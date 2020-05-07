@@ -76,10 +76,7 @@ class MpttTest extends BaseTestCase
 
     protected $tables = ['mptt'];
 
-    /**
-     * Prepares the environment before running a test.
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -87,8 +84,7 @@ class MpttTest extends BaseTestCase
         foreach ($this->idOrderedTree as $values) {
             $row = array_combine($fields, $values);
             $this->idOrderedRows[] = $row;
-            unset($row['lft']);
-            unset($row['rgt']);
+            unset($row['lft'], $row['rgt']);
             $this->defaultRows[] = $row;
         }
 
@@ -100,10 +96,7 @@ class MpttTest extends BaseTestCase
         $this->dropTables()->createTables();
     }
 
-    /**
-     * Tests Mptt->__construct()
-     */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $cacheService = new CacheService();
         $cacheService->setCacheDir($this->getDataDir() . '/cache');
@@ -120,11 +113,7 @@ class MpttTest extends BaseTestCase
         $this->assertInstanceOf(MapperConcrete::class, $mptt->getMapper());
     }
 
-    /**
-     * Tests Mptt->setTraversal()
-     * @expectedException \Exception
-     */
-    public function testSetTraversalIncomplete()
+    public function testSetTraversalIncomplete(): void
     {
         $cacheService = new CacheService();
         $cacheService->setCacheDir($this->getDataDir() . '/cache');
@@ -143,14 +132,11 @@ class MpttTest extends BaseTestCase
 
         $this->assertInstanceOf(Service\Mptt\MpttServiceAbstract::class, $mptt);
 
-        // The Exception
+        $this->expectException(\Exception::class);
         $mptt->setTraversal(['invalid' => 'invalid']);
     }
 
-    /**
-     * Tests Mptt->getColumns()
-     */
-    public function testGetColumns()
+    public function testGetColumns(): void
     {
         $cacheService = new CacheService();
         $cacheService->setCacheDir($this->getDataDir() . '/cache');
@@ -161,16 +147,11 @@ class MpttTest extends BaseTestCase
 
         $mptt = new ServiceConcrete($mapper, 'id');
         $mptt->setCache($cacheService->getFrontend());
-        $this->assertInternalType('array', $mptt->getColumns());
-        $this->assertNotNull($mptt->getColumns());
-        $this->assertNotEmpty($mptt->getColumns());
-        $this->assertEquals(['id', 'name', 'parent_id', 'lft', 'rgt'], $mptt->getColumns());
+        // Laminas retornar em ordem alfabética e não do bd
+        $this->assertEquals(['id', 'lft', 'name', 'parent_id', 'rgt'], $mptt->getColumns());
     }
 
-    /**
-     * Tests Mptt->setTraversal()
-     */
-    public function testSetTraversal()
+    public function testSetTraversal(): void
     {
         $cacheService = new CacheService();
         $cacheService->setCacheDir($this->getDataDir() . '/cache');
@@ -187,10 +168,7 @@ class MpttTest extends BaseTestCase
         $this->assertTrue($mptt->isTraversable());
     }
 
-    /**
-     * Tests Mptt->rebuildTreeTraversal()
-     */
-    public function testRebuildTreeTraversal()
+    public function testRebuildTreeTraversal(): void
     {
         // Cria a tabela com os valores padrões
         $cacheService = new CacheService();
@@ -236,10 +214,7 @@ class MpttTest extends BaseTestCase
         $this->assertEquals($this->nameOrderedRows, $fetchArray);
     }
 
-    /**
-     * Tests Mptt->rebuildTreeTraversal()
-     */
-    public function testInsert()
+    public function testInsert(): void
     {
         // Cria a tabela com os valores padrões
         $cacheService = new CacheService();
@@ -297,10 +272,7 @@ class MpttTest extends BaseTestCase
         $this->assertEquals($this->idOrderedRows, $fetchArray);
     }
 
-    /**
-     * Tests Mptt->rebuildTreeTraversal()
-     */
-    public function testDelete()
+    public function testDelete(): void
     {
         // Cria a tabela com os valores padrões
         $cacheService = new CacheService();
