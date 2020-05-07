@@ -6,11 +6,11 @@ use Psr\Container\ContainerInterface;
 use Realejo\Cache\CacheService;
 use Realejo\Paginator\Paginator;
 use Realejo\Stdlib\ArrayObject;
-use Zend\Cache\Storage as CacheStorage;
-use Zend\Db\ResultSet\HydratingResultSet;
-use Zend\Db\Sql\Select;
-use Zend\Paginator\Adapter\DbSelect;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\Cache\Storage as CacheStorage;
+use Laminas\Db\ResultSet\HydratingResultSet;
+use Laminas\Db\Sql\Select;
+use Laminas\Paginator\Adapter\DbSelect;
+use Laminas\ServiceManager\ServiceManager;
 
 abstract class ServiceAbstract
 {
@@ -31,7 +31,7 @@ abstract class ServiceAbstract
     protected $useCache = false;
 
     /**
-     * @var \Zend\Cache\Storage\Adapter\Filesystem
+     * @var \Laminas\Cache\Storage\Adapter\Filesystem
      */
     protected $cache;
 

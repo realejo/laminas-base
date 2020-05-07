@@ -9,15 +9,15 @@ use Psr\Container\ContainerInterface;
 use Realejo\Cache\CacheService;
 use Realejo\Stdlib\ArrayObject;
 use RuntimeException;
-use Zend\Cache\Storage as CacheStorage;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\ResultSet\HydratingResultSet;
-use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Predicate;
-use Zend\Db\Sql\Select;
-use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
-use Zend\Db\TableGateway\TableGateway;
-use Zend\Hydrator\ArraySerializable;
+use Laminas\Cache\Storage as CacheStorage;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\ResultSet\HydratingResultSet;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Predicate;
+use Laminas\Db\Sql\Select;
+use Laminas\Db\TableGateway\Feature\GlobalAdapterFeature;
+use Laminas\Db\TableGateway\TableGateway;
+use Laminas\Hydrator\ArraySerializable;
 
 abstract class MapperAbstract
 {
@@ -763,7 +763,7 @@ abstract class MapperAbstract
             $select->order($order);
         }
 
-        // Verifica se há paginação, não confundir com o Zend\Paginator
+        // Verifica se há paginação, não confundir com o Laminas\Paginator
         if ($count !== null) {
             $select->limit($count);
         }
@@ -786,7 +786,7 @@ abstract class MapperAbstract
 
         // processa as clausulas
         foreach ($where as $id => $w) {
-            // \Zend\Db\Sql\Expression
+            // \Laminas\Db\Sql\Expression
             if (is_numeric($id) && $w instanceof Expression) {
                 if (!$w instanceof Predicate\Expression) {
                     $select->where(new Predicate\Expression($w->getExpression()));

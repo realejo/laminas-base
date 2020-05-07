@@ -3,7 +3,7 @@
 namespace RealejoTest\Service\Mapper;
 
 use Realejo\Service\MapperAbstract;
-use Zend\Db\Sql\Select;
+use Laminas\Db\Sql\Select;
 
 class MapperConcreteDeprecated extends MapperAbstract
 {

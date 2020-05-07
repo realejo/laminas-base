@@ -6,11 +6,11 @@ use Realejo\Cache\CacheService;
 use Realejo\Service\MapperAbstract;
 use Realejo\Stdlib\ArrayObject;
 use RealejoTest\BaseTestCase;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\ResultSet\HydratingResultSet;
-use Zend\Db\Sql;
-use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Select;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\ResultSet\HydratingResultSet;
+use Laminas\Db\Sql;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
 
 class MapperAbstractTest extends BaseTestCase
 {

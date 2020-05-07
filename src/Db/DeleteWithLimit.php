@@ -1,11 +1,11 @@
 <?php
 namespace Realejo\Db;
 
-use Zend\Db\Adapter\Driver\DriverInterface;
-use Zend\Db\Adapter\ParameterContainer;
-use Zend\Db\Adapter\Platform\PlatformInterface;
-use Zend\Db\Sql\Delete;
-use Zend\Db\Sql\Predicate;
+use Laminas\Db\Adapter\Driver\DriverInterface;
+use Laminas\Db\Adapter\ParameterContainer;
+use Laminas\Db\Adapter\Platform\PlatformInterface;
+use Laminas\Db\Sql\Delete;
+use Laminas\Db\Sql\Predicate;
 
 /**
  * @method DeleteWithLimit where($predicate, $combination = Predicate\PredicateSet::OP_AND)

@@ -9,7 +9,7 @@ use Realejo\Service\Metadata\MetadataService;
 use Realejo\Stdlib\ArrayObject;
 use RealejoTest\BaseTestCase;
 use ReflectionClass;
-use Zend\Db\Sql\Expression;
+use Laminas\Db\Sql\Expression;
 
 /**
  * MetadataService test case.

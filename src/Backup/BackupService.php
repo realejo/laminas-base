@@ -2,7 +2,7 @@
 
 namespace Realejo\Backup;
 
-use Zend\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\Adapter;
 
 /**
  * Controle de backup

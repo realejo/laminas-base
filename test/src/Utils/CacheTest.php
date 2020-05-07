@@ -139,7 +139,7 @@ class CacheTest extends BaseTestCase
     public function testgetFrontendComClass()
     {
         $cache = $this->cacheService->getFrontend('Album');
-        $this->assertInstanceOf('Zend\Cache\Storage\Adapter\Filesystem', $cache);
+        $this->assertInstanceOf('Laminas\Cache\Storage\Adapter\Filesystem', $cache);
     }
 
     /**
@@ -148,6 +148,6 @@ class CacheTest extends BaseTestCase
     public function testgetFrontendSemClass()
     {
         $cache = $this->cacheService->getFrontend(null);
-        $this->assertInstanceOf('Zend\Cache\Storage\Adapter\Filesystem', $cache);
+        $this->assertInstanceOf('Laminas\Cache\Storage\Adapter\Filesystem', $cache);
     }
 }

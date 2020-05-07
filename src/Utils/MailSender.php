@@ -10,9 +10,9 @@
 namespace Realejo\Utils;
 
 use RuntimeException;
-use Zend\Mail;
-use Zend\Mime;
-use Zend\Stdlib\ArrayUtils;
+use Laminas\Mail;
+use Laminas\Mime;
+use Laminas\Stdlib\ArrayUtils;
 
 class MailSender
 {
@@ -460,7 +460,7 @@ class MailSender
      */
     public static function isEmail($email)
     {
-        return \Zend\Validator\StaticValidator::execute($email, 'EmailAddress');
+        return \Laminas\Validator\StaticValidator::execute($email, 'EmailAddress');
     }
 
     /**

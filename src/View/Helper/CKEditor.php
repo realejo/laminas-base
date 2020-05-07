@@ -2,7 +2,7 @@
 
 namespace Realejo\View\Helper;
 
-use Zend\View\Helper\AbstractHelper;
+use Laminas\View\Helper\AbstractHelper;
 
 /**
  * Coloca o CKEditor e CKFinder na view

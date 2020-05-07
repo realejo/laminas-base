@@ -1,53 +1,57 @@
 {
-  "name" : "realejo/zf3-base",
-  "description" : "Biblioteca com classes comuns utilizadas nos projetos ZF3.",
-  "type" : "library",
-  "homepage" : "http://realejo.com.br",
-  "license" : "BSD-3-Clause",
-  "keywords" : [ "framework", "zf3", "realejo" ],
-  "minimum-stability": "dev",
-  "prefer-stable": true,
-  "require" : {
-    "php" : "~7.1",
-    "ext-json" : "*",
-    "zendframework/zend-db" : "^2.8.1",
-    "zendframework/zend-cache": "^2.7.1",
-    "zendframework/zend-paginator": "^2.8.0",
-    "zendframework/zend-serializer": "^2.8.0",
-    "zendframework/zend-mail": "^2.7.2",
-    "zendframework/zend-hydrator": "^2.2.1",
-    "zendframework/zend-servicemanager": "^3.3",
-    "zendframework/zend-i18n" : "~2.7",
-    "zendframework/zend-validator" : "~2.8",
-    "zendframework/zend-form" : "~2.10",
-    "zendframework/zend-view" : "~2.8",
-    "zendframework/zend-i18n-resources": "^2.5"
-  },
-  "require-dev" : {
-    "friendsofphp/php-cs-fixer": "2.*",
-    "squizlabs/php_codesniffer": "^2.8 || ^3.0",
-    "phpunit/phpunit" : "^6.5 || ^7.0",
-    "zendframework/zend-dom": "~2.6.0"
-  },
-  "autoload" : {
-    "psr-4" : {
-      "Realejo\\" : "src/"
+    "name": "realejo/laminas-base",
+    "description": "Biblioteca com classes comuns utilizadas nos projetos com Laminas.",
+    "type": "library",
+    "homepage": "http://realejo.com.br",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "framework",
+        "zf3",
+        "laminas",
+        "realejo"
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": "~7.1",
+        "ext-json": "*",
+        "laminas/laminas-db": "^2.8.1",
+        "laminas/laminas-cache": "^2.7.1",
+        "laminas/laminas-paginator": "^2.8.0",
+        "laminas/laminas-serializer": "^2.8.0",
+        "laminas/laminas-mail": "^2.7.2",
+        "laminas/laminas-hydrator": "^2.2.1",
+        "laminas/laminas-servicemanager": "^3.3",
+        "laminas/laminas-i18n": "~2.7",
+        "laminas/laminas-validator": "~2.8",
+        "laminas/laminas-form": "~2.10",
+        "laminas/laminas-view": "~2.8",
+        "laminas/laminas-i18n-resources": "^2.5",
+        "laminas/laminas-dependency-plugin": "^1.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "2.*",
+        "squizlabs/php_codesniffer": "^2.8 || ^3.0",
+        "phpunit/phpunit": "^6.5 || ^7.0",
+        "laminas/laminas-dom": "~2.6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Realejo\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "RealejoTest\\": "test/src"
+        }
+    },
+    "suggest": {
+        "ext-fileinfo": "Needed to support attachments in Realejo\\Utils\\MailSender"
+    },
+    "scripts": {
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf fix -v --diff --dry-run",
+        "test": "phpunit",
+        "cs-check-travis": "phpcs --config-set ignore_errors_on_exit 1;phpcs --config-set ignore_warnings_on_exit 1; phpcs"
     }
-  },
-  "autoload-dev" : {
-    "psr-4" : {
-      "RealejoTest\\" : "test/src"
-    }
-  },
-  "suggest": {
-    "ext-gd" : "Needed to support resizing images in Realejo\\Image",
-    "ext-exif" : "Needed to support resizing images in Realejo\\Image",
-    "ext-fileinfo" : "Needed to support attachments in Realejo\\MailSender"
-  },
-  "scripts": {
-    "cs-check": "phpcs",
-    "cs-fix": "phpcbf fix -v --diff --dry-run",
-    "test": "phpunit",
-    "cs-check-travis": "phpcs --config-set ignore_errors_on_exit 1;phpcs --config-set ignore_warnings_on_exit 1; phpcs"
-  }
 }

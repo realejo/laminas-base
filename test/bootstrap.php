@@ -23,7 +23,7 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
 // Procura pelas configurações do Semaphore
 if (isset($_SERVER['DATABASE_MYSQL_USERNAME'])) {
     // Define o banco de dados de testes
-    \Zend\Db\TableGateway\Feature\GlobalAdapterFeature::setStaticAdapter(new Zend\Db\Adapter\Adapter([
+    \Laminas\Db\TableGateway\Feature\GlobalAdapterFeature::setStaticAdapter(new Laminas\Db\Adapter\Adapter([
         'driver' => 'mysqli',
         'host'           => '127.0.0.1',
         'username'       => $_SERVER['DATABASE_MYSQL_USERNAME'],
@@ -37,7 +37,7 @@ if (isset($_SERVER['DATABASE_MYSQL_USERNAME'])) {
 // Procura pelas configurações do Codeship
 } elseif (isset($_SERVER['MYSQL_USER'])) {
     // Define o banco de dados de testes
-    \Zend\Db\TableGateway\Feature\GlobalAdapterFeature::setStaticAdapter(new Zend\Db\Adapter\Adapter([
+    \Laminas\Db\TableGateway\Feature\GlobalAdapterFeature::setStaticAdapter(new Laminas\Db\Adapter\Adapter([
         'driver' => 'mysqli',
         'host'           => '127.0.0.1',
         'username'       => $_SERVER['MYSQL_USER'],
@@ -50,5 +50,5 @@ if (isset($_SERVER['DATABASE_MYSQL_USERNAME'])) {
 } else {
     // Define o banco de dados de testes
     $config = (file_exists(__DIR__. '/configs/db.php')) ? __DIR__.'/configs/db.php' : __DIR__.'/configs/db.php.dist';
-    \Zend\Db\TableGateway\Feature\GlobalAdapterFeature::setStaticAdapter(new Zend\Db\Adapter\Adapter(require $config));
+    \Laminas\Db\TableGateway\Feature\GlobalAdapterFeature::setStaticAdapter(new Laminas\Db\Adapter\Adapter(require $config));
 }

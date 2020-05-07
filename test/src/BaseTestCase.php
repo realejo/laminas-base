@@ -15,9 +15,9 @@
 namespace RealejoTest;
 
 use PHPUnit\Framework\TestCase;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\TableGateway\Feature\GlobalAdapterFeature;
+use Laminas\Db\TableGateway\TableGateway;
 
 class BaseTestCase extends TestCase
 {
@@ -25,7 +25,7 @@ class BaseTestCase extends TestCase
     const SQL_DROP = 'drop';
 
     /**
-     * @var \Zend\Db\Adapter\Adapter
+     * @var \Laminas\Db\Adapter\Adapter
      */
     protected $adapter = null;
 

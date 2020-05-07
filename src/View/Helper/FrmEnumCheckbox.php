@@ -20,7 +20,7 @@ namespace Realejo\View\Helper;
 
 use Realejo\Enum\Enum;
 use Realejo\Enum\EnumFlagged;
-use Zend\View\Helper\AbstractHelper;
+use Laminas\View\Helper\AbstractHelper;
 
 class FrmEnumCheckbox extends AbstractHelper
 {

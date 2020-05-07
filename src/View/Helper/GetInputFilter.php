@@ -2,21 +2,21 @@
 
 namespace Realejo\View\Helper;
 
-use Zend\Form\Form;
-use Zend\I18n\Translator\Translator;
-use Zend\I18n\Validator\IsInt;
-use Zend\I18n\Validator\PhoneNumber;
-use Zend\Validator\Between;
-use Zend\Validator\CreditCard;
-use Zend\Validator\Date;
-use Zend\Validator\EmailAddress;
-use Zend\Validator\Identical;
-use Zend\Validator\Ip;
-use Zend\Validator\NotEmpty;
-use Zend\Validator\Regex;
-use Zend\Validator\StringLength;
-use Zend\Validator\Uri;
-use Zend\View\Helper\AbstractHelper;
+use Laminas\Form\Form;
+use Laminas\I18n\Translator\Translator;
+use Laminas\I18n\Validator\IsInt;
+use Laminas\I18n\Validator\PhoneNumber;
+use Laminas\Validator\Between;
+use Laminas\Validator\CreditCard;
+use Laminas\Validator\Date;
+use Laminas\Validator\EmailAddress;
+use Laminas\Validator\Identical;
+use Laminas\Validator\Ip;
+use Laminas\Validator\NotEmpty;
+use Laminas\Validator\Regex;
+use Laminas\Validator\StringLength;
+use Laminas\Validator\Uri;
+use Laminas\View\Helper\AbstractHelper;
 
 /**
  * View helper plugin to fetch the authenticated identity.
@@ -34,10 +34,10 @@ class GetInputFilter extends AbstractHelper
             $translator = new Translator();
 
             // Coloca as mensagens de tradução em Português se existir
-            if (file_exists('./vendor/zendframework/zend-i18n-resources/languages/pt_BR/Zend_Validate.php')) {
+            if (file_exists('./vendor/laminas/laminas-i18n-resources/languages/pt_BR/Laminas_Validate.php')) {
                 // Define o local onde se encontra o arquivo de tradução de mensagens
                 $translator->addTranslationFile('phparray',
-                    './vendor/zendframework/zend-i18n-resources/languages/pt_BR/Zend_Validate.php');
+                    './vendor/laminas/laminas-i18n-resources/languages/pt_BR/Laminas_Validate.php');
                 // Define o local (você também pode definir diretamente no método acima
                 $translator->setLocale('pt_BR');
             }
@@ -80,7 +80,7 @@ class GetInputFilter extends AbstractHelper
                         break;
                     case $validator['instance'] instanceof StringLength:
                         $messages = $validator['instance']->getMessageTemplates();
-                        #fixado mensagem na mão pois o ZendForm não possui a mensagem junta, somente msg de min e max distintas.
+                        #fixado mensagem na mão pois o LaminasForm não possui a mensagem junta, somente msg de min e max distintas.
                         $result[$element->getName()]['validators']['stringLength']['message'] = "O tamanho do valor de entrada deve conter entre {$validator['instance']->getMin()} e {$validator['instance']->getMax()} caracteres";
                         $result[$element->getName()]['validators']['stringLength']['max'] = $validator['instance']->getMax();
                         $result[$element->getName()]['validators']['stringLength']['min'] = $validator['instance']->getMin();

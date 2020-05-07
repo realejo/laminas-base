@@ -7,9 +7,9 @@ use Realejo\Cache\CacheService;
 use Realejo\Service\MapperAbstract;
 use Realejo\Service\Metadata\MetadataService;
 use RealejoTest\BaseTestCase;
-use Zend\Db\Adapter\Adapter;
-use Zend\Dom\Query as DomQuery;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Dom\Query as DomQuery;
+use Laminas\ServiceManager\ServiceManager;
 
 class ServiceTest extends BaseTestCase
 {

@@ -12,7 +12,7 @@
 namespace Realejo\Service\Mptt;
 
 use Realejo\Service\ServiceAbstract;
-use Zend\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Predicate\Expression;
 
 abstract class MpttServiceAbstract extends ServiceAbstract
 {
@@ -343,7 +343,7 @@ abstract class MpttServiceAbstract extends ServiceAbstract
     public function getColumns()
     {
         if (!isset($this->_columns)) {
-            $metadata = new \Zend\Db\Metadata\Metadata($this->getMapper()->getTableGateway()->getAdapter());
+            $metadata = new \Laminas\Db\Metadata\Metadata($this->getMapper()->getTableGateway()->getAdapter());
             $this->_columns = $metadata->getColumnNames($this->getMapper()->getTableName());
         }
 

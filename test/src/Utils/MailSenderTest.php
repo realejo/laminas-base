@@ -8,8 +8,8 @@ namespace RealejoTest\Utils;
 
 use PHPUnit\Framework\TestCase;
 use Realejo\Utils\MailSender;
-use Zend\Mail;
-use Zend\Mime;
+use Laminas\Mail;
+use Laminas\Mime;
 
 class MailSenderTest extends TestCase
 {
