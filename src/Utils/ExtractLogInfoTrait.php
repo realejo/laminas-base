@@ -1,10 +1,13 @@
 <?php
 
-namespace Realejo;
+namespace Realejo\Utils;
 
 trait ExtractLogInfoTrait
 {
-    protected function extractLogInfo(array &$set, string $logMessage = '', string $logType = '',
+    protected function extractLogInfo(
+        array &$set,
+        string $logMessage = '',
+        string $logType = '',
         $forceLogTypePrefix = false
     ): array {
         $idBlame = null;
@@ -22,7 +25,7 @@ trait ExtractLogInfoTrait
         }
 
         // Verifica se há uma mensagem para o log
-        foreach (['logType', 'logtipo'] as $possibleKey) {
+        foreach (['logType'] as $possibleKey) {
             if (array_key_exists($possibleKey, $set)) {
                 $logTypeCandidate = empty($set[$possibleKey]) ? $logType : $set[$possibleKey];
                 if ($forceLogTypePrefix === true && strpos($logTypeCandidate, $logType) !== 0) {
