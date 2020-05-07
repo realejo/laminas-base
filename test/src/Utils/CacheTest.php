@@ -2,28 +2,16 @@
 
 namespace RealejoTest\Utils;
 
-/**
- * CacheTest test case.
- *
- * @link      http://github.com/realejo/libraray-zf2
- * @copyright Copyright (c) 2014 Realejo (http://realejo.com.br)
- * @license   http://unlicense.org
- */
-
 use Realejo\Cache\CacheService;
 use RealejoTest\BaseTestCase;
+use Laminas\Cache\Storage\Adapter\Filesystem;
 
 class CacheTest extends BaseTestCase
 {
-    /**
-     * @var CacheService
-     */
+    /** @var CacheService */
     protected $cacheService;
 
-    /**
-     * Prepares the environment before running a test.
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -33,10 +21,7 @@ class CacheTest extends BaseTestCase
         $this->clearApplicationData();
     }
 
-    /**
-     * Cleans up the environment after running a test.
-     */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
 
@@ -44,26 +29,18 @@ class CacheTest extends BaseTestCase
         $this->clearApplicationData();
     }
 
-    /**
-     * getCachePath sem nome da pasta
-     */
-    public function testGetCacheRoot()
+    public function testGetCacheRoot(): void
     {
-        // Recupera a pasta aonde será salva as informações
         $path = $this->cacheService->getCacheRoot();
 
-        // Verifica se tere o retorno correto
         $this->assertNotNull($path);
         $this->assertEquals(realpath(TEST_DATA . '/cache'), $path);
-        $this->assertTrue(file_exists($path));
-        $this->assertTrue(is_dir($path));
+        $this->assertFileExists($path);
+        $this->assertDirectoryExists($path);
         $this->assertTrue(is_writable($path));
     }
 
-    /**
-     * getCachePath sem nome da pasta
-     */
-    public function testGetCachePath()
+    public function testGetCachePath(): void
     {
         // Verifica se todas as opções são iguais
         $this->assertEquals($this->cacheService->getCacheRoot(), $this->cacheService->getCachePath(null));
@@ -77,15 +54,15 @@ class CacheTest extends BaseTestCase
         $this->assertNotNull($path);
         $this->assertEquals(realpath(TEST_DATA . '/cache/album'), $path);
         $this->assertNotEquals(realpath(TEST_DATA . '/cache/Album'), $path);
-        $this->assertTrue(file_exists($path));
-        $this->assertTrue(is_dir($path));
+        $this->assertFileExists($path);
+        $this->assertDirectoryExists($path);
         $this->assertTrue(is_writable($path));
 
         // Apaga a pasta
         $this->rrmdir($path);
 
         // Verifica se a pasta foi apagada
-        $this->assertFalse(file_exists($path));
+        $this->assertFileNotExists($path);
 
         // Cria ou recupera a pasta album
         $path = $this->cacheService->getCachePath('album');
@@ -94,15 +71,15 @@ class CacheTest extends BaseTestCase
         $this->assertNotNull($path);
         $this->assertEquals(realpath(TEST_DATA . '/cache/album'), $path);
         $this->assertNotEquals(realpath(TEST_DATA . '/cache/Album'), $path);
-        $this->assertTrue(file_exists($path), 'Verifica se a pasta album existe');
-        $this->assertTrue(is_dir($path), 'Verifica se a pasta album é uma pasta');
+        $this->assertFileExists($path, 'Verifica se a pasta album existe');
+        $this->assertDirectoryExists($path, 'Verifica se a pasta album é uma pasta');
         $this->assertTrue(is_writable($path), 'Verifica se a pasta album tem permissão de escrita');
 
         // Apaga a pasta
         $this->rrmdir($path);
 
         // Verifica se a pasta foi apagada
-        $this->assertFalse(file_exists($path));
+        $this->assertFileNotExists($path);
 
         // Cria ou recupera a pasta
         $path = $this->cacheService->getCachePath('album_Teste');
@@ -111,15 +88,15 @@ class CacheTest extends BaseTestCase
         $this->assertNotNull($path);
         $this->assertEquals(realpath(TEST_DATA . '/cache/album/teste'), $path);
         $this->assertNotEquals(realpath(TEST_DATA . '/cache/Album/Teste'), $path);
-        $this->assertTrue(file_exists($path), 'Verifica se a pasta album_Teste existe');
-        $this->assertTrue(is_dir($path), 'Verifica se a pasta album_Teste é uma pasta');
+        $this->assertFileExists($path, 'Verifica se a pasta album_Teste existe');
+        $this->assertDirectoryExists($path, 'Verifica se a pasta album_Teste é uma pasta');
         $this->assertTrue(is_writable($path), 'Verifica se a pasta album_Teste tem permissão de escrita');
 
         // Apaga a pasta
         $this->rrmdir($path);
 
         // Verifica se a pasta foi apagada
-        $this->assertFalse(file_exists($path), 'Verifica se a pasta album_Teste foi apagada');
+        $this->assertFileNotExists($path, 'Verifica se a pasta album_Teste foi apagada');
 
         // Cria ou recupera a pasta
         $path = $this->cacheService->getCachePath('album/Teste');
@@ -128,26 +105,20 @@ class CacheTest extends BaseTestCase
         $this->assertNotNull($path, 'Teste se o album/Teste foi criado');
         $this->assertEquals(realpath(TEST_DATA . '/cache/album/teste'), $path);
         $this->assertNotEquals(realpath(TEST_DATA . '/cache/Album/Teste'), $path);
-        $this->assertTrue(file_exists($path), 'Verifica se a pasta album/Teste existe');
-        $this->assertTrue(is_dir($path), 'Verifica se a pasta album/Teste é uma pasta');
+        $this->assertFileExists($path, 'Verifica se a pasta album/Teste existe');
+        $this->assertDirectoryExists($path, 'Verifica se a pasta album/Teste é uma pasta');
         $this->assertTrue(is_writable($path), 'Verifica se a pasta album/Teste tem permissão de escrita');
     }
 
-    /**
-     * getFrontend com nome da class
-     */
-    public function testgetFrontendComClass()
+    public function testGetFrontendComClass(): void
     {
         $cache = $this->cacheService->getFrontend('Album');
-        $this->assertInstanceOf('Zend\Cache\Storage\Adapter\Filesystem', $cache);
+        $this->assertInstanceOf(Filesystem::class, $cache);
     }
 
-    /**
-     * getFrontend sem nome da class
-     */
-    public function testgetFrontendSemClass()
+    public function testGetFrontendSemClass(): void
     {
         $cache = $this->cacheService->getFrontend(null);
-        $this->assertInstanceOf('Zend\Cache\Storage\Adapter\Filesystem', $cache);
+        $this->assertInstanceOf(Filesystem::class, $cache);
     }
 }

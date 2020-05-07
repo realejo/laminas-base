@@ -4,6 +4,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+### [3.0.0] - 2020-05-07
+Laminas migration
+
+## [2.2.5] - 2019-12-27
+### Fixed
+- `MapperAbstract::setHydratorEntity()` had a wrong signature. Changed to `string`.
+
+
+## [2.2.4] - 2019-11-19
+### Added
+- `Enum`/`EnumFlagged` have `setValue()` separated form `__construct()` to change the value without the need to recreate the object
+- `EnumFlagged::add()` and `EnumFlagged::remove()` to change the value without the need to recreate the object
+
+## [2.2.3] - 2019-11-11
+### Added
+- `Realejo\Db\DeleteWithLimit` to use with `Zend\Db\TableGateway::deleteWith()` and limit the records deleted (tested only on mysql)
+
+## [2.2.2] - 2019-07-16
+### Fixed
+- Bug on cache when using `Service::findAssoc` with a different key than the actual table key
+
+## [2.2.1] - 2019-07-16
+### Changed
+- `MailSender` lookup for configuration files in several folders.
+
+### Deprecated
+- `tableJoinLeft` at `MapperAbstract`. Should use `tableJoin`
+
 ## [2.2.0] - 2018-11-28
 ### Added
 - Bump to 7.1

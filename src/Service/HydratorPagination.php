@@ -3,8 +3,8 @@
 namespace Realejo\Service;
 
 use Realejo\Stdlib\ArrayObject;
-use Zend\Hydrator\ArraySerializable;
-use Zend\Paginator\Adapter\DbSelect;
+use Laminas\Hydrator\ArraySerializable;
+use Laminas\Paginator\Adapter\DbSelect;
 
 /**
  * Class HydratorPagination

@@ -8,10 +8,10 @@ namespace Realejo\MvcUtils;
 interface AccessControlListInterface
 {
     /**
-     * Retuns an arrays contains two items. First, the \Zend\Permissions\Acl\Acl object containing the definitions of
+     * Retuns an arrays contains two items. First, the \Laminas\Permissions\Acl\Acl object containing the definitions of
      * roles and resources. Second, an array containing roles descriptions.
      *
-     * @return array[\Zend\Permissions\Acl\Acl, array]
+     * @return array[\Laminas\Permissions\Acl\Acl, array]
      */
     public function getAcl();
 }

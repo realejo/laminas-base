@@ -2,6 +2,8 @@
 
 namespace Realejo\Enum;
 
+use InvalidArgumentException;
+
 /**
  * Enum class
  *
@@ -17,11 +19,22 @@ namespace Realejo\Enum;
  */
 abstract class EnumFlagged extends Enum
 {
+
+    public function setValue($value = null): void
+    {
+        if ($value === '' || $value === null) {
+            $value = 0;
+        }
+
+        parent::setValue($value);
+    }
+
     /**
      * Return the name os the constant
      *
-     * @param null $value
+     * @param null   $value
      * @param string $join
+     *
      * @return string|array
      */
     public static function getName($value = null, $join = '/')
@@ -53,8 +66,9 @@ abstract class EnumFlagged extends Enum
     /**
      * Descrição dos status
      *
-     * @param null $value
+     * @param null   $value
      * @param string $join
+     *
      * @return string|array|null
      */
     public static function getDescription($value = null, $join = '/')
@@ -86,8 +100,9 @@ abstract class EnumFlagged extends Enum
     /**
      * Return the name os the constant
      *
-     * @param null $value
+     * @param null   $value
      * @param string $join
+     *
      * @return string|array
      */
     public function getValueName($value = null, $join = '/')
@@ -96,14 +111,15 @@ abstract class EnumFlagged extends Enum
             $value = $this->value;
         }
 
-        return $this->getName($value, $join);
+        return self::getName($value, $join);
     }
 
     /**
      * Return the name os the constant
      *
-     * @param null $value
+     * @param null   $value
      * @param string $join
+     *
      * @return string|array
      */
     public function getValueDescription($value = null, $join = '/')
@@ -112,15 +128,7 @@ abstract class EnumFlagged extends Enum
             $value = $this->value;
         }
 
-        return $this->getDescription($value, $join);
-    }
-
-    public function __construct($value = 0)
-    {
-        if ($value === '' || $value === null) {
-            $value = 0;
-        }
-        return parent::__construct($value);
+        return self::getDescription($value, $join);
     }
 
     public static function isValid($value): bool
@@ -130,6 +138,7 @@ abstract class EnumFlagged extends Enum
         }
 
         // ZERO is not a const but it's valid because default flagged is ZERO
+        // And it also means 'no flag'
         if ($value === 0) {
             return true;
         }
@@ -138,6 +147,7 @@ abstract class EnumFlagged extends Enum
         if (empty($const)) {
             return false;
         }
+
         $maxFlaggedValue = max($const) * 2 - 1;
         return ($value <= $maxFlaggedValue);
     }
@@ -153,5 +163,27 @@ abstract class EnumFlagged extends Enum
         }
 
         return (($this->value & $value) === $value);
+    }
+
+    public function add(int $value): void
+    {
+        if (!static::isValid($value)) {
+            throw new InvalidArgumentException("Value '$value' is not valid.");
+        }
+
+        if (!$this->has($value)) {
+            $this->value += $value;
+        }
+    }
+
+    public function remove(int $value): void
+    {
+        if (!static::isValid($value)) {
+            throw new InvalidArgumentException("Value '$value' is not valid.");
+        }
+
+        if ($this->has($value)) {
+            $this->value -= $value;
+        }
     }
 }

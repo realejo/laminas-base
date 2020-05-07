@@ -2,22 +2,16 @@
 
 namespace RealejoTest\Utils;
 
-/**
- * Version test case.
- */
-
 use PHPUnit\Framework\TestCase;
 use Realejo\Utils\MailSender;
-use Zend\Mail;
-use Zend\Mime;
+use Laminas\Mail;
+use Laminas\Mime;
 
 class MailSenderTest extends TestCase
 {
-    /**
-     * @expectedException \Exception
-     */
-    public function testConstructError()
+    public function testConstructError(): void
     {
+        $this->expectException(\Exception::class);
         new MailSender();
     }
 
@@ -31,9 +25,7 @@ class MailSenderTest extends TestCase
         return require $configFile . '.dist';
     }
 
-    /**
-     */
-    public function testConstructSuccess()
+    public function testConstructSuccess(): void
     {
         $config = $this->getMailSenderConfig();
         $oMailer = new MailSender($config['mailsender']);
@@ -41,10 +33,7 @@ class MailSenderTest extends TestCase
         $this->assertInstanceOf(Mail\Transport\Smtp::class, $oMailer->getTransport());
     }
 
-    /**
-     *
-     */
-    public function testSetEmailComAnexoStrings()
+    public function testSetEmailComAnexoStrings(): void
     {
         $config = $this->getMailSenderConfig();
         $oMailer = new MailSender($config['mailsender']);
@@ -93,16 +82,13 @@ class MailSenderTest extends TestCase
         $this->assertEquals('album.drop.sql', $parts[2]->getFileName());
     }
 
-    /**
-     * Verificar
-     */
-    public function testEnvioEmailComAnexoSource()
+    public function testEnvioEmailComAnexoSource(): void
     {
         $config = $this->getMailSenderConfig();
         $oMailer = new MailSender($config['mailsender']);
 
-        $file1 = fopen(TEST_ROOT . '/assets/sql/album.create.sql', 'r');
-        $file2 = fopen(TEST_ROOT . '/assets/sql/album.drop.sql', 'r');
+        $file1 = fopen(TEST_ROOT . '/assets/sql/album.create.sql', 'rb');
+        $file2 = fopen(TEST_ROOT . '/assets/sql/album.drop.sql', 'rb');
 
         $files = [
             $file1,
@@ -150,10 +136,7 @@ class MailSenderTest extends TestCase
         $this->assertEquals('application/octet-stream', $parts[2]->getType());
     }
 
-    /**
-     * Ok
-     */
-    public function testEnvioEmailHtmlSuccess()
+    public function testEnvioEmailHtmlSuccess(): void
     {
         $config = $this->getMailSenderConfig();
         $oMailer = new MailSender($config['mailsender']);
@@ -202,10 +185,7 @@ class MailSenderTest extends TestCase
         }
     }
 
-    /**
-     * Ok
-     */
-    public function testMessageDifferentSender()
+    public function testMessageDifferentSender(): void
     {
         $config = $this->getMailSenderConfig();
         $oMailer = new MailSender($config['mailsender']);
@@ -254,12 +234,9 @@ class MailSenderTest extends TestCase
         }
     }
 
-    public function testiIsValid()
+    public function testIsValid(): void
     {
-        $config = $this->getMailSenderConfig();
-        $oMailer = new MailSender($config['mailsender']);
-
-        $this->assertFalse($oMailer->isEmail('wrooong'));
-        $this->assertTrue($oMailer->isEmail('test@email.com'));
+        $this->assertFalse(MailSender::isEmail('wrooong'));
+        $this->assertTrue(MailSender::isEmail('test@email.com'));
     }
 }

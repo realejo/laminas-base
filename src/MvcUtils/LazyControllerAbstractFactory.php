@@ -3,7 +3,7 @@
 namespace Realejo\MvcUtils;
 
 use Interop\Container\ContainerInterface;
-use Zend\Mvc\Controller\LazyControllerAbstractFactory as ZendLazyControllerAbstractFactory;
+use Laminas\Mvc\Controller\LazyControllerAbstractFactory as ZendLazyControllerAbstractFactory;
 
 class LazyControllerAbstractFactory extends ZendLazyControllerAbstractFactory
 {

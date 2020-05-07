@@ -2,16 +2,14 @@
 
 namespace RealejoTest\Service\Metadata;
 
+use PHPUnit\Framework\Error\Notice;
 use PHPUnit\Framework\TestCase;
 use Realejo\Service\Metadata\MetadataArrayObject;
 
-/**
- * MetadataArrayObject test case.
- */
 class MetadataArrayObjectTest extends TestCase
 {
 
-    public function testGettersSetters()
+    public function testGettersSetters(): void
     {
         $object = new MetadataArrayObject();
         $this->assertEmpty($object);
@@ -55,9 +53,8 @@ class MetadataArrayObjectTest extends TestCase
         $this->assertFalse(isset($object->three));
         $this->assertFalse(isset($object['three']));
 
-        $this->assertFalse(empty($object->one));
-        $this->assertTrue(empty($object->two));
-        $this->assertTrue(empty($object->three));
+        $this->assertNotEmpty($object->one);
+        $this->assertEmpty($object->two);
 
         unset($object->one);
 
@@ -66,15 +63,14 @@ class MetadataArrayObjectTest extends TestCase
         $this->assertTrue(isset($object->one));
         $this->assertTrue(isset($object->two));
 
-        $this->assertTrue(empty($object->one));
-        $this->assertTrue(empty($object->two));
+        $this->assertEmpty($object->one);
+        $this->assertEmpty($object->two);
     }
 
-    public function testCount()
+    public function testCount(): void
     {
         $object = new MetadataArrayObject();
         $this->assertEmpty($object);
-        $this->assertFalse(empty($object));
 
         $object = new MetadataArrayObject(['one' => 'two']);
         $this->assertNotEmpty($object);
@@ -96,10 +92,7 @@ class MetadataArrayObjectTest extends TestCase
         $this->assertCount(3, $object);
     }
 
-    /**
-     * Tests MetadataArrayObject->populate()
-     */
-    public function testPopulateToArray()
+    public function testPopulateToArray(): void
     {
         $object = new MetadataArrayObject();
         $this->assertEmpty($object);
@@ -121,57 +114,57 @@ class MetadataArrayObjectTest extends TestCase
         $this->assertEquals(['third' => null], $object->toArray());
     }
 
-    /**
-     * @expectedException \PHPUnit\Framework\Error\Notice
-     */
-    public function testGetKeyNonExisting()
+    public function testGetKeyNonExisting(): void
     {
         $object = new MetadataArrayObject();
+
+        $this->expectException(Notice::class);
+
         $object['test'];
     }
 
-    /**
-     * @expectedException \PHPUnit\Framework\Error\Notice
-     */
-    public function testGetPropertyNonExisting()
+    public function testGetPropertyNonExisting(): void
     {
         $object = new MetadataArrayObject();
+
+        $this->expectException(Notice::class);
+
         $object->test;
     }
 
-    /**
-     * @expectedException \PHPUnit\Framework\Error\Notice
-     */
-    public function testSetKeyNonExisting()
+    public function testSetKeyNonExisting(): void
     {
         $object = new MetadataArrayObject();
+
+        $this->expectException(Notice::class);
+
         $object['test'] = 'tessst';
     }
 
-    /**
-     * @expectedException \PHPUnit\Framework\Error\Notice
-     */
-    public function testSetPropertyNonExisting()
+    public function testSetPropertyNonExisting(): void
     {
         $object = new MetadataArrayObject();
+
+        $this->expectException(Notice::class);
+
         $object->test = 'tessst';
     }
 
-    /**
-     * @expectedException \PHPUnit\Framework\Error\Notice
-     */
-    public function testUnsetKeyNonExisting()
+    public function testUnsetKeyNonExisting(): void
     {
         $object = new MetadataArrayObject();
+
+        $this->expectException(Notice::class);
+
         unset($object['test']);
     }
 
-    /**
-     * @expectedException \PHPUnit\Framework\Error\Notice
-     */
-    public function testUnsetPropertyNonExisting()
+    public function testUnsetPropertyNonExisting(): void
     {
         $object = new MetadataArrayObject();
+
+        $this->expectException(Notice::class);
+
         unset($object->test);
     }
 }

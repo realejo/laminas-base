@@ -2,7 +2,7 @@
 
 namespace Realejo\MvcUtils;
 
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 trait ServiceLocatorTrait
 {

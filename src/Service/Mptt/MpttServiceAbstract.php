@@ -12,7 +12,7 @@
 namespace Realejo\Service\Mptt;
 
 use Realejo\Service\ServiceAbstract;
-use Zend\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Predicate\Expression;
 
 abstract class MpttServiceAbstract extends ServiceAbstract
 {
@@ -69,7 +69,9 @@ abstract class MpttServiceAbstract extends ServiceAbstract
         }
 
         if (!in_array($this->traversal['left'], $columns)) {
-            throw new \InvalidArgumentException("Column '" . $this->traversal['left'] . "' not found in table for tree traversal");
+            throw new \InvalidArgumentException(
+                "Column '" . $this->traversal['left'] . "' not found in table for tree traversal"
+            );
         }
 
         // Verify 'right' value and column
@@ -78,7 +80,9 @@ abstract class MpttServiceAbstract extends ServiceAbstract
         }
 
         if (!in_array($this->traversal['right'], $columns)) {
-            throw new \InvalidArgumentException("Column '" . $this->traversal['right'] . "' not found in table for tree traversal");
+            throw new \InvalidArgumentException(
+                "Column '" . $this->traversal['right'] . "' not found in table for tree traversal"
+            );
         }
 
         // Check for identifying column
@@ -87,7 +91,9 @@ abstract class MpttServiceAbstract extends ServiceAbstract
         }
 
         if (!in_array($this->traversal['column'], $columns)) {
-            throw new \InvalidArgumentException("Column '" . $this->traversal['column'] . "' not found in table for tree traversal");
+            throw new \InvalidArgumentException(
+                "Column '" . $this->traversal['column'] . "' not found in table for tree traversal"
+            );
         }
 
         // Check for reference column
@@ -96,7 +102,9 @@ abstract class MpttServiceAbstract extends ServiceAbstract
         }
 
         if (!in_array($this->traversal['refColumn'], $columns)) {
-            throw new \InvalidArgumentException("Column '" . $this->traversal['refColumn'] . "' not found in table for tree traversal");
+            throw new \InvalidArgumentException(
+                "Column '" . $this->traversal['refColumn'] . "' not found in table for tree traversal"
+            );
         }
 
         // Check the order
@@ -105,7 +113,9 @@ abstract class MpttServiceAbstract extends ServiceAbstract
         }
 
         if (!in_array($this->traversal['order'], $columns)) {
-            throw new \InvalidArgumentException("Column '" . $this->traversal['order'] . "' not found in table for tree traversal");
+            throw new \InvalidArgumentException(
+                "Column '" . $this->traversal['order'] . "' not found in table for tree traversal"
+            );
         }
 
         $this->isTraversable = true;
@@ -143,7 +153,9 @@ abstract class MpttServiceAbstract extends ServiceAbstract
         if (!empty($parentId)) {
             $select->where([$this->traversal['refColumn'] => $parentId]);
         } else {
-            $select->where(new Expression("{$this->traversal['refColumn']} IS NULL OR {$this->traversal['refColumn']} = 0"));
+            $select->where(
+                new Expression("{$this->traversal['refColumn']} IS NULL OR {$this->traversal['refColumn']} = 0")
+            );
         }
 
         // Define the order
@@ -158,10 +170,13 @@ abstract class MpttServiceAbstract extends ServiceAbstract
 
         if (!empty($parentId)) {
             $this->getMapper()->getTableGateway()
-                ->update([
-                    $this->traversal['left'] => $leftValue,
-                    $this->traversal['right'] => $rightValue
-                ], [$this->traversal['column'] => $parentId]);
+                ->update(
+                    [
+                        $this->traversal['left'] => $leftValue,
+                        $this->traversal['right'] => $rightValue
+                    ],
+                    [$this->traversal['column'] => $parentId]
+                );
         }
 
         return $rightValue + 1;
@@ -197,7 +212,9 @@ abstract class MpttServiceAbstract extends ServiceAbstract
         if (array_key_exists($this->traversal['refColumn'], $set) && $set[$this->traversal['refColumn']] > 0) {
             // Find parent
             $parent_id = $set[$this->traversal['refColumn']];
-            $parent = $this->getMapper()->getTableGateway()->select([$this->getMapper()->getTableKey() => $parent_id])->current();
+            $parent = $this->getMapper()->getTableGateway()->select(
+                [$this->getMapper()->getTableKey() => $parent_id]
+            )->current();
             if (null === $parent) {
                 throw new \RuntimeException("Traversable error: Parent id {$parent_id} not found");
             }
@@ -235,7 +252,6 @@ abstract class MpttServiceAbstract extends ServiceAbstract
 
                 $set[$this->traversal['left']] = $rt + 1;
                 $set[$this->traversal['right']] = $rt + 2;
-
                 // Insert o the start os the list os siblings or alone
             } else {
                 $set[$this->traversal['left']] = $lt + 1;
@@ -306,10 +322,12 @@ abstract class MpttServiceAbstract extends ServiceAbstract
         // Delete the node and it's childs
         $delete = $this->getMapper()
             ->getTableGateway()
-            ->delete(new Expression(
-                "{$this->traversal['left']} >= {$row[$this->traversal['left']]}"
-                . " and {$this->traversal['right']} <= {$row[$this->traversal['right']]}"
-            ));
+            ->delete(
+                new Expression(
+                    "{$this->traversal['left']} >= {$row[$this->traversal['left']]}"
+                    . " and {$this->traversal['right']} <= {$row[$this->traversal['right']]}"
+                )
+            );
 
         // Fixes the left,right for the remaining nodes
         $fix = $row[$this->traversal['right']] - $row[$this->traversal['left']] + 1;
@@ -333,17 +351,12 @@ abstract class MpttServiceAbstract extends ServiceAbstract
         return $delete;
     }
 
-    /**
-     * Returns columns names
-     *
-     * @todo colocar no cache
-     *
-     * @return array columns
-     */
-    public function getColumns()
+    public function getColumns(): ?array
     {
         if (!isset($this->_columns)) {
-            $metadata = new \Zend\Db\Metadata\Metadata($this->getMapper()->getTableGateway()->getAdapter());
+            $metadata = \Laminas\Db\Metadata\Source\Factory::createSourceFromAdapter(
+                $this->getMapper()->getTableGateway()->getAdapter()
+            );
             $this->_columns = $metadata->getColumnNames($this->getMapper()->getTableName());
         }
 

@@ -2,40 +2,35 @@
 
 namespace RealejoTest\View\Helper;
 
-/**
- * Version test case.
- */
-
 use PHPUnit\Framework\TestCase;
 use Realejo\View\Helper\GetInputFilter;
-use Zend\Form\Element\Text;
-use Zend\Form\Form;
-use Zend\I18n\Translator\Translator;
-use Zend\I18n\Validator\IsInt;
-use Zend\InputFilter\InputFilter;
-use Zend\Validator\Between;
-use Zend\Validator\NotEmpty;
+use Laminas\Form\Element\Text;
+use Laminas\Form\Form;
+use Laminas\I18n\Translator\Translator;
+use Laminas\I18n\Validator\IsInt;
+use Laminas\InputFilter\InputFilter;
+use Laminas\Validator\Between;
+use Laminas\Validator\NotEmpty;
 
 class GetInputFilterTest extends TestCase
 {
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $helper = new GetInputFilter();
-        $this->assertInstanceOf('Realejo\View\Helper\GetInputFilter', $helper);
-        $this->assertInstanceOf('Zend\I18n\Translator\Translator', $helper->getTranslator());
+        $this->assertInstanceOf(GetInputFilter::class, $helper);
+        $this->assertInstanceOf(Translator::class, $helper->getTranslator());
         $this->assertEquals('pt_BR', $helper->getTranslator()->getLocale());
     }
 
-    public function testConstructIngles()
+    public function testConstructEnglish(): void
     {
         $translator = new Translator();
         $helper = new GetInputFilter($translator);
         $this->assertEquals('en_US', $helper->getTranslator()->getLocale());
     }
 
-    public function testGetFormValidationFieldsArray()
+    public function testGetFormValidationFieldsArray(): void
     {
-        // Cria um form
         $form = new Form();
 
         // Adiciona um campo texto
@@ -70,7 +65,7 @@ class GetInputFilterTest extends TestCase
         $helper = new GetInputFilter();
 
         $fields = $helper->getFormValidationFieldsArray($form);
-        $this->assertTrue(is_array($fields));
+        $this->assertIsArray($fields);
         $this->assertNotEmpty($fields);
         $this->assertCount(1, $fields);
         $this->assertArrayHasKey('campo1', $fields);
@@ -86,7 +81,7 @@ class GetInputFilterTest extends TestCase
         $this->assertArrayHasKey('max', $fields['campo1']['validators']['between']);
     }
 
-    public function testGetFormValidationFieldsJson()
+    public function testGetFormValidationFieldsJson(): void
     {
         // Cria um form
         $form = new Form();
@@ -122,10 +117,10 @@ class GetInputFilterTest extends TestCase
 
         $helper = new GetInputFilter();
         $json = $helper->getFormValidationFieldsJSON($form);
-        $this->assertTrue(is_string($json));
+        $this->assertIsString($json);
 
         $fields = json_decode($json, true);
-        $this->assertTrue(is_array($fields));
+        $this->assertIsArray($fields);
 
         $this->assertNotEmpty($fields);
         $this->assertCount(1, $fields);

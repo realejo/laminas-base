@@ -9,9 +9,10 @@
 
 namespace Realejo\Utils;
 
-use Zend\Mail;
-use Zend\Mime;
-use Zend\Stdlib\ArrayUtils;
+use RuntimeException;
+use Laminas\Mail;
+use Laminas\Mime;
+use Laminas\Stdlib\ArrayUtils;
 
 class MailSender
 {
@@ -67,10 +68,14 @@ class MailSender
     public function __construct($config = null, $isException = false)
     {
         if (empty($config)) {
-            if (defined('APPLICATION_PATH')) {
-                $config = include APPLICATION_PATH . "/config/autoload/email_config.php";
+            if (defined('APPLICATION_PATH') && file_exists(APPLICATION_PATH . '/config/autoload/email_config.php')) {
+                $config = require APPLICATION_PATH . '/config/autoload/email_config.php';
+            } elseif (defined('APPLICATION_PATH') && file_exists(APPLICATION_PATH . '/../config/autoload/email_config.php')) {
+                $config = require APPLICATION_PATH . '/../config/autoload/email_config.php';
+            } elseif (file_exists('config/autoload/email_config.php')) {
+                $config = require 'config/autoload/email_config.php';
             } else {
-                throw new \RuntimeException('Error loading email configuration in ' . get_class($this) . '::__construct()');
+                throw new RuntimeException('Error loading email configuration in ' . get_class($this) . '::__construct()');
             }
         }
 
@@ -79,8 +84,8 @@ class MailSender
         $this->smtpHost = $config['host'];
         $this->smtpPort = $config['port'];
 
-        $this->smtpUsername = isset($config['username']) ? $config['username'] : '';
-        $this->smtpPassword = isset($config['password']) ? $config['password'] : '';
+        $this->smtpUsername = $config['username'] ?? '';
+        $this->smtpPassword = $config['password'] ?? '';
 
         $smtpConfig = [
             'name' => $this->smtpHost,
@@ -95,12 +100,12 @@ class MailSender
         ];
 
         // Verifica se há SSL
-        if (isset($config['ssl']) && $config['ssl'] != '') {
+        if (isset($config['ssl']) && $config['ssl'] !== '') {
             $smtpConfig['connection_config']['ssl'] = $config['ssl'];
         }
 
         // verifica se há uma porta definida
-        if (isset($config['port']) && $config['port'] != '') {
+        if (isset($config['port']) && $config['port'] !== '') {
             $smtpConfig['port'] = $config['port'];
         }
 
@@ -455,7 +460,7 @@ class MailSender
      */
     public static function isEmail($email)
     {
-        return \Zend\Validator\StaticValidator::execute($email, 'EmailAddress');
+        return \Laminas\Validator\StaticValidator::execute($email, 'EmailAddress');
     }
 
     /**

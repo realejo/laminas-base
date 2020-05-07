@@ -3,8 +3,8 @@
 namespace Realejo\Cache;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class CacheFactory implements FactoryInterface
 {

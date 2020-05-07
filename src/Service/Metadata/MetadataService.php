@@ -5,7 +5,7 @@ namespace Realejo\Service\Metadata;
 use DateTime;
 use Realejo\Service\ServiceAbstract;
 use Realejo\Utils\DateHelper;
-use Zend\Db\Sql\Expression;
+use Laminas\Db\Sql\Expression;
 
 class MetadataService extends ServiceAbstract
 {
