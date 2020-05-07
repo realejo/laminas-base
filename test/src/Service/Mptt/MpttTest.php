@@ -136,8 +136,13 @@ class MpttTest extends BaseTestCase
 
         $mptt = new ServiceConcrete($mapper, 'id');
         $mptt->setCache($cacheService->getFrontend());
-        // Laminas retornar em ordem alfabética e não do bd
-        $this->assertEquals(['id', 'lft', 'name', 'parent_id', 'rgt'], $mptt->getColumns());
+        // Laminas retorna em ordem alfabética e não do bd
+        $columns = $mptt->getColumns();
+        $expected = ['id', 'name', 'parent_id', 'lft', 'rgt'];
+        self::assertCount(count($expected), $columns);
+        foreach ($expected as $item) {
+            $this->assertContains($item, $expected);
+        }
     }
 
     public function testSetTraversal(): void
