@@ -121,6 +121,7 @@ class MailSender
      * @param array $opt
      * @return bool
      */
+    // @codingStandardsIgnoreStart
     public function sendEmail(
         $replyName = null,
         $replyEmail = null,
@@ -130,6 +131,7 @@ class MailSender
         $message,
         $opt = []
     ) {
+        // @codingStandardsIgnoreEnd
         $this->setEmailMessage($replyName, $replyEmail, $toName, $toEmail, $subject, $message, $opt);
         $this->getTransport()->send($this->getMessage());
         return true;
@@ -151,6 +153,7 @@ class MailSender
      * @param array $opt
      * @return Mail\Message
      */
+    // @codingStandardsIgnoreStart
     public function setEmailMessage(
         $replyName = null,
         $replyEmail = null,
@@ -160,6 +163,7 @@ class MailSender
         $message,
         $opt = []
     ) {
+        // @codingStandardsIgnoreEnd
         // Verifica a codificação
         $replyName = $this->fixEncoding($replyName);
         $replyEmail = $this->fixEncoding($replyEmail);

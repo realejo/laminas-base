@@ -11,6 +11,7 @@
     <rule ref="PSR12" />
     <rule ref="PSR1.Files.SideEffects">
         <exclude-pattern>public/index.php</exclude-pattern>
+        <exclude-pattern>test/bootstrap.php</exclude-pattern>
     </rule>
 
     <!-- Paths to check -->
