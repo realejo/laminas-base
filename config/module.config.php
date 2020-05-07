@@ -2,6 +2,8 @@
 
 namespace Realejo;
 
+use Laminas\Cache\Service\StorageCacheAbstractServiceFactory;
+
 return [
     'realejo' => [
         'vendor' => [
@@ -24,8 +26,7 @@ return [
     ],
     'service_manager' => [
         'abstract_factories' => [
-            'Laminas\Cache\Service\StorageCacheAbstractServiceFactory',
-            'Laminas\Log\LoggerAbstractServiceFactory'
+            StorageCacheAbstractServiceFactory::class,
         ],
         'factories' => [
             Cache\CacheService::class => Cache\CacheFactory::class,
