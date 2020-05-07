@@ -2,16 +2,18 @@
 
 namespace RealejoTest\Stdlib;
 
+use DateTime;
 use Realejo\Stdlib\ArrayObject;
 use RealejoTest\Enum\EnumConcrete;
 use RealejoTest\Enum\EnumFlaggedConcrete;
+use stdClass;
 
 /**
  * @property bool booleanKey
  * @property int intKey
- * @property \stdClass jsonObjectKey
+ * @property stdClass jsonObjectKey
  * @property array jsonArrayKey
- * @property \DateTime datetimeKey
+ * @property DateTime datetimeKey
  * @property EnumConcrete enum
  * @property EnumFlaggedConcrete enumFlagged
  */

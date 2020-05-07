@@ -275,7 +275,7 @@ class MapperAbstractTest extends BaseTestCase
         $this->mapper->setUseJoin(true);
         $select = $this->mapper->getTableSelect();
         $this->assertEquals(
-            'SELECT `album`.*, `test_table`.`test_column` AS `test_column` '
+            'SELECT `album`.*, `test_table`.`test_column` AS `test_column`'
             . ' FROM `album` LEFT JOIN `test_table` ON `test_condition`',
             $select->getSqlString($this->adapter->getPlatform())
         );

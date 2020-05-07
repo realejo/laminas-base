@@ -22,7 +22,7 @@ class ArrayObject implements \ArrayAccess
 
     protected $intKeys = [];
 
-    protected $boolKeys = [];
+    protected $booleanKeys = [];
 
     protected $dateKeys = [];
 
@@ -65,7 +65,7 @@ class ArrayObject implements \ArrayAccess
         $useJsonArrayKeys = (is_array($this->jsonArrayKeys) && !empty($this->jsonArrayKeys));
         $useJsonObjectKeys = (is_array($this->jsonObjectKeys) && !empty($this->jsonObjectKeys));
         $useIntKeys = (is_array($this->intKeys) && !empty($this->intKeys));
-        $useboolKeys = (is_array($this->boolKeys) && !empty($this->boolKeys));
+        $useBooleanKeys = (is_array($this->booleanKeys) && !empty($this->booleanKeys));
         $useEnumKeys = (is_array($this->enumKeys) && !empty($this->enumKeys));
 
         if (!empty($data)) {
@@ -78,7 +78,7 @@ class ArrayObject implements \ArrayAccess
                     $value = json_decode($value);
                 } elseif ($useIntKeys && in_array($key, $this->intKeys) && !empty($value)) {
                     $value = (int)$value;
-                } elseif ($useboolKeys && in_array($key, $this->boolKeys) && !empty($value)) {
+                } elseif ($useBooleanKeys && in_array($key, $this->booleanKeys) && !empty($value)) {
                     $value = (bool)$value;
                 } elseif ($useEnumKeys && array_key_exists($key, $this->enumKeys)) {
                     $value = new $this->enumKeys[$key]($value);

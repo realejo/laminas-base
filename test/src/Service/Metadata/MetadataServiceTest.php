@@ -74,13 +74,13 @@ class MetadataServiceTest extends BaseTestCase
             ->setUseCache(true);
 
         $this->cacheFetchAllKey = 'fetchAll' . md5(
-            var_export(false, true)
+                var_export(false, true)
                 . var_export(false, true)
                 . var_export(null, true)
                 . var_export(null, true)
                 . var_export(null, true)
                 . var_export(null, true)
-        );
+            );
 
         // Grava no cache um fetchAll ficticio
         $fetchAll = [];
@@ -762,9 +762,9 @@ class MetadataServiceTest extends BaseTestCase
 
     private function getSqlSchemaString($idInfo): string
     {
-        return "SELECT * FROM metadata_value 
-                WHERE metadata_value.fk_info=$idInfo 
-                   AND tblreference.id_reference=metadata_value.fk_reference";
+        return "SELECT * FROM metadata_value"
+            . " WHERE metadata_value.fk_info=$idInfo"
+            . " AND tblreference.id_reference=metadata_value.fk_reference";
     }
 
     public function testSetSchemaMapper(): void
