@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Zend Framework coding standard">
-    <description>Zend Framework coding standard</description>
+<ruleset name="Realejo project coding standard">
+    <description>Realejo project coding standard</description>
 
     <!-- display progress -->
     <arg value="p"/>
@@ -10,7 +10,6 @@
     <!-- inherit rules from: -->
     <rule ref="PSR12" />
     <rule ref="PSR1.Files.SideEffects">
-        <exclude-pattern>public/index.php</exclude-pattern>
         <exclude-pattern>test/bootstrap.php</exclude-pattern>
     </rule>
 
