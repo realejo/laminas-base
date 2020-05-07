@@ -371,8 +371,10 @@ abstract class MapperAbstract
         }
 
         // Verifica se todas as chaves foram usadas
-        if ($this->getUseAllKeys() === true && is_array($this->getTableKey()) && count($usedKeys) !==
-            count($this->getTableKey())) {
+        if (
+            $this->getUseAllKeys() === true && is_array($this->getTableKey()) && count($usedKeys) !==
+            count($this->getTableKey())
+        ) {
             throw new LogicException('Não é permitido usar chaves parciais em ' . get_class($this));
         }
 
@@ -853,8 +855,10 @@ abstract class MapperAbstract
                     );
                 }
 
-                if (isset($definition['columns']) && !empty($definition['columns'])
-                    && !is_array($definition['columns'])) {
+                if (
+                    isset($definition['columns']) && !empty($definition['columns'])
+                    && !is_array($definition['columns'])
+                ) {
                     throw new InvalidArgumentException(
                         "Colunas para a tabela {$definition['table']} devem ser um array em " . get_class($this)
                     );

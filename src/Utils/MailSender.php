@@ -63,8 +63,10 @@ class MailSender
         if (empty($config)) {
             if (defined('APPLICATION_PATH') && file_exists(APPLICATION_PATH . '/config/autoload/email_config.php')) {
                 $config = require APPLICATION_PATH . '/config/autoload/email_config.php';
-            } elseif (defined('APPLICATION_PATH')
-                && file_exists(APPLICATION_PATH . '/../config/autoload/email_config.php')) {
+            } elseif (
+                defined('APPLICATION_PATH')
+                && file_exists(APPLICATION_PATH . '/../config/autoload/email_config.php')
+            ) {
                 $config = require APPLICATION_PATH . '/../config/autoload/email_config.php';
             } elseif (file_exists('config/autoload/email_config.php')) {
                 $config = require 'config/autoload/email_config.php';

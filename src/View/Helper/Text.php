@@ -55,10 +55,12 @@ class Text extends AbstractHelper
             foreach ($tags as $tag) {
                 $contentLength = self::strlen($tag[3], $options);
                 if ($truncate === '') {
-                    if (!preg_match(
-                        '/img|br|input|hr|area|base|basefont|col|frame|isindex|link|meta|param/i',
-                        $tag[2]
-                    )) {
+                    if (
+                        !preg_match(
+                            '/img|br|input|hr|area|base|basefont|col|frame|isindex|link|meta|param/i',
+                            $tag[2]
+                        )
+                    ) {
                         if (preg_match('/<[\w]+[^>]*>/', $tag[0])) {
                             array_unshift($openTags, $tag[2]);
                         } elseif (preg_match('/<\/([\w]+)[^>]*>/', $tag[0], $closeTag)) {
@@ -205,8 +207,10 @@ class Text extends AbstractHelper
             }
             $len = self::strlen($part, $options);
             if ($offset !== 0 || $totalLength + $len > $length) {
-                if (strpos($part, '&') === 0 && preg_match($pattern, $part)
-                    && $part !== html_entity_decode($part, ENT_HTML5 | ENT_QUOTES, 'UTF-8')) {
+                if (
+                    strpos($part, '&') === 0 && preg_match($pattern, $part)
+                    && $part !== html_entity_decode($part, ENT_HTML5 | ENT_QUOTES, 'UTF-8')
+                ) {
                     // Entities cannot be passed substr.
                     continue;
                 }
