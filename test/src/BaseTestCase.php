@@ -21,12 +21,10 @@ use Laminas\Db\TableGateway\TableGateway;
 
 class BaseTestCase extends TestCase
 {
-    const SQL_CREATE = 'create';
-    const SQL_DROP = 'drop';
+    protected const SQL_CREATE = 'create';
+    protected const SQL_DROP = 'drop';
 
-    /**
-     * @var \Laminas\Db\Adapter\Adapter
-     */
+    /** @var Adapter */
     protected $adapter = null;
 
     /**
@@ -40,30 +38,21 @@ class BaseTestCase extends TestCase
 
     private $tableGateways = [];
 
-    /**
-     * Prepares the environment before running ALL tests.
-     */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         // Apaga todo o conteúdo do APPLICATION_DATA
         $oTemp = new self();
         $oTemp->clearApplicationData();
     }
 
-    /**
-     * Reset the environment after running ALL tests.
-     */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         // Apaga todo o conteúdo do APPLICATION_DATA
         $oTemp = new self();
         $oTemp->clearApplicationData();
     }
 
-    /**
-     * @return Adapter
-     */
-    public function getAdapter()
+    public function getAdapter(): Adapter
     {
         if (!isset($this->adapter)) {
             $this->adapter = GlobalAdapterFeature::getStaticAdapter();
@@ -71,11 +60,7 @@ class BaseTestCase extends TestCase
         return $this->adapter;
     }
 
-    /**
-     * @param string $table
-     * @return TableGateway
-     */
-    public function getTableGateway(string $table)
+    public function getTableGateway(string $table): TableGateway
     {
         if (!isset($this->tableGateways[$table])) {
             $this->tableGateways[$table] = new TableGateway(
@@ -86,21 +71,13 @@ class BaseTestCase extends TestCase
         return $this->tableGateways[$table];
     }
 
-    /**
-     * @param Adapter $adapter
-     * @return BaseTestCase
-     */
-    public function setAdapter(Adapter $adapter)
+    public function setAdapter(Adapter $adapter): BaseTestCase
     {
         $this->adapter = $adapter;
         return $this;
     }
 
-    /**
-     * @param null $tables
-     * @return BaseTestCase
-     */
-    public function createTables($tables = null)
+    public function createTables($tables = null): BaseTestCase
     {
         // Não deixa executar em produção
         if (APPLICATION_ENV !== 'testing') {
@@ -118,8 +95,10 @@ class BaseTestCase extends TestCase
         // Recupera o script para criar as tabelas
         foreach ($tables as $tbl) {
             // Cria a tabela de usuários
-            $this->getAdapter()->query(file_get_contents($this->getSqlFile($tbl, self::SQL_CREATE)),
-                Adapter::QUERY_MODE_EXECUTE);
+            $this->getAdapter()->query(
+                file_get_contents($this->getSqlFile($tbl, self::SQL_CREATE)),
+                Adapter::QUERY_MODE_EXECUTE
+            );
         }
 
         return $this;
@@ -130,7 +109,7 @@ class BaseTestCase extends TestCase
      * @param string $sqlAction
      * @return string|false
      */
-    private function getSqlFile($file, $sqlAction)
+    private function getSqlFile(string $file, string $sqlAction)
     {
         if ($sqlAction === self::SQL_CREATE) {
             // Procura primeiro na pasta do modulo caso queria substituir a do geral
@@ -179,11 +158,7 @@ class BaseTestCase extends TestCase
         return null;
     }
 
-    /**
-     * @param null $tables
-     * @return BaseTestCase
-     */
-    public function dropTables($tables = null)
+    public function dropTables(array $tables = []): BaseTestCase
     {
         // Não deixa executar em produção
         if (APPLICATION_ENV !== 'testing') {
@@ -211,24 +186,11 @@ class BaseTestCase extends TestCase
         return $this;
     }
 
-    /**
-     *
-     * @param string $table
-     * @param array $rows
-     *
-     * @return BaseTestCase
-     */
-    public function insertRows($table, $rows)
+    public function insertRows(string $table, array $rows): BaseTestCase
     {
         // Não deixa executar em produção
         if (APPLICATION_ENV !== 'testing') {
             $this->fail('Só é possível executar insertRows() em testing');
-        }
-
-        if (is_array($table)) {
-            $t = $rows;
-            $rows = $table;
-            $table = $t;
         }
 
         if (is_string($table)) {
@@ -244,7 +206,7 @@ class BaseTestCase extends TestCase
         return $this;
     }
 
-    public function getDataDir()
+    public function getDataDir(): string
     {
         if (empty($this->dataDir)) {
             // Verifica se há APPLICATION_DATA
@@ -255,25 +217,23 @@ class BaseTestCase extends TestCase
         }
 
         // Verifica se a pasta existe e tem permissão de escrita
-        if (!is_dir($this->dataDir) || !is_writeable($this->dataDir)) {
+        if (!is_dir($this->dataDir) || !is_writable($this->dataDir)) {
             $this->fail("{$this->dataDir} not writeable.");
         }
 
         return $this->dataDir;
     }
 
-    public function setDataDir(string $dataDir)
+    public function setDataDir(string $dataDir): void
     {
         $this->dataDir = $dataDir;
     }
 
     /**
      * Apaga todas pastas do APPLICATION_DATA
-     * @return boolean
      */
-    public function clearApplicationData()
+    public function clearApplicationData(): bool
     {
-
         // Apaga todo o conteudo dele
         $this->rrmdir($this->getDataDir(), $this->getDataDir());
 
@@ -282,22 +242,19 @@ class BaseTestCase extends TestCase
 
     /**
      * Retorna se a pasta APPLICATION_DATA está vazia
-     *
-     * @return boolean
      */
-    public function isApplicationDataEmpty()
+    public function isApplicationDataEmpty(): bool
     {
-        // Retorna se está vazio
-        return (count(scandir($this->getDataDir())) == 3);
+        return (count(scandir($this->getDataDir())) === 3);
     }
 
     /**
-     * Apaga recursivamente o contéudo de um pasta
+     * Apaga recursivamente o conteúdo de um pasta
      *
      * @param string $dir
      * @param string $root OPCIONAL pasta raiz para evitar que seja apagada
      */
-    public function rrmdir($dir, $root = null)
+    public function rrmdir(string $dir, string $root = null): void
     {
         // Não deixa executar em produção
         if (APPLICATION_ENV !== 'testing') {
@@ -305,15 +262,15 @@ class BaseTestCase extends TestCase
         }
 
         // Não deixa apagar fora do APPLICATION_DATA
-        if (strpos($dir, $this->getDataDir()) === false || empty($this->getDataDir())) {
+        if (empty($this->getDataDir()) || strpos($dir, $this->getDataDir()) === false) {
             $this->fail('Não é possível apagar fora do APPLICATION_DATA');
         }
 
         if (is_dir($dir)) {
             $objects = scandir($dir);
             foreach ($objects as $object) {
-                if ($object != "." && $object != ".." && $object != ".gitignore") {
-                    if (filetype($dir . "/" . $object) == "dir") {
+                if ($object !== "." && $object !== ".." && $object !== ".gitignore") {
+                    if (filetype($dir . "/" . $object) === "dir") {
                         $this->rrmdir($dir . "/" . $object, $root);
                     } else {
                         unlink($dir . "/" . $object);
@@ -322,22 +279,14 @@ class BaseTestCase extends TestCase
             }
 
             // Não apaga a raiz
-            if ($dir !== $root && count(scandir($dir)) == 2) {
+            if ($dir !== $root && count(scandir($dir)) === 2) {
                 rmdir($dir);
             }
         }
     }
 
-    /**
-     * Retorna a pasta de assets
-     *
-     * @param string $path
-     *
-     * @return string
-     */
-    protected function getAssetsPath($path = '')
+    protected function getAssetsPath(string $path = ''): string
     {
-
         // Path do asset a ser usado
         $path = realpath($this->getDataDir() . '/../' . $path);
 
@@ -358,7 +307,7 @@ class BaseTestCase extends TestCase
      *
      * @return mixed Method return.
      */
-    public function invokePrivateMethod(&$object, $methodName, array $parameters = [])
+    public function invokePrivateMethod(&$object, string $methodName, array $parameters = [])
     {
         try {
             $reflection = new \ReflectionClass(get_class($object));
@@ -372,24 +321,12 @@ class BaseTestCase extends TestCase
     }
 
 
-    /**
-     * Retorna as tabelas padrões
-     *
-     * @return array
-     */
-    public function getTables()
+    public function getTables(): array
     {
         return $this->tables;
     }
 
-    /**
-     * Define as tabelas a serem usadas com padrão
-     *
-     * @param array $tables
-     *
-     * @return BaseTestCase
-     */
-    public function setTables($tables)
+    public function setTables(array $tables): BaseTestCase
     {
         $this->tables = $tables;
 

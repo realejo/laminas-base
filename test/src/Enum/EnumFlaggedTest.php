@@ -19,7 +19,8 @@ class EnumFlaggedTest extends TestCase
                 1 => 'x',
                 2 => 'w',
                 4 => 'r'
-            ], $enum::getNames()
+            ],
+            $enum::getNames()
         );
         $this->assertNull($enum::getName());
         $this->assertNull($enum::getName('Z'));
@@ -48,7 +49,8 @@ class EnumFlaggedTest extends TestCase
             [
                 1 => 'x',
                 2 => 'w',
-            ], $enum::getName(1 | 2, false)
+            ],
+            $enum::getName(1 | 2, false)
         );
 
         $this->assertEquals('x/w', $enum->getValueName(1 | 2));
@@ -57,7 +59,8 @@ class EnumFlaggedTest extends TestCase
             [
                 1 => 'x',
                 2 => 'w',
-            ], $enum->getValueName(1 | 2, false)
+            ],
+            $enum->getValueName(1 | 2, false)
         );
     }
 
@@ -71,7 +74,8 @@ class EnumFlaggedTest extends TestCase
                 1 => 'x',
                 2 => 'w',
                 4 => 'r'
-            ], EnumFlaggedConcrete::getNames()
+            ],
+            EnumFlaggedConcrete::getNames()
         );
         $this->assertNull(EnumFlaggedConcrete::getName());
         $this->assertNull(EnumFlaggedConcrete::getName('Z'));
@@ -89,7 +93,8 @@ class EnumFlaggedTest extends TestCase
             [
                 1 => 'x',
                 2 => 'w',
-            ], EnumFlaggedConcrete::getName(1 | 2, false)
+            ],
+            EnumFlaggedConcrete::getName(1 | 2, false)
         );
     }
 
@@ -106,7 +111,8 @@ class EnumFlaggedTest extends TestCase
                 1 => 'execute',
                 2 => 'w',
                 4 => 'r'
-            ], $enum::getDescriptions()
+            ],
+            $enum::getDescriptions()
         );
         $this->assertNull($enum::getDescription());
         $this->assertNull($enum::getDescription('Z'));
@@ -134,7 +140,8 @@ class EnumFlaggedTest extends TestCase
             [
                 1 => 'execute',
                 2 => 'w',
-            ], $enum::getDescription(1 | 2, false)
+            ],
+            $enum::getDescription(1 | 2, false)
         );
 
         $this->assertEquals('execute/w', $enum->getValueDescription(1 | 2));
@@ -143,7 +150,8 @@ class EnumFlaggedTest extends TestCase
             [
                 1 => 'execute',
                 2 => 'w',
-            ], $enum->getValueDescription(1 | 2, false)
+            ],
+            $enum->getValueDescription(1 | 2, false)
         );
     }
 
@@ -157,7 +165,8 @@ class EnumFlaggedTest extends TestCase
                 1 => 'execute',
                 2 => 'w',
                 4 => 'r'
-            ], EnumFlaggedConcrete::getDescriptions()
+            ],
+            EnumFlaggedConcrete::getDescriptions()
         );
         $this->assertNull(EnumFlaggedConcrete::getDescription());
         $this->assertNull(EnumFlaggedConcrete::getDescription('Z'));
@@ -175,7 +184,8 @@ class EnumFlaggedTest extends TestCase
             [
                 1 => 'execute',
                 2 => 'w',
-            ], EnumFlaggedConcrete::getDescription(1 | 2, false)
+            ],
+            EnumFlaggedConcrete::getDescription(1 | 2, false)
         );
     }
 
@@ -386,9 +396,9 @@ class EnumFlaggedTest extends TestCase
         $this->assertNotEquals(EnumFlaggedConcrete::WRITE, $read->getValue());
     }
 
-    public function testAddRemove():void
+    public function testAddRemove(): void
     {
-        $enum  = new EnumFlaggedConcrete();
+        $enum = new EnumFlaggedConcrete();
         $this->assertEquals(0, $enum->getValue());
         $this->assertFalse($enum->has(EnumFlaggedConcrete::EXECUTE));
         $this->assertFalse($enum->has(EnumFlaggedConcrete::WRITE));
@@ -440,14 +450,14 @@ class EnumFlaggedTest extends TestCase
         /**
          * Testes considerando o valor direto
          */
-        $enum  = new EnumFlaggedConcrete();
+        $enum = new EnumFlaggedConcrete();
         $enum->add(EnumFlaggedConcrete::EXECUTE);
         $this->assertEquals(EnumFlaggedConcrete::EXECUTE, $enum->getValue());
         $enum->add(EnumFlaggedConcrete::EXECUTE);
         $this->assertEquals(EnumFlaggedConcrete::EXECUTE, $enum->getValue());
 
         $enum->add(EnumFlaggedConcrete::WRITE);
-        $this->assertEquals(EnumFlaggedConcrete::EXECUTE|EnumFlaggedConcrete::WRITE, $enum->getValue());
+        $this->assertEquals(EnumFlaggedConcrete::EXECUTE | EnumFlaggedConcrete::WRITE, $enum->getValue());
 
         $enum->remove(EnumFlaggedConcrete::EXECUTE);
         $this->assertEquals(EnumFlaggedConcrete::WRITE, $enum->getValue());
@@ -455,23 +465,23 @@ class EnumFlaggedTest extends TestCase
         $this->assertEquals(EnumFlaggedConcrete::WRITE, $enum->getValue());
     }
 
-    /**
-     * @expectedExceptionMessage Value '123' is not valid.
-     * @expectedException \InvalidArgumentException
-     */
-    public function testAddException():void
+    public function testAddException(): void
     {
-        $enum  = new EnumFlaggedConcrete();
+        $enum = new EnumFlaggedConcrete();
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("Value '123' is not valid.");
+
         $enum->add(123);
     }
 
-    /**
-     * @expectedExceptionMessage Value '123' is not valid.
-     * @expectedException \InvalidArgumentException
-     */
-    public function testRemoveException():void
+    public function testRemoveException(): void
     {
-        $enum  = new EnumFlaggedConcrete();
+        $enum = new EnumFlaggedConcrete();
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("Value '123' is not valid.");
+
         $enum->remove(123);
     }
 }

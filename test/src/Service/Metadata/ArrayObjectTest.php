@@ -2,25 +2,21 @@
 
 namespace RealejoTest\Service\Metadata;
 
+use PHPUnit\Framework\Error\Notice;
 use PHPUnit\Framework\TestCase;
 use Realejo\Service\Metadata\ArrayObject;
 use Realejo\Service\Metadata\MetadataArrayObject;
+use Realejo\Stdlib\ArrayObject as StdlibArrayObject;
+use RuntimeException;
 
-/**
- * ArrayObject test case.
- */
 class ArrayObjectTest extends TestCase
 {
-
-    /**
-     * Tests ArrayObject->getMetadata()
-     */
-    public function testMetadata()
+    public function testMetadata(): void
     {
         $object = new ArrayObject();
         $this->assertNotNull($object->getMetadata());
         $this->assertEmpty($object->getMetadata());
-        $this->assertInstanceOf('\Realejo\Stdlib\ArrayObject', $object);
+        $this->assertInstanceOf(StdlibArrayObject::class, $object);
 
         $metadata = new MetadataArrayObject(['one' => 'first']);
 
@@ -40,14 +36,11 @@ class ArrayObjectTest extends TestCase
         $this->assertFalse($object->hasMetadata('one'));
     }
 
-    /**
-     * Tests ArrayObject->addMetadata()
-     */
-    public function testAddMetadata()
+    public function testAddMetadata(): void
     {
         $object = new ArrayObject();
         $this->assertEmpty($object->getMetadata());
-        $this->assertInstanceOf('\Realejo\Stdlib\ArrayObject', $object);
+        $this->assertInstanceOf(StdlibArrayObject::class, $object);
 
         $metadata = new MetadataArrayObject(['one' => 'first']);
 
@@ -66,7 +59,7 @@ class ArrayObjectTest extends TestCase
         $this->assertTrue($object->hasMetadata('one'));
     }
 
-    public function testPopulateToArray()
+    public function testPopulateToArray(): void
     {
         $object = new ArrayObject(['one' => 'first']);
         $this->assertInstanceOf(MetadataArrayObject::class, $object->getMetadata());
@@ -114,10 +107,7 @@ class ArrayObjectTest extends TestCase
         $this->assertEquals(['one' => 'first', 'metadata' => ['two' => 'second']], $object->toArray());
     }
 
-    /**
-     * Tests ArrayObject->hasMetadata()
-     */
-    public function testGetterSetter()
+    public function testGetterSetter(): void
     {
         $object = new ArrayObject(['one' => 'first', 'metadata' => ['two' => 'second']]);
         $this->assertInstanceOf(MetadataArrayObject::class, $object->getMetadata());
@@ -144,86 +134,91 @@ class ArrayObjectTest extends TestCase
         $this->assertNull($object['two']);
     }
 
-    /**
-     * @expectedException \PHPUnit\Framework\Error\Notice
-     */
-    public function testGetKeyNonExisting()
+    public function testGetKeyNonExisting(): void
     {
         $object = new ArrayObject();
         $this->assertFalse(isset($object['test']));
+
+        $this->expectException(Notice::class);
+
         $object['test'];
     }
 
-    /**
-     * @expectedException \PHPUnit\Framework\Error\Notice
-     */
-    public function testGetPropertyNonExisting()
+    public function testGetPropertyNonExisting(): void
     {
         $object = new ArrayObject();
         $this->assertFalse(isset($object->test));
+
+        $this->expectException(Notice::class);
+
         $object->test;
     }
 
-    /**
-     * @expectedException \PHPUnit\Framework\Error\Notice
-     */
-    public function testGetKeyNonExistingWithNoLockedKeys()
+    public function testGetKeyNonExistingWithNoLockedKeys(): void
     {
         $object = new ArrayObject();
         $object->setLockedKeys(false);
         $this->assertFalse(isset($object['test']));
+
+        $this->expectException(Notice::class);
+
         $this->assertNull($object['test']);
+
+        // E como testo isso?
         $object['test'];
     }
 
-    /**
-     * @expectedException \PHPUnit\Framework\Error\Notice
-     */
-    public function testGetPropertyNonExistingWithNoLockedKeys()
+    public function testGetPropertyNonExistingWithNoLockedKeys(): void
     {
         $object = new ArrayObject();
         $object->setLockedKeys(false);
         $this->assertFalse(isset($object->test));
+
+        $this->expectException(Notice::class);
+
         $this->assertNull($object->test);
     }
 
-    /**
-     * @expectedException \PHPUnit\Framework\Error\Notice
-     */
-    public function testSetKeyNonExisting()
+    public function testSetKeyNonExisting(): void
     {
         $object = new ArrayObject();
         $this->assertFalse(isset($object['test']));
+
+        $this->expectException(Notice::class);
+
         $object['test'] = 'tessst';
     }
 
-    /**
-     * @expectedException \PHPUnit\Framework\Error\Notice
-     */
-    public function testSetPropertyNonExisting()
+    public function testSetPropertyNonExisting(): void
     {
         $object = new ArrayObject();
         $this->assertFalse(isset($object->test));
+
+        $this->expectException(Notice::class);
+
         $object->test = 'tessst';
     }
 
-    /**
-     * @expectedException Exception
-     */
-    public function testUnsetKeyNonExisting()
+    public function testUnsetKeyNonExisting(): void
     {
         $object = new ArrayObject();
         $this->assertFalse(isset($object['test']));
+
+        $this->expectException(RuntimeException::class);
+
         unset($object['test']);
     }
 
-    /**
-     * @expectedException Exception
-     */
-    public function testUnsetPropertyNonExisting()
+    public function testUnsetPropertyNonExisting(): void
     {
         $object = new ArrayObject();
+
+        $this->expectException(RuntimeException::class);
+
         $this->assertFalse(isset($object->test));
+
+        // E como testo isso?
+
         unset($object->test);
     }
 }

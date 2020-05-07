@@ -1,54 +1,18 @@
 <?php
-/**
- * Realejo Lib Unit Test Bootstrap
- *
- * @category  TestUnit
- * @author    Realejo
- * @copyright Copyright (c) 2013 Realejo (http://realejo.com.br)
- */
+
+use Laminas\Db\TableGateway\Feature\GlobalAdapterFeature;
+
 error_reporting(E_ALL | E_STRICT);
 
 define('APPLICATION_ENV', 'testing');
 define('TEST_ROOT', __DIR__);
 define('TEST_DATA', TEST_ROOT . '/assets/data');
 
-/**
- * Setup autoloading
- */
-
 if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     $loader = require __DIR__ . '/../vendor/autoload.php';
 }
 
-// Procura pelas configurações do Semaphore
-if (isset($_SERVER['DATABASE_MYSQL_USERNAME'])) {
-    // Define o banco de dados de testes
-    \Laminas\Db\TableGateway\Feature\GlobalAdapterFeature::setStaticAdapter(new Laminas\Db\Adapter\Adapter([
-        'driver' => 'mysqli',
-        'host'           => '127.0.0.1',
-        'username'       => $_SERVER['DATABASE_MYSQL_USERNAME'],
-        'password'       => $_SERVER['DATABASE_MYSQL_PASSWORD'],
-        'dbname'         => 'test',
-        'options' => [
-            'buffer_results' => true,
-        ],
-    ]));
-
-// Procura pelas configurações do Codeship
-} elseif (isset($_SERVER['MYSQL_USER'])) {
-    // Define o banco de dados de testes
-    \Laminas\Db\TableGateway\Feature\GlobalAdapterFeature::setStaticAdapter(new Laminas\Db\Adapter\Adapter([
-        'driver' => 'mysqli',
-        'host'           => '127.0.0.1',
-        'username'       => $_SERVER['MYSQL_USER'],
-        'password'       => $_SERVER['MYSQL_PASSWORD'],
-        'dbname'         => 'test',
-        'options' => [
-            'buffer_results' => true,
-        ],
-    ]));
-} else {
-    // Define o banco de dados de testes
-    $config = (file_exists(__DIR__. '/configs/db.php')) ? __DIR__.'/configs/db.php' : __DIR__.'/configs/db.php.dist';
-    \Laminas\Db\TableGateway\Feature\GlobalAdapterFeature::setStaticAdapter(new Laminas\Db\Adapter\Adapter(require $config));
-}
+// Define o banco de dados de testes
+// Errado, eu sei. mas só vai ser corrigido no laminas-sdk porque vai quebrar muita coisa
+$config = (file_exists(__DIR__ . '/configs/db.php')) ? __DIR__ . '/configs/db.php' : __DIR__ . '/configs/db.php.dist';
+GlobalAdapterFeature::setStaticAdapter(new Laminas\Db\Adapter\Adapter(require $config));

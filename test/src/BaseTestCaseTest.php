@@ -4,72 +4,38 @@ namespace RealejoTest;
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * Test case para as funcionalidades com conexão ao banco de dados
- *
- * @link      http://github.com/realejo/libraray-zf2
- * @copyright Copyright (c) 2014 Realejo (http://realejo.com.br)
- * @license   http://unlicense.org
- */
 class BaseTestCaseTest extends TestCase
 {
-    /**
-     *
-     * @var BaseTestCase
-     */
-    private $BaseTestCase;
+    /** @var BaseTestCase */
+    private $baseTestCase;
 
-    /**
-     * Prepares the environment before running a test.
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
-        parent::setUp();
-
-        // TODO Auto-generated DbAdapterTest::setUp()
-
-        $this->BaseTestCase = new BaseTestCase();
+        $this->baseTestCase = new BaseTestCase();
     }
 
-    /**
-     * Cleans up the environment after running a test.
-     */
-    protected function tearDown()
+    protected function tearDown(): void
     {
-        // TODO Auto-generated DbAdapterTest::tearDown()
-        $this->BaseTestCase = null;
-
-        parent::tearDown();
+        $this->baseTestCase = null;
     }
 
-    /**
-     * Tests DbAdapter->getAdapter()
-     */
-    public function testGetAdapter()
-    {
-        $this->assertInstanceOf('\Laminas\Db\Adapter\Adapter', $this->BaseTestCase->getAdapter());
-    }
-
-    /**
-     * Tests DbAdapter->testSetupMysql()
-     */
     public function testTestSetupMysql()
     {
         $tables = ['album'];
-        $this->assertInstanceOf('\RealejoTest\BaseTestCase', $this->BaseTestCase->setTables($tables));
-        $this->assertEquals($tables, $this->BaseTestCase->getTables());
+        $this->baseTestCase->setTables($tables);
+        $this->assertEquals($tables, $this->baseTestCase->getTables());
 
-        $dbTest = $this->BaseTestCase->createTables();
-        $this->assertInstanceOf('\RealejoTest\BaseTestCase', $dbTest);
+        $dbTest = $this->baseTestCase->createTables();
+        $this->assertInstanceOf(BaseTestCase::class, $dbTest);
 
-        $dbTest = $this->BaseTestCase->dropTables();
-        $this->assertInstanceOf('\RealejoTest\BaseTestCase', $dbTest);
+        $dbTest = $this->baseTestCase->dropTables();
+        $this->assertInstanceOf(BaseTestCase::class, $dbTest);
 
-        $dbTest = $this->BaseTestCase->createTables()->dropTables();
-        $this->assertInstanceOf('\RealejoTest\BaseTestCase', $dbTest);
+        $dbTest = $this->baseTestCase->createTables()->dropTables();
+        $this->assertInstanceOf(BaseTestCase::class, $dbTest);
     }
 
-    public function testClearApplicationData()
+    public function testClearApplicationData(): void
     {
         // Verifica se está tudo ok
         if (!defined('TEST_DATA')) {
@@ -97,9 +63,9 @@ class BaseTestCaseTest extends TestCase
         file_put_contents($folder . '/sample.txt', 'teste teste');
 
         // Verifica se a pasta está vazia
-        $this->assertFalse($this->BaseTestCase->isApplicationDataEmpty());
+        $this->assertFalse($this->baseTestCase->isApplicationDataEmpty());
 
-        $this->BaseTestCase->clearApplicationData();
+        $this->baseTestCase->clearApplicationData();
 
         // Verifica se está vazia
         $files = $objects = scandir(TEST_DATA);
@@ -107,13 +73,13 @@ class BaseTestCaseTest extends TestCase
         $this->assertEquals(['.', '..', 'cache'], $files, 'não tem mais nada no APPLICATION_DATA');
 
         // Verifica se a pasta está vazia
-        $this->assertTrue($this->BaseTestCase->isApplicationDataEmpty());
+        $this->assertTrue($this->baseTestCase->isApplicationDataEmpty());
 
         // Grava mais coisa no raiz do APPLICATION_DATA
         file_put_contents(TEST_DATA . '/sample.txt', 'outro teste');
 
         // Verifica se a pasta está vazia depois de apagar
-        $this->assertFalse($this->BaseTestCase->isApplicationDataEmpty());
-        $this->assertTrue($this->BaseTestCase->clearApplicationData());
+        $this->assertFalse($this->baseTestCase->isApplicationDataEmpty());
+        $this->assertTrue($this->baseTestCase->clearApplicationData());
     }
 }

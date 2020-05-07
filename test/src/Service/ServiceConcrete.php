@@ -6,8 +6,6 @@ use Realejo\Service\ServiceAbstract;
 
 class ServiceConcrete extends ServiceAbstract
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $mapperClass = Mapper\MapperConcrete::class;
 }

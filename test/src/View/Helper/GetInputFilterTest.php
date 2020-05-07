@@ -2,10 +2,6 @@
 
 namespace RealejoTest\View\Helper;
 
-/**
- * Version test case.
- */
-
 use PHPUnit\Framework\TestCase;
 use Realejo\View\Helper\GetInputFilter;
 use Laminas\Form\Element\Text;
@@ -69,7 +65,7 @@ class GetInputFilterTest extends TestCase
         $helper = new GetInputFilter();
 
         $fields = $helper->getFormValidationFieldsArray($form);
-        $this->assertTrue(is_array($fields));
+        $this->assertIsArray($fields);
         $this->assertNotEmpty($fields);
         $this->assertCount(1, $fields);
         $this->assertArrayHasKey('campo1', $fields);
@@ -85,7 +81,7 @@ class GetInputFilterTest extends TestCase
         $this->assertArrayHasKey('max', $fields['campo1']['validators']['between']);
     }
 
-    public function testGetFormValidationFieldsJson()
+    public function testGetFormValidationFieldsJson(): void
     {
         // Cria um form
         $form = new Form();
@@ -121,10 +117,10 @@ class GetInputFilterTest extends TestCase
 
         $helper = new GetInputFilter();
         $json = $helper->getFormValidationFieldsJSON($form);
-        $this->assertTrue(is_string($json));
+        $this->assertIsString($json);
 
         $fields = json_decode($json, true);
-        $this->assertTrue(is_array($fields));
+        $this->assertIsArray($fields);
 
         $this->assertNotEmpty($fields);
         $this->assertCount(1, $fields);

@@ -2,20 +2,15 @@
 
 namespace RealejoTest\Stdlib;
 
+use PHPUnit\Framework\Error\Notice;
 use PHPUnit\Framework\TestCase;
 use Realejo\Stdlib\ArrayObject;
 use RealejoTest\Enum\EnumConcrete;
 use RealejoTest\Enum\EnumFlaggedConcrete;
 
-/**
- * ArrayObject test case.
- */
 class ArrayObjectTest extends TestCase
 {
-    /**
-     * Tests ArrayObject->populate()
-     */
-    public function testPopulateToArray()
+    public function testPopulateToArray(): void
     {
         $object = new ArrayObject();
         $this->assertNotNull($object->toArray());
@@ -56,10 +51,7 @@ class ArrayObjectTest extends TestCase
         $this->assertEquals($stdClass, $object['two']);
     }
 
-    /**
-     * Tests ArrayObject->populate()
-     */
-    public function testSetGet()
+    public function testSetGet(): void
     {
         $object = new ArrayObject();
         $this->assertNotNull($object->toArray());
@@ -129,93 +121,95 @@ class ArrayObjectTest extends TestCase
         $this->assertFalse(isset($object['two']));
     }
 
-    /**
-     * @expectedException \PHPUnit\Framework\Error\Notice
-     */
-    public function testGetKeyNonExisting()
+    public function testGetKeyNonExisting(): void
     {
         $object = new ArrayObject();
         $this->assertFalse(isset($object['test']));
+
+        $this->expectException(Notice::class);
+
         $object['test'];
     }
 
-    /**
-     * @expectedException \PHPUnit\Framework\Error\Notice
-     */
-    public function testGetPropertyNonExisting()
+    public function testGetPropertyNonExisting(): void
     {
         $object = new ArrayObject();
+
+
         $this->assertFalse(isset($object->test));
+
+        $this->expectException(Notice::class);
+
         $object->test;
     }
 
-    /**
-     * @expectedException \PHPUnit\Framework\Error\Notice
-     */
-    public function testGetKeyNonExistingWithNoLockedKeys()
+    public function testGetKeyNonExistingWithNoLockedKeys(): void
     {
         $object = new ArrayObject();
         $object->setLockedKeys(false);
         $this->assertFalse(isset($object['test']));
+
+        $this->expectException(Notice::class);
+
         $this->assertNull($object['test']);
+
+        // Como testar isso ai em baixo?
+
         $object['test'];
     }
 
-    /**
-     * @expectedException \PHPUnit\Framework\Error\Notice
-     */
-    public function testGetPropertyNonExistingWithNoLockedKeys()
+    public function testGetPropertyNonExistingWithNoLockedKeys(): void
     {
         $object = new ArrayObject();
         $object->setLockedKeys(false);
         $this->assertFalse(isset($object->test));
+
+        $this->expectException(Notice::class);
+
         $this->assertNull($object->test);
     }
 
-    /**
-     * @expectedException \PHPUnit\Framework\Error\Notice
-     */
-    public function testSetKeyNonExisting()
+    public function testSetKeyNonExisting(): void
     {
         $object = new ArrayObject();
         $this->assertFalse(isset($object['test']));
+
+        $this->expectException(Notice::class);
+
         $object['test'] = 'tessst';
     }
 
-    /**
-     * @expectedException \PHPUnit\Framework\Error\Notice
-     */
-    public function testSetPropertyNonExisting()
+    public function testSetPropertyNonExisting(): void
     {
         $object = new ArrayObject();
         $this->assertFalse(isset($object->test));
+
+        $this->expectException(Notice::class);
+
         $object->test = 'tessst';
     }
 
-    /**
-     * @expectedException \Exception
-     */
-    public function testUnsetKeyNonExisting()
+    public function testUnsetKeyNonExisting(): void
     {
         $object = new ArrayObject();
         $this->assertFalse(isset($object['test']));
+
+        $this->expectException(\Exception::class);
+
         unset($object['test']);
     }
 
-    /**
-     * @expectedException \Exception
-     */
-    public function testUnsetPropertyNonExisting()
+    public function testUnsetPropertyNonExisting(): void
     {
         $object = new ArrayObject();
         $this->assertFalse(isset($object->test));
+
+        $this->expectException(\Exception::class);
+
         unset($object->test);
     }
 
-    /**
-     * Tests ArrayObject::getMapNaming()
-     */
-    public function testMapping()
+    public function testMapping(): void
     {
         $object = new ArrayObject();
         $this->assertNull($object->getKeyMapping());
@@ -244,10 +238,7 @@ class ArrayObjectTest extends TestCase
         $this->assertEquals(null, $object->getKeyMapping());
     }
 
-    /**
-     * Test with typed keys
-     */
-    public function testPopulateWithTypedKeys()
+    public function testPopulateWithTypedKeys(): void
     {
         $object = new ArrayObjectTypedKeys();
         $this->assertNotNull($object->toArray());
@@ -258,20 +249,22 @@ class ArrayObjectTest extends TestCase
 
         // populate as it comes from database
         $originalArray = ['key' => 'value', 'unicode' => 'áéíóú😶çý', 'slashes' => '\\slashes\\'];
-        $object = new ArrayObjectTypedKeys([
-            'booleanKey' => '1',
-            'jsonObjectKey' => json_encode($originalArray),
-            'jsonArrayKey' => json_encode($originalArray),
-            'datetimeKey' => '2010-01-01 00:00:00',
-            'intKey' => '1',
-            'enum' => EnumConcrete::STRING1,
-            'enumFlagged' => EnumFlaggedConcrete::WRITE
-        ]);
+        $object = new ArrayObjectTypedKeys(
+            [
+                'booleanKey' => '1',
+                'jsonObjectKey' => json_encode($originalArray),
+                'jsonArrayKey' => json_encode($originalArray),
+                'datetimeKey' => '2010-01-01 00:00:00',
+                'intKey' => '1',
+                'enum' => EnumConcrete::STRING1,
+                'enumFlagged' => EnumFlaggedConcrete::WRITE
+            ]
+        );
 
         // check keys
-        $this->assertTrue($object->booleanKey === true);
+        $this->assertTrue($object->booleanKey);
         $this->assertEquals(new \DateTime('2010-01-01'), $object->datetimeKey);
-        $this->assertTrue($object->intKey === 1);
+        $this->assertSame($object->intKey, 1);
 
         $this->assertInstanceOf(EnumConcrete::class, $object->enum);
         $this->assertEquals(EnumConcrete::STRING1, $object->enum->getValue());

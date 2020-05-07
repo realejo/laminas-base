@@ -223,10 +223,7 @@ abstract class ServiceAbstract
         return str_replace('\\', '_', get_class($this));
     }
 
-    /**
-     * @return MapperAbstract
-     */
-    public function getMapper()
+    public function getMapper(): MapperAbstract
     {
         if (!isset($this->mapper)) {
             if (!isset($this->mapperClass)) {

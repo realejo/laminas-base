@@ -1167,11 +1167,7 @@ abstract class MapperAbstract
         return $this->lastDeleteKey;
     }
 
-    /**
-     *
-     * @return string
-     */
-    public function getTableName()
+    public function getTableName(): string
     {
         return $this->tableName;
     }

@@ -12,7 +12,7 @@ class MapperConcreteDeprecated extends MapperAbstract
 
     protected $tableJoinLeft = [
         'test' => [
-            'table' =>'test_table',
+            'table' => 'test_table',
             'condition' => 'test_condition',
             'columns' => ['test_column'],
             'type' => Select::JOIN_LEFT
