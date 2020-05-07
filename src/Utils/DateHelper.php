@@ -1,10 +1,4 @@
 <?php
-/**
- *
- * @link      http://github.com/realejo/base-zf3
- * @copyright Copyright (c) 2011-2014 Realejo (http://realejo.com.br)
- * @license   http://unlicense.org
- */
 
 namespace Realejo\Utils;
 
@@ -18,7 +12,6 @@ class DateHelper
      */
     public static function toMySQL($d)
     {
-
         if (empty($d)) {
             return null;
         }

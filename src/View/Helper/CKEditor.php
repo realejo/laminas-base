@@ -1,17 +1,15 @@
 <?php
 
+/**
+ * Coloca o CKEditor e CKFinder na view
+ *
+ * @uses viewHelper AbstractHelper
+ */
+
 namespace Realejo\View\Helper;
 
 use Laminas\View\Helper\AbstractHelper;
 
-/**
- * Coloca o CKEditor e CKFinder na view
- *
- * @author     Realejo
- * @copyright  Copyright (c) 2018 Realejo Design Ltda. (http://www.realejo.com.br)
- *
- * @uses viewHelper AbstractHelper
- */
 class CKEditor extends AbstractHelper
 {
     /**
@@ -65,8 +63,8 @@ class CKEditor extends AbstractHelper
 
     /**
      * Retorna o javascript do CKEditor
-     * @param array $fields
-     * @param array $options
+     * @param array|string $fields
+     * @param array|string $options
      *
      * @return string js
      */
@@ -106,7 +104,9 @@ class CKEditor extends AbstractHelper
             $options['customConfig'] = self::$ckEditorCustomConfig;
         }
 
-        $options = (empty($options)) ? '{}' : json_encode($options, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $options = (empty($options))
+            ? '{}'
+            : json_encode($options, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
         // Carrega as opções para cada campo
         $config = '';
@@ -115,13 +115,13 @@ class CKEditor extends AbstractHelper
             if (!array_key_exists('validator', $cloneOptions)) {
                 $config .= "$( '$c' ).ckeditor(function() {}, $options);";
             } else {
-                $config .= "$( '$c' ).ckeditor(function() {}, $options).editor.on('change', function() { $('{$cloneOptions['validator']['form']}').formValidation('revalidateField', '{$cloneOptions['validator']['name']}'); });";
+                $config .= "$( '$c' ).ckeditor(function() {}, $options)
+                        .editor.on('change', function() { $('{$cloneOptions['validator']['form']}')
+                        .formValidation('revalidateField', '{$cloneOptions['validator']['name']}'); });";
             }
         }
 
         // Cria a configuração do CKEditor
-        $script = "$(document).ready(function(){ $config });";
-
-        return $script;
+        return "$(document).ready(function(){ $config });";
     }
 }

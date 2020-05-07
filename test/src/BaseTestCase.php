@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Test case para as funcionalidades padrões
  *
@@ -6,10 +7,6 @@
  * É de propósito pois dentro do outros testes ela pode ser iniciada para criar as tabelas
  *
  * @todo colocar dentro da biblioteca padrão!
- *
- * @link      http://bitbucket.org/bffc/excelencia
- * @copyright Copyright (c) 2014 Realejo (http://realejo.com.br)
- * @license   proprietary
  */
 
 namespace RealejoTest;
@@ -319,7 +316,6 @@ class BaseTestCase extends TestCase
 
         return $method->invokeArgs($object, $parameters);
     }
-
 
     public function getTables(): array
     {

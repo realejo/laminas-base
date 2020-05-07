@@ -9,21 +9,17 @@ use Realejo\Cache\CacheService;
 use Realejo\Service\Metadata\MetadataService;
 use RealejoTest\BaseTestCase;
 use Laminas\Db\Adapter\Adapter;
-use \Laminas\Dom\Document\Query as DomQuery;
+use Laminas\Dom\Document\Query as DomQuery;
 use Laminas\ServiceManager\ServiceManager;
 use Realejo\Stdlib\ArrayObject;
 use Realejo\Service\ServiceAbstract;
 
 class ServiceAbstractTest extends BaseTestCase
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $tableName = 'album';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $tableKeyName = 'id';
 
     protected $tables = ['album'];
@@ -93,9 +89,6 @@ class ServiceAbstractTest extends BaseTestCase
         $this->clearApplicationData();
     }
 
-    /**
-     * Cleans up the environment after running a test.
-     */
     protected function tearDown(): void
     {
         parent::tearDown();
@@ -510,7 +503,7 @@ class ServiceAbstractTest extends BaseTestCase
         $this->assertCount(1, DomQuery::execute("#$id", $domDocument, DomQuery::TYPE_CSS), "id #$id existe");
         $this->assertCount(
             1,
-            DomQuery::execute("select[name=\"$id\"]" , $domDocument, DomQuery::TYPE_CSS),
+            DomQuery::execute("select[name=\"$id\"]", $domDocument, DomQuery::TYPE_CSS),
             "placeholder select[name=\"$id\"] encontrado"
         );
         $options = DomQuery::execute("option", $domDocument, DomQuery::TYPE_CSS);
@@ -559,10 +552,14 @@ class ServiceAbstractTest extends BaseTestCase
         $select = $this->service->getHtmlSelect('nome_usado', null, ['placeholder' => $ph]);
         $this->assertNotEmpty($select);
         $domDocument = new Document($select);
-        $this->assertCount(1, DomQuery::execute('#nome_usado' , $domDocument, DomQuery::TYPE_CSS), 'id #nome_usado existe');
         $this->assertCount(
             1,
-            DomQuery::execute("select[placeholder=\"$ph\"]" , $domDocument, DomQuery::TYPE_CSS),
+            DomQuery::execute('#nome_usado', $domDocument, DomQuery::TYPE_CSS),
+            'id #nome_usado existe'
+        );
+        $this->assertCount(
+            1,
+            DomQuery::execute("select[placeholder=\"$ph\"]", $domDocument, DomQuery::TYPE_CSS),
             "placeholder select[placeholder=\"$ph\"] encontrado"
         );
         $options = DomQuery::execute("option", $domDocument, DomQuery::TYPE_CSS);
@@ -577,9 +574,16 @@ class ServiceAbstractTest extends BaseTestCase
         $select = $this->service->getHtmlSelect('nome_usado');
         $this->assertNotEmpty($select);
         $domDocument = new Document($select);
-        $this->assertCount(1, DomQuery::execute('#nome_usado' , $domDocument, DomQuery::TYPE_CSS), 'id #nome_usado existe');
+        $this->assertCount(
+            1,
+            DomQuery::execute('#nome_usado', $domDocument, DomQuery::TYPE_CSS),
+            'id #nome_usado existe'
+        );
         $this->assertCount(5, DomQuery::execute("option", $domDocument, DomQuery::TYPE_CSS), '5 opções existem');
-        $this->assertEmpty(DomQuery::execute("option", $domDocument, DomQuery::TYPE_CSS)->current()->nodeValue, "a primeira é vazia");
+        $this->assertEmpty(
+            DomQuery::execute("option", $domDocument, DomQuery::TYPE_CSS)->current()->nodeValue,
+            "a primeira é vazia"
+        );
         $this->assertEmpty(
             DomQuery::execute("option", $domDocument, DomQuery::TYPE_CSS)->current()->getAttribute('value'),
             "o valor da primeira é vazio"
@@ -588,15 +592,23 @@ class ServiceAbstractTest extends BaseTestCase
         $select = $this->service->getHtmlSelect('nome_usado', 1);
         $this->assertNotEmpty($select);
         $domDocument = new Document($select);
-        $this->assertCount(1, DomQuery::execute('#nome_usado' , $domDocument, DomQuery::TYPE_CSS), 'id #nome_usado existe COM valor padrão');
-        $this->assertCount(4, DomQuery::execute("option", $domDocument, DomQuery::TYPE_CSS), '4 opções existem COM valor padrão');
+        $this->assertCount(
+            1,
+            DomQuery::execute('#nome_usado', $domDocument, DomQuery::TYPE_CSS),
+            'id #nome_usado existe COM valor padrão'
+        );
+        $this->assertCount(
+            4,
+            DomQuery::execute("option", $domDocument, DomQuery::TYPE_CSS),
+            '4 opções existem COM valor padrão'
+        );
 
         $select = $this->service->getHtmlSelect('nome_usado', null, ['show-empty' => false]);
         $this->assertNotEmpty($select);
         $domDocument = new Document($select);
         $this->assertCount(
             1,
-            DomQuery::execute('#nome_usado' , $domDocument, DomQuery::TYPE_CSS),
+            DomQuery::execute('#nome_usado', $domDocument, DomQuery::TYPE_CSS),
             'id #nome_usado existe SEM valor padrão e show-empty=false'
         );
         $this->assertCount(
@@ -611,7 +623,7 @@ class ServiceAbstractTest extends BaseTestCase
         $domDocument = new Document($select);
         $this->assertCount(
             1,
-            DomQuery::execute('#nome_usado' , $domDocument, DomQuery::TYPE_CSS),
+            DomQuery::execute('#nome_usado', $domDocument, DomQuery::TYPE_CSS),
             'id #nome_usado existe com valor padrão e show-empty=false'
         );
         $this->assertCount(
@@ -626,7 +638,7 @@ class ServiceAbstractTest extends BaseTestCase
         $domDocument = new Document($select);
         $this->assertCount(
             1,
-            DomQuery::execute('#nome_usado' , $domDocument, DomQuery::TYPE_CSS),
+            DomQuery::execute('#nome_usado', $domDocument, DomQuery::TYPE_CSS),
             'id #nome_usado existe com valor padrão e show-empty=true'
         );
         $this->assertCount(
@@ -652,7 +664,7 @@ class ServiceAbstractTest extends BaseTestCase
         $select = $this->service->setHtmlSelectOption('{title}')->getHtmlSelect($id, 1, ['grouped' => 'artist']);
         $this->assertNotEmpty($select);
         $domDocument = new Document($select);
-        $this->assertCount(1, DomQuery::execute("#$id" , $domDocument, DomQuery::TYPE_CSS), "id #$id existe");
+        $this->assertCount(1, DomQuery::execute("#$id", $domDocument, DomQuery::TYPE_CSS), "id #$id existe");
 
         $options = DomQuery::execute("option", $domDocument, DomQuery::TYPE_CSS);
         $this->assertCount(4, $options, " 4 opções encontradas");
@@ -688,7 +700,7 @@ class ServiceAbstractTest extends BaseTestCase
             "valor do quarto ok 1"
         );
 
-        $optgroups = DomQuery::execute("optgroup" , $domDocument, DomQuery::TYPE_CSS);
+        $optgroups = DomQuery::execute("optgroup", $domDocument, DomQuery::TYPE_CSS);
         $this->assertCount(3, $optgroups, " 3 grupo de opções encontrados");
 
         $this->assertEquals(
@@ -763,12 +775,23 @@ class ServiceAbstractTest extends BaseTestCase
         );
         $this->assertNotEmpty($select);
         $domDocument = new Document($select);
-        $this->assertCount(1, DomQuery::execute("#$id" , $domDocument, DomQuery::TYPE_CSS), "id #$id existe");
+        $this->assertCount(1, DomQuery::execute("#$id", $domDocument, DomQuery::TYPE_CSS), "id #$id existe");
 
-        $this->assertCount(1, DomQuery::execute("option", $domDocument, DomQuery::TYPE_CSS), " nenhuma option com where id = 100");
-        $this->assertCount(0, DomQuery::execute("optgroup" , $domDocument, DomQuery::TYPE_CSS), " nenhuma optgroup com where id = 100");
+        $this->assertCount(
+            1,
+            DomQuery::execute("option", $domDocument, DomQuery::TYPE_CSS),
+            " nenhuma option com where id = 100"
+        );
+        $this->assertCount(
+            0,
+            DomQuery::execute("optgroup", $domDocument, DomQuery::TYPE_CSS),
+            " nenhuma optgroup com where id = 100"
+        );
 
-        $this->assertEmpty(DomQuery::execute("option", $domDocument, DomQuery::TYPE_CSS)->current()->nodeValue, "primeiro é vazio");
+        $this->assertEmpty(
+            DomQuery::execute("option", $domDocument, DomQuery::TYPE_CSS)->current()->nodeValue,
+            "primeiro é vazio"
+        );
         $this->assertEmpty(
             DomQuery::execute("option", $domDocument, DomQuery::TYPE_CSS)->current()->getAttribute('value'),
             "o valor do primeiro é vazio"
@@ -950,7 +973,8 @@ class ServiceAbstractTest extends BaseTestCase
         // Verifica o paginator com o padrão
         $paginator = $this->service->findPaginated();
 
-        // verifica se vai utilizar o mesmo cache id quando realizar a mesma consulta, pois estava criando novo id e nunca
+        // verifica se vai utilizar o mesmo cache id quando realizar a mesma consulta,
+        // pois estava criando novo id e nunca
         // utilizando o cache no paginator
         $oldId = $this->service->getCache()->getIterator()->key();
         $fetchAll = $this->service->setUseCache(true)->findPaginated();

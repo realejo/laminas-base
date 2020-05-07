@@ -3,26 +3,24 @@
 namespace Realejo\Service\Metadata;
 
 use DateTime;
+use InvalidArgumentException;
 use Realejo\Service\ServiceAbstract;
 use Realejo\Utils\DateHelper;
 use Laminas\Db\Sql\Expression;
 
 class MetadataService extends ServiceAbstract
 {
-    /**
-     * Tipos de campos
-     */
-    const TEXT = "T";
+    public const TEXT = "T";
 
-    const INTEGER = "I";
+    public const INTEGER = "I";
 
-    const DATE = "D";
+    public const DATE = "D";
 
-    const BOOLEAN = "B";
+    public const BOOLEAN = "B";
 
-    const DECIMAL = "F";
+    public const DECIMAL = "F";
 
-    const DATETIME = "M";
+    public const DATETIME = "M";
 
     protected $mapperValues;
 
@@ -114,6 +112,9 @@ class MetadataService extends ServiceAbstract
                     $cast = 'INTEGER';
                     $field = 'value_boolean';
                     break;
+
+                default:
+                    throw new InvalidArgumentException('Campo inválido');
             }
 
             // Corrige o valor
@@ -122,7 +123,8 @@ class MetadataService extends ServiceAbstract
             // Faz a busca pelo campo
             if (is_null($value)) {
                 $where[] = new Expression(
-                    "EXISTS (SELECT * FROM $valueTable WHERE $valueTable.{$this->infoForeignKeyName}={$schema[$id][$this->infoKeyName]} " .
+                    "EXISTS (SELECT * FROM $valueTable " .
+                    "WHERE $valueTable.{$this->infoForeignKeyName}={$schema[$id][$this->infoKeyName]} " .
                     "AND $mapperTable.$mapperKey=$valueTable.$referenceKey " .
                     "AND $field IS NULL) " .
                     "OR NOT EXISTS (SELECT * FROM $valueTable " .
@@ -130,19 +132,21 @@ class MetadataService extends ServiceAbstract
                     "AND $mapperTable.$mapperKey=$valueTable.$referenceKey)"
                 );
             } else {
-                $where[] = new Expression($this->quoteInto(
-                    "EXISTS (SELECT * FROM $valueTable " .
-                    "WHERE $valueTable.{$this->infoForeignKeyName}={$schema[$id][$this->infoKeyName]} " .
-                    "AND $mapperTable.$mapperKey=$valueTable.$referenceKey " .
-                    "AND $field = ?)",
-                    $value,
-                    $this->getMapperSchema()
-                        ->getTableGateway()
-                        ->getAdapter()
-                        ->getPlatform(),
-                    null,
-                    $cast
-                ));
+                $where[] = new Expression(
+                    $this->quoteInto(
+                        "EXISTS (SELECT * FROM $valueTable " .
+                        "WHERE $valueTable.{$this->infoForeignKeyName}={$schema[$id][$this->infoKeyName]} " .
+                        "AND $mapperTable.$mapperKey=$valueTable.$referenceKey " .
+                        "AND $field = ?)",
+                        $value,
+                        $this->getMapperSchema()
+                            ->getTableGateway()
+                            ->getAdapter()
+                            ->getPlatform(),
+                        null,
+                        $cast
+                    )
+                );
             }
         }
 
@@ -159,13 +163,13 @@ class MetadataService extends ServiceAbstract
     public function setMetadataMappers($schemaTable, $valueTable, $mapperForeignKey)
     {
         if (!is_string($schemaTable) || empty($schemaTable)) {
-            throw new \InvalidArgumentException("schemaTable invalid");
+            throw new InvalidArgumentException("schemaTable invalid");
         }
         if (!is_string($valueTable) || empty($valueTable)) {
-            throw new \InvalidArgumentException("valueTable invalid");
+            throw new InvalidArgumentException("valueTable invalid");
         }
         if (!is_string($mapperForeignKey) || empty($mapperForeignKey)) {
-            throw new \InvalidArgumentException("mapperForeignKey invalid");
+            throw new InvalidArgumentException("mapperForeignKey invalid");
         }
 
         $this->mapperSchema = $schemaTable;
@@ -316,11 +320,13 @@ class MetadataService extends ServiceAbstract
                 }
             } elseif (!is_null($setMetadataValue)) {
                 $this->getMapperValue()
-                    ->insert([
-                        $this->infoForeignKeyName => $schema[$this->infoKeyName],
-                        $this->referenceKey => $foreignKey,
-                        $setMetadataKey => $setMetadataValue
-                    ]);
+                    ->insert(
+                        [
+                            $this->infoForeignKeyName => $schema[$this->infoKeyName],
+                            $this->referenceKey => $foreignKey,
+                            $setMetadataKey => $setMetadataValue
+                        ]
+                    );
                 $saveMetadataLog[$schema['nick']] = [null, $setMetadataValue];
             }
             unset($set[$schema['nick']]);
@@ -348,7 +354,7 @@ class MetadataService extends ServiceAbstract
     {
         // Verifica o código do PDV
         if (empty($key) || !is_numeric($key)) {
-            throw new \InvalidArgumentException('Código inválido em MetadataService::fixMetadata()');
+            throw new InvalidArgumentException('Código inválido em MetadataService::fixMetadata()');
         }
 
         // Recupera as informações do PDV
@@ -549,8 +555,10 @@ class MetadataService extends ServiceAbstract
     public function getMapperValue()
     {
         if (is_string($this->mapperValue)) {
-            $this->mapperValue = new MetadataMapper($this->mapperValue,
-                [$this->infoForeignKeyName, $this->referenceKey]);
+            $this->mapperValue = new MetadataMapper(
+                $this->mapperValue,
+                [$this->infoForeignKeyName, $this->referenceKey]
+            );
             $this->mapperValue->setCache($this->getCache());
 
             if ($this->hasServiceLocator()) {
@@ -580,7 +588,7 @@ class MetadataService extends ServiceAbstract
             } elseif ($cast === 'STRING') {
                 return str_replace('?', $platform->quoteValue($value), $text);
             } else {
-                throw new \InvalidArgumentException('CAST inválido em ' . get_class($this) . '::quoteInto');
+                throw new InvalidArgumentException('CAST inválido em ' . get_class($this) . '::quoteInto');
             }
         } else {
             while ($count > 0) {

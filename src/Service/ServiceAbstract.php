@@ -199,9 +199,11 @@ abstract class ServiceAbstract
         // Cria a assinatura da consulta
         $cacheKey = 'findAll'
             . $this->getUniqueCacheKey()
-            . md5($this->getMapper()->getSelect($this->getWhere($where), $order, $count, $offset)->getSqlString(
-                $this->getMapper()->getTableGateway()->getAdapter()->getPlatform()
-            ));
+            . md5(
+                $this->getMapper()->getSelect($this->getWhere($where), $order, $count, $offset)->getSqlString(
+                    $this->getMapper()->getTableGateway()->getAdapter()->getPlatform()
+                )
+            );
 
         // Verifica se tem no cache
         if ($this->getUseCache() && $this->getCache()->hasItem($cacheKey)) {
@@ -393,7 +395,9 @@ abstract class ServiceAbstract
             if (is_array($this->getMapper()->getTableKey())) {
                 // Verifica se é uma chave simples com cast
                 if (count($this->getMapper()->getTableKey()) !== 1) {
-                    throw new \InvalidArgumentException('Não é possível acessar chaves múltiplas informando apenas uma');
+                    throw new \InvalidArgumentException(
+                        'Não é possível acessar chaves múltiplas informando apenas uma'
+                    );
                 }
                 $where = [$this->getMapper()->getTableKey(true) => $where];
             } else {
@@ -404,9 +408,11 @@ abstract class ServiceAbstract
         // Cria a assinatura da consulta
         $cacheKey = 'findOne'
             . $this->getUniqueCacheKey()
-            . md5($this->getMapper()->getSelect($where, $order)->getSqlString(
-                $this->getMapper()->getTableGateway()->getAdapter()->getPlatform()
-            ));
+            . md5(
+                $this->getMapper()->getSelect($where, $order)->getSqlString(
+                    $this->getMapper()->getTableGateway()->getAdapter()->getPlatform()
+                )
+            );
 
         // Verifica se tem no cache
         if ($this->getUseCache() && $this->getCache()->hasItem($cacheKey)) {
@@ -454,9 +460,11 @@ abstract class ServiceAbstract
         $cacheKey = 'findAssoc'
             . $this->getUniqueCacheKey()
             . '_key' . $this->getMapper()->getTableKey(true) . '_'
-            . md5($this->getMapper()->getSelect($this->getWhere($where), $order, $count, $offset)->getSqlString(
-                $this->getMapper()->getTableGateway()->getAdapter()->getPlatform()
-            ));
+            . md5(
+                $this->getMapper()->getSelect($this->getWhere($where), $order, $count, $offset)->getSqlString(
+                    $this->getMapper()->getTableGateway()->getAdapter()->getPlatform()
+                )
+            );
 
         // Verifica se tem no cache
         if ($this->getUseCache() && $this->getCache()->hasItem($cacheKey)) {

@@ -2,21 +2,10 @@
 
 namespace RealejoTest\Service\Mptt;
 
-/**
- * MpttTest test case.
- *
- * @link      http://github.com/realejo/libraray-zf2
- * @copyright Copyright (c) 2014 Realejo (http://realejo.com.br)
- * @license   http://unlicense.org
- */
-
 use Realejo\Cache\CacheService;
 use Realejo\Service;
 use RealejoTest\BaseTestCase;
 
-/**
- * Mptt test case.
- */
 class MpttTest extends BaseTestCase
 {
     /**

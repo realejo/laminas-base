@@ -12,9 +12,9 @@ class CacheFactory implements FactoryInterface
     /**
      * Create an object
      *
-     * @param  ContainerInterface $container
-     * @param  string $requestedName
-     * @param  null|array $options
+     * @param ContainerInterface $container
+     * @param string $requestedName
+     * @param null|array $options
      * @return object
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
@@ -32,4 +32,3 @@ class CacheFactory implements FactoryInterface
         return $cacheService;
     }
 }
-

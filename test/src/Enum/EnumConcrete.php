@@ -11,7 +11,7 @@ final class EnumConcrete extends Enum
     public const NUMERIC1 = 666;
     public const NUMERIC2 = 999;
 
-    static protected $constDescription = [
+    protected static $constDescription = [
         'S' => 'string1',
         'X' => ['string2', 'string with description'],
         666 => 'numeric1',

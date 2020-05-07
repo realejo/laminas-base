@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @see https://gist.github.com/mcaskill/02636e5970be1bb22270#file-function-date-format-conversion-php
  */
@@ -22,7 +23,7 @@ class FormatDate extends AbstractHelper
 
         $locale = setlocale(LC_TIME, 0);
         setlocale(LC_TIME, ['pt_BR.utf8', 'pt_BR']);
-        $dateFormatted = strftime($this->date_format_to_strftime_format($format), $date->getTimestamp());
+        $dateFormatted = strftime($this->dateFormatToStrftimeFormat($format), $date->getTimestamp());
         setlocale(LC_ALL, $locale);
         return $dateFormatted;
     }
@@ -35,14 +36,15 @@ class FormatDate extends AbstractHelper
      * Unsupported date formats : S, n, t, L, B, G, u, e, I, P, Z, c, r
      * Unsupported strftime formats : %U, %W, %C, %g, %r, %R, %T, %X, %c, %D, %F, %x
      *
-     * @example Convert `%A, %B %e, %Y, %l:%M %P` to `l, F j, Y, g:i a`, and vice versa for "Saturday, March 10, 2001, 5:16 pm"
-     * @link http://php.net/manual/en/function.strftime.php#96424
-     *
      * @param string $format The format to parse.
      * @param string $syntax The format's syntax. Either 'strf' for `strtime()` or 'date' for `date()`.
      * @return bool|string Returns a string formatted according $syntax using the given $format or `false`.
+     * @link http://php.net/manual/en/function.strftime.php#96424
+     *
+     * @example Convert `%A, %B %e, %Y, %l:%M %P` to `l, F j, Y, g:i a`,
+     *              and vice versa for "Saturday, March 10, 2001, 5:16 pm"
      */
-    private function date_format_to($format, $syntax)
+    private function dateFormatTo($format, $syntax)
     {
         // http://php.net/manual/en/function.strftime.php
         $strf_syntax = [
@@ -127,7 +129,7 @@ class FormatDate extends AbstractHelper
         }
 
         $pattern = array_map(
-            function ($s) {
+            static function ($s) {
                 return '/(?<!\\\\|\%)' . $s . '/';
             },
             $from
@@ -142,9 +144,9 @@ class FormatDate extends AbstractHelper
      * @param string $strf_format A `strftime()` date/time format
      * @return string
      */
-    private function strftime_format_to_date_format($strf_format)
+    private function strftimeFormatToDateFormat($strf_format)
     {
-        return $this->date_format_to($strf_format, 'date');
+        return $this->dateFormatTo($strf_format, 'date');
     }
 
     /**
@@ -153,8 +155,8 @@ class FormatDate extends AbstractHelper
      * @param string $date_format A `date()` date/time format
      * @return string
      */
-    private function date_format_to_strftime_format($date_format)
+    private function dateFormatToStrftimeFormat($date_format)
     {
-        return $this->date_format_to($date_format, 'strf');
+        return $this->dateFormatTo($date_format, 'strf');
     }
 }

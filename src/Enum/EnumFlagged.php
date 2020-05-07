@@ -32,7 +32,7 @@ abstract class EnumFlagged extends Enum
     /**
      * Return the name os the constant
      *
-     * @param null   $value
+     * @param null $value
      * @param string $join
      *
      * @return string|array
@@ -66,7 +66,7 @@ abstract class EnumFlagged extends Enum
     /**
      * Descrição dos status
      *
-     * @param null   $value
+     * @param null $value
      * @param string $join
      *
      * @return string|array|null
@@ -100,7 +100,7 @@ abstract class EnumFlagged extends Enum
     /**
      * Return the name os the constant
      *
-     * @param null   $value
+     * @param null $value
      * @param string $join
      *
      * @return string|array
@@ -117,7 +117,7 @@ abstract class EnumFlagged extends Enum
     /**
      * Return the name os the constant
      *
-     * @param null   $value
+     * @param null $value
      * @param string $join
      *
      * @return string|array

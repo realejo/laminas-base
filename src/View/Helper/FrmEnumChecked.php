@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Retorna o HTML de um <select> apra usar em formulários
+ * Retorna o HTML de um <select> para usar em formulários
  *
  * @param string $nome Name/ID a ser usado no <select>
  * @param string $selecionado Valor pré selecionado
@@ -47,12 +48,13 @@ class FrmEnumChecked extends AbstractHelper
         $values = [];
         if (!empty($names)) {
             foreach ($names as $v => $n) {
-
                 $checked = ($enum instanceof EnumFlagged) ? $enum->has($v) : $enum->is($v);
                 $checked = ($checked) ? '<i class="fa fa-check-square-o"></i>' : '<i class="fa fa-square-o"></i>';
 
                 if ($showDescription) {
-                    $n .= ' <span class="tip" title="' . $enum->getValueDescription($v) . '"><i class="fa fa fa-question-circle"></i></span>';
+                    $n .= ' <span class="tip" title="'
+                        . $enum->getValueDescription($v)
+                        . '"><i class="fa fa fa-question-circle"></i></span>';
                 }
 
                 $values[] = "<p class=\"form-control-static\"> $checked $n </p>";

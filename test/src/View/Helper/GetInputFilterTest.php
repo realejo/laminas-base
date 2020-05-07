@@ -34,31 +34,35 @@ class GetInputFilterTest extends TestCase
         $form = new Form();
 
         // Adiciona um campo texto
-        $form->add([
-            'name' => 'campo1',
-            'type' => Text::class
-        ]);
+        $form->add(
+            [
+                'name' => 'campo1',
+                'type' => Text::class
+            ]
+        );
 
         // Cria um input filter
         $inputFilter = new InputFilter();
 
         // Adiciona validação [obrigatório, inteiro, não vazio, entre 1 e 3]
-        $inputFilter->add([
-            'name' => 'campo1',
-            'required' => true,
-            'filters' => [],
-            'validators' => [
-                ['name' => IsInt::class],
-                ['name' => NotEmpty::class],
-                [
-                    'name' => Between::class,
-                    'options' => [
-                        'min' => 1,
-                        'max' => 3
-                    ]
+        $inputFilter->add(
+            [
+                'name' => 'campo1',
+                'required' => true,
+                'filters' => [],
+                'validators' => [
+                    ['name' => IsInt::class],
+                    ['name' => NotEmpty::class],
+                    [
+                        'name' => Between::class,
+                        'options' => [
+                            'min' => 1,
+                            'max' => 3
+                        ]
+                    ],
                 ],
-            ],
-        ]);
+            ]
+        );
 
         $form->setInputFilter($inputFilter);
 
@@ -87,31 +91,35 @@ class GetInputFilterTest extends TestCase
         $form = new Form();
 
         // Adiciona um campo texto
-        $form->add([
-            'name' => 'campo1',
-            'type' => Text::class
-        ]);
+        $form->add(
+            [
+                'name' => 'campo1',
+                'type' => Text::class
+            ]
+        );
 
         // Cria um input filter
         $inputFilter = new InputFilter();
 
         // Adiciona validação [obrigatório, inteiro, não vazio, entre 1 e 3]
-        $inputFilter->add([
-            'name' => 'campo1',
-            'required' => true,
-            'filters' => [],
-            'validators' => [
-                ['name' => IsInt::class],
-                ['name' => NotEmpty::class],
-                [
-                    'name' => Between::class,
-                    'options' => [
-                        'min' => 1,
-                        'max' => 3
-                    ]
+        $inputFilter->add(
+            [
+                'name' => 'campo1',
+                'required' => true,
+                'filters' => [],
+                'validators' => [
+                    ['name' => IsInt::class],
+                    ['name' => NotEmpty::class],
+                    [
+                        'name' => Between::class,
+                        'options' => [
+                            'min' => 1,
+                            'max' => 3
+                        ]
+                    ],
                 ],
-            ],
-        ]);
+            ]
+        );
 
         $form->setInputFilter($inputFilter);
 

@@ -1,23 +1,14 @@
 <?php
-/**
- * Gerenciador de cache utilizado pelo App_Model
- *
- * Ele cria automaticamente a pasta de cache, dentro de data/cache, baseado no nome da classe
- *
- * @link      http://github.com/realejo/libraray-zf2
- * @copyright Copyright (c) 2014 Realejo (http://realejo.com.br)
- * @license   http://unlicense.org
- */
 
 namespace Realejo\Cache;
 
+use Laminas\Cache\Storage\Adapter\Filesystem;
 use Laminas\Cache\StorageFactory;
+use RuntimeException;
 
 class CacheService
 {
-    /**
-     * @var \Laminas\Cache\Storage\Adapter\Filesystem
-     */
+    /** @var Filesystem */
     protected $cache;
 
     protected $cacheDir;
@@ -26,7 +17,7 @@ class CacheService
      * Configura o cache
      *
      * @param string $class
-     * @return \Laminas\Cache\Storage\Adapter\Filesystem
+     * @return Filesystem
      */
     public function getFrontend($class = '')
     {
@@ -36,26 +27,28 @@ class CacheService
 
         if (!empty($path)) {
             // Configura o cache
-            $cacheService->cache = StorageFactory::factory([
-                'adapter' => [
-                    'name' => 'filesystem',
+            $cacheService->cache = StorageFactory::factory(
+                [
+                    'adapter' => [
+                        'name' => 'filesystem',
+                        'options' => [
+                            'cache_dir' => $path,
+                            'namespace' => $this->getNamespace($class),
+                            'dir_level' => 0,
+                        ],
+                    ],
+                    'plugins' => [
+                        // Don't throw exceptions on cache errors
+                        'exception_handler' => [
+                            'throw_exceptions' => false
+                        ],
+                        'Serializer'
+                    ],
                     'options' => [
-                        'cache_dir' => $path,
-                        'namespace' => $this->getNamespace($class),
-                        'dir_level' => 0,
-                    ],
-                ],
-                'plugins' => [
-                    // Don't throw exceptions on cache errors
-                    'exception_handler' => [
-                        'throw_exceptions' => false
-                    ],
-                    'Serializer'
-                ],
-                'options' => [
-                    'ttl' => 86400
+                        'ttl' => 86400
+                    ]
                 ]
-            ]);
+            );
         }
 
         return $cacheService->cache;
@@ -93,7 +86,7 @@ class CacheService
         // Verifica se a pasta de cache existe
         if ($cacheRoot === null) {
             if (defined('APPLICATION_DATA') === false) {
-                throw new \RuntimeException('A pasta raiz do data não está definido em APPLICATION_DATA');
+                throw new RuntimeException('A pasta raiz do data não está definido em APPLICATION_DATA');
             }
             $cacheRoot = APPLICATION_DATA . '/cache';
         }
@@ -130,7 +123,7 @@ class CacheService
         }
 
         if (!is_writable($cachePath)) {
-            throw new \RuntimeException("Pasta $cachePath nẽo tem permissão de escrita");
+            throw new RuntimeException("Pasta $cachePath nẽo tem permissão de escrita");
         }
 
         // Retorna a pasta de cache

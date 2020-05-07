@@ -21,8 +21,8 @@ use Laminas\Hydrator\ArraySerializable;
 
 abstract class MapperAbstract
 {
-    const KEY_STRING = 'STRING';
-    const KEY_INTEGER = 'INTEGER';
+    public const KEY_STRING = 'STRING';
+    public const KEY_INTEGER = 'INTEGER';
 
     /**
      * @var ArrayObject
@@ -75,14 +75,14 @@ abstract class MapperAbstract
     /**
      * Join lefts que devem ser usados no mapper
      *
-     * @var boolean
+     * @var bool
      */
     protected $useJoin = false;
 
     /**
      * Define se deve usar todas as chaves para os operações de update e delete
      *
-     * @var boolean
+     * @var bool
      */
     protected $useAllKeys = true;
 
@@ -103,19 +103,19 @@ abstract class MapperAbstract
     /**
      * Define se deve remover os registros ou apenas marcar como removido
      *
-     * @var boolean
+     * @var bool
      */
     protected $useDeleted = false;
 
     /**
      * Define se deve mostrar os registros marcados como removido
      *
-     * @var boolean
+     * @var bool
      */
     protected $showDeleted = false;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $useCache = false;
 
@@ -125,7 +125,7 @@ abstract class MapperAbstract
     protected $serviceLocator;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $autoCleanCache = true;
     protected $cache;
@@ -313,11 +313,11 @@ abstract class MapperAbstract
             return $key;
         }
 
-        if (is_string($this->getTableKey()) && is_numeric($key)) {
+        if (is_numeric($key) && is_string($this->getTableKey())) {
             return "{$this->getTableKey()} = $key";
         }
 
-        if (is_string($this->getTableKey()) && is_string($key)) {
+        if (is_string($key) && is_string($this->getTableKey())) {
             return "{$this->getTableKey()} = '$key'";
         }
 
@@ -335,20 +335,15 @@ abstract class MapperAbstract
                 // Grava a chave como integer
                 if (is_numeric($type) || $type === self::KEY_INTEGER) {
                     $where[] = "$definedKey = $key";
-
-                    // Grava a chave como string
-                } elseif ($type === self::KEY_STRING) {
+                } elseif ($type === self::KEY_STRING) { // Grava a chave como string
                     $where[] = "$definedKey = '$key'";
                 }
 
                 $usedKeys[] = $definedKey;
-            } // Verifica se a chave definida foi informada
-            elseif (is_array($key) && !is_array($definedKey) && isset($key[$definedKey])) {
+            } elseif (is_array($key) && !is_array($definedKey) && isset($key[$definedKey])) {
                 // Grava a chave como integer
                 if (is_numeric($type) || $type === self::KEY_INTEGER) {
                     $where[] = "$definedKey = {$key[$definedKey]}";
-
-                    // Grava a chave como string
                 } elseif ($type === self::KEY_STRING) {
                     $where[] = "$definedKey = '{$key[$definedKey]}'";
                 }
@@ -360,8 +355,6 @@ abstract class MapperAbstract
                     // Grava a chave como integer
                     if (is_numeric($value) || $type === self::KEY_INTEGER) {
                         $where[] = "$value = {$key[$value]}";
-
-                        // Grava a chave como string
                     } elseif ($type === self::KEY_STRING) {
                         $where[] = "$value = '{$key[$value]}'";
                     }
@@ -378,30 +371,25 @@ abstract class MapperAbstract
         }
 
         // Verifica se todas as chaves foram usadas
-        if ($this->getUseAllKeys() === true
-            && is_array($this->getTableKey())
-            && count($usedKeys) !== count($this->getTableKey())
-        ) {
+        if ($this->getUseAllKeys() === true && is_array($this->getTableKey()) && count($usedKeys) !==
+            count($this->getTableKey())) {
             throw new LogicException('Não é permitido usar chaves parciais em ' . get_class($this));
         }
 
         return '(' . implode(') AND (', $where) . ')';
     }
 
-    /**
-     * @return boolean
-     */
-    public function getUseAllKeys()
+    public function getUseAllKeys(): bool
     {
         return $this->useAllKeys;
     }
 
     /**
-     * @param boolean $useAllKeys
+     * @param bool $useAllKeys
      *
      * @return $this
      */
-    public function setUseAllKeys($useAllKeys)
+    public function setUseAllKeys(bool $useAllKeys)
     {
         $this->useAllKeys = $useAllKeys;
 
@@ -411,9 +399,9 @@ abstract class MapperAbstract
     /**
      * Retorna se deve usar o cache
      *
-     * @return boolean
+     * @return bool
      */
-    public function getUseCache()
+    public function getUseCache(): bool
     {
         return $this->useCache;
     }
@@ -421,30 +409,27 @@ abstract class MapperAbstract
     /**
      * Define se deve usar o cache
      *
-     * @param boolean $useCache
+     * @param bool $useCache
      * @return MapperAbstract
      */
-    public function setUseCache($useCache)
+    public function setUseCache(bool $useCache)
     {
         $this->useCache = $useCache;
 
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getAutoCleanCache()
+    public function getAutoCleanCache(): bool
     {
         return $this->autoCleanCache;
     }
 
     /**
-     * @param boolean $autoCleanCache
+     * @param bool $autoCleanCache
      *
      * @return MapperAbstract
      */
-    public function setAutoCleanCache($autoCleanCache)
+    public function setAutoCleanCache(bool $autoCleanCache)
     {
         $this->autoCleanCache = $autoCleanCache;
 
@@ -501,7 +486,7 @@ abstract class MapperAbstract
      * Grava um novo registro
      *
      * @param $set
-     * @return int boolean
+     * @return int bool
      *
      */
     public function insert($set)
@@ -544,8 +529,7 @@ abstract class MapperAbstract
                         // Grava a chave como integer
                         if (is_numeric($value) || $type === self::KEY_INTEGER) {
                             $key[$value] = $set[$value];
-
-                            // Grava a chave como string
+                        // Grava a chave como string
                         } elseif ($type === self::KEY_STRING) {
                             $key[$value] = $set[$value];
                         }
@@ -644,8 +628,8 @@ abstract class MapperAbstract
     /**
      * @param array $where condições para localizar o registro
      * @param array|string $order
-     * @param integer $count
-     * @param integer $offset
+     * @param int $count
+     * @param int $offset
      *
      * @return ArrayObject[]|HydratingResultSet
      */
@@ -722,7 +706,7 @@ abstract class MapperAbstract
         }
 
         foreach ($fetchAll as $id => $row) {
-            $fetchAll[$id] = $hydrator->hydrate($row, new $hydratorEntity);
+            $fetchAll[$id] = $hydrator->hydrate($row, new $hydratorEntity());
         }
 
         // Grava a consulta no cache
@@ -864,11 +848,16 @@ abstract class MapperAbstract
                 }
 
                 if (empty($definition['condition']) && !is_string($definition['condition'])) {
-                    throw new InvalidArgumentException("Condição para a tabela {$definition['table']} não definida em " . get_class($this));
+                    throw new InvalidArgumentException(
+                        "Condição para a tabela {$definition['table']} não definida em " . get_class($this)
+                    );
                 }
 
-                if (isset($definition['columns']) && !empty($definition['columns']) && !is_array($definition['columns'])) {
-                    throw new InvalidArgumentException("Colunas para a tabela {$definition['table']} devem ser um array em " . get_class($this));
+                if (isset($definition['columns']) && !empty($definition['columns'])
+                    && !is_array($definition['columns'])) {
+                    throw new InvalidArgumentException(
+                        "Colunas para a tabela {$definition['table']} devem ser um array em " . get_class($this)
+                    );
                 }
 
                 if (array_key_exists('schema', $definition)) {
@@ -897,7 +886,7 @@ abstract class MapperAbstract
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getUseJoin()
     {
@@ -905,7 +894,7 @@ abstract class MapperAbstract
     }
 
     /**
-     * @param boolean $useJoin
+     * @param bool $useJoin
      *
      * @return MapperAbstract
      */
@@ -918,7 +907,7 @@ abstract class MapperAbstract
     /**
      * Retorna se irá usar o campo deleted ou remover o registro quando usar delete()
      *
-     * @return boolean
+     * @return bool
      */
     public function getUseDeleted()
     {
@@ -928,7 +917,7 @@ abstract class MapperAbstract
     /**
      * Define se irá usar o campo deleted ou remover o registro quando usar delete()
      *
-     * @param boolean $useDeleted
+     * @param bool $useDeleted
      *
      * @return MapperAbstract
      */
@@ -942,7 +931,7 @@ abstract class MapperAbstract
     /**
      * Retorna se deve retornar os registros marcados como removidos
      *
-     * @return boolean
+     * @return bool
      */
     public function getShowDeleted()
     {
@@ -952,7 +941,7 @@ abstract class MapperAbstract
     /**
      * Define se deve retornar os registros marcados como removidos
      *
-     * @param boolean $showDeleted
+     * @param bool $showDeleted
      *
      * @return MapperAbstract
      */
@@ -1011,7 +1000,7 @@ abstract class MapperAbstract
      * @param array $set Dados a serem atualizados
      * @param int|array $key Chave do registro a ser alterado
      *
-     * @return boolean
+     * @return bool
      */
     public function update($set, $key)
     {
@@ -1062,7 +1051,7 @@ abstract class MapperAbstract
         }
 
         // Verifica se há o que atualizar
-        $diff = self::array_diff_assoc_recursive($set, $row);
+        $diff = self::arrayDiffAssocRecursive($set, $row);
 
         // Grava os dados alterados para referencia
         $this->lastUpdateSet = $set;
@@ -1091,7 +1080,7 @@ abstract class MapperAbstract
         return $return;
     }
 
-    private function array_diff_assoc_recursive($array1, $array2)
+    private function arrayDiffAssocRecursive($array1, $array2)
     {
         $difference = [];
         foreach ($array1 as $key => $value) {
@@ -1099,22 +1088,19 @@ abstract class MapperAbstract
                 if (!isset($array2[$key]) || !is_array($array2[$key])) {
                     $difference[$key] = $value;
                 } else {
-                    $new_diff = self::array_diff_assoc_recursive($value, $array2[$key]);
+                    $new_diff = self::arrayDiffAssocRecursive($value, $array2[$key]);
                     if (!empty($new_diff)) {
                         $difference[$key] = $new_diff;
                     }
                 }
-            } else {
-                if (!array_key_exists($key, $array2) || $array2[$key] !== $value) {
-                    $difference[$key] = $value;
-                }
+            } elseif (!array_key_exists($key, $array2) || $array2[$key] !== $value) {
+                $difference[$key] = $value;
             }
         }
         return $difference;
     }
 
     /**
-     *
      * @return array
      */
     public function getLastInsertSet()
@@ -1123,7 +1109,6 @@ abstract class MapperAbstract
     }
 
     /**
-     *
      * @return int
      */
     public function getLastInsertKey()
@@ -1132,7 +1117,6 @@ abstract class MapperAbstract
     }
 
     /**
-     *
      * @return array
      */
     public function getLastUpdateSet()
@@ -1141,7 +1125,6 @@ abstract class MapperAbstract
     }
 
     /**
-     *
      * @return array
      */
     public function getLastUpdateDiff()
@@ -1150,7 +1133,6 @@ abstract class MapperAbstract
     }
 
     /**
-     *
      * @return int
      */
     public function getLastUpdateKey()
@@ -1159,7 +1141,6 @@ abstract class MapperAbstract
     }
 
     /**
-     *
      * @return int
      */
     public function getLastDeleteKey()
@@ -1218,10 +1199,7 @@ abstract class MapperAbstract
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isUseHydrateResultSet()
+    public function isUseHydrateResultSet(): bool
     {
         return $this->useHydrateResultSet;
     }
@@ -1230,7 +1208,7 @@ abstract class MapperAbstract
      * @param bool $useHydrateResultSet
      * @return MapperAbstract
      */
-    public function setUseHydrateResultSet($useHydrateResultSet)
+    public function setUseHydrateResultSet(bool $useHydrateResultSet)
     {
         $this->useHydrateResultSet = $useHydrateResultSet;
         return $this;

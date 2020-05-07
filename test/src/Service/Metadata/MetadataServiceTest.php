@@ -74,13 +74,13 @@ class MetadataServiceTest extends BaseTestCase
             ->setUseCache(true);
 
         $this->cacheFetchAllKey = 'fetchAll' . md5(
-                var_export(false, true)
+            var_export(false, true)
                 . var_export(false, true)
                 . var_export(null, true)
                 . var_export(null, true)
                 . var_export(null, true)
                 . var_export(null, true)
-            );
+        );
 
         // Grava no cache um fetchAll ficticio
         $fetchAll = [];
@@ -226,7 +226,11 @@ class MetadataServiceTest extends BaseTestCase
         $this->assertNull($service->getMapperValue());
         $this->assertInstanceOf(
             MetadataService::class,
-            $service->setMetadataMappers('schemaTable', 'valuesTable', 'foreignKeyName')
+            $service->setMetadataMappers(
+                'schemaTable',
+                'valuesTable',
+                'foreignKeyName'
+            )
         );
         $this->assertInstanceOf(MetadataMapper::class, $service->getMapperSchema());
         $this->assertEquals('schemaTable', $service->getMapperSchema()->getTableName());
@@ -422,7 +426,8 @@ class MetadataServiceTest extends BaseTestCase
         $this->assertCount(1, $where);
         $this->assertInstanceOf(Expression::class, $where[0]);
         $this->assertEquals(
-            "EXISTS ({$this->getSqlSchemaString(123)} AND value_boolean IS NULL) OR NOT EXISTS ({$this->getSqlSchemaString(123)})",
+            "EXISTS ({$this->getSqlSchemaString(123)} AND value_boolean IS NULL)"
+            . " OR NOT EXISTS ({$this->getSqlSchemaString(123)})",
             $where[0]->getExpression()
         );
 
@@ -431,7 +436,8 @@ class MetadataServiceTest extends BaseTestCase
         $this->assertCount(1, $where);
         $this->assertInstanceOf(Expression::class, $where[0]);
         $this->assertEquals(
-            "EXISTS ({$this->getSqlSchemaString(123)} AND value_boolean IS NULL) OR NOT EXISTS ({$this->getSqlSchemaString(123)})",
+            "EXISTS ({$this->getSqlSchemaString(123)} AND value_boolean IS NULL)"
+            . " OR NOT EXISTS ({$this->getSqlSchemaString(123)})",
             $where[0]->getExpression()
         );
         /*  array(
@@ -504,7 +510,8 @@ class MetadataServiceTest extends BaseTestCase
         $this->assertCount(1, $where);
         $this->assertInstanceOf(Expression::class, $where[0]);
         $this->assertEquals(
-            "EXISTS ({$this->getSqlSchemaString(78)} AND value_integer IS NULL) OR NOT EXISTS ({$this->getSqlSchemaString(78)})",
+            "EXISTS ({$this->getSqlSchemaString(78)} AND value_integer IS NULL)"
+            . " OR NOT EXISTS ({$this->getSqlSchemaString(78)})",
             $where[0]->getExpression()
         );
 
@@ -513,7 +520,8 @@ class MetadataServiceTest extends BaseTestCase
         $this->assertCount(1, $where);
         $this->assertInstanceOf(Expression::class, $where[0]);
         $this->assertEquals(
-            "EXISTS ({$this->getSqlSchemaString(78)} AND value_integer IS NULL) OR NOT EXISTS ({$this->getSqlSchemaString(78)})",
+            "EXISTS ({$this->getSqlSchemaString(78)} AND value_integer IS NULL)"
+            . " OR NOT EXISTS ({$this->getSqlSchemaString(78)})",
             $where[0]->getExpression()
         );
 
@@ -595,7 +603,8 @@ class MetadataServiceTest extends BaseTestCase
         $this->assertCount(1, $where);
         $this->assertInstanceOf(Expression::class, $where[0]);
         $this->assertEquals(
-            "EXISTS ({$this->getSqlSchemaString(456)} AND value_text IS NULL) OR NOT EXISTS ({$this->getSqlSchemaString(456)})",
+            "EXISTS ({$this->getSqlSchemaString(456)} AND value_text IS NULL)"
+            . " OR NOT EXISTS ({$this->getSqlSchemaString(456)})",
             $where[0]->getExpression()
         );
 
@@ -604,7 +613,8 @@ class MetadataServiceTest extends BaseTestCase
         $this->assertCount(1, $where);
         $this->assertInstanceOf(Expression::class, $where[0]);
         $this->assertEquals(
-            "EXISTS ({$this->getSqlSchemaString(456)} AND value_text IS NULL) OR NOT EXISTS ({$this->getSqlSchemaString(456)})",
+            "EXISTS ({$this->getSqlSchemaString(456)} AND value_text IS NULL)"
+            . " OR NOT EXISTS ({$this->getSqlSchemaString(456)})",
             $where[0]->getExpression()
         );
 
@@ -614,7 +624,8 @@ class MetadataServiceTest extends BaseTestCase
         $this->assertCount(1, $where);
         $this->assertInstanceOf(Expression::class, $where[0]);
         $this->assertEquals(
-            "EXISTS ({$this->getSqlSchemaString(456)} AND value_text IS NULL) OR NOT EXISTS ({$this->getSqlSchemaString(456)})",
+            "EXISTS ({$this->getSqlSchemaString(456)} AND value_text IS NULL)"
+            . " OR NOT EXISTS ({$this->getSqlSchemaString(456)})",
             $where[0]->getExpression()
         );
 
@@ -623,7 +634,8 @@ class MetadataServiceTest extends BaseTestCase
         $this->assertCount(1, $where);
         $this->assertInstanceOf(Expression::class, $where[0]);
         $this->assertEquals(
-            "EXISTS ({$this->getSqlSchemaString(456)} AND value_text IS NULL) OR NOT EXISTS ({$this->getSqlSchemaString(456)})",
+            "EXISTS ({$this->getSqlSchemaString(456)} AND value_text IS NULL)"
+            . " OR NOT EXISTS ({$this->getSqlSchemaString(456)})",
             $where[0]->getExpression()
         );
     }
@@ -732,7 +744,8 @@ class MetadataServiceTest extends BaseTestCase
         $this->assertCount(1, $where);
         $this->assertInstanceOf(Expression::class, $where[0]);
         $this->assertEquals(
-            "EXISTS ({$this->getSqlSchemaString(321)} AND value_date IS NULL) OR NOT EXISTS ({$this->getSqlSchemaString(321)})",
+            "EXISTS ({$this->getSqlSchemaString(321)} AND value_date IS NULL)"
+            . " OR NOT EXISTS ({$this->getSqlSchemaString(321)})",
             $where[0]->getExpression()
         );
 
@@ -741,14 +754,17 @@ class MetadataServiceTest extends BaseTestCase
         $this->assertCount(1, $where);
         $this->assertInstanceOf(Expression::class, $where[0]);
         $this->assertEquals(
-            "EXISTS ({$this->getSqlSchemaString(321)} AND value_date IS NULL) OR NOT EXISTS ({$this->getSqlSchemaString(321)})",
+            "EXISTS ({$this->getSqlSchemaString(321)} AND value_date IS NULL)"
+            . " OR NOT EXISTS ({$this->getSqlSchemaString(321)})",
             $where[0]->getExpression()
         );
     }
 
     private function getSqlSchemaString($idInfo): string
     {
-        return "SELECT * FROM metadata_value WHERE metadata_value.fk_info=$idInfo AND tblreference.id_reference=metadata_value.fk_reference";
+        return "SELECT * FROM metadata_value 
+                WHERE metadata_value.fk_info=$idInfo 
+                   AND tblreference.id_reference=metadata_value.fk_reference";
     }
 
     public function testSetSchemaMapper(): void
@@ -758,7 +774,11 @@ class MetadataServiceTest extends BaseTestCase
         $this->expectExceptionMessage("schemaTable invalid");
         $this->expectException(Exception::class);
 
-        $service->setMetadataMappers(new MetadataMapper('tablename', 'keyname'), null, null);
+        $service->setMetadataMappers(
+            new MetadataMapper('tablename', 'keyname'),
+            null,
+            null
+        );
     }
 
     public function testSetValuesMapper(): void
@@ -778,7 +798,7 @@ class MetadataServiceTest extends BaseTestCase
     public function testSetForeignKey(): void
     {
         $service = new MetadataService();
-        
+
         $this->expectExceptionMessage("mapperForeignKey invalid");
         $this->expectException(Exception::class);
 

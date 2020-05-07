@@ -15,8 +15,10 @@ use Laminas\Paginator\Paginator as LaminasPaginator;
 
 class Paginator extends LaminasPaginator
 {
+    // @codingStandardsIgnoreStart
     protected function _getCacheInternalId()
     {
+        // @codingStandardsIgnoreEnd
         $adapter = $this->getAdapter();
 
         if ($adapter instanceof DbSelect) {

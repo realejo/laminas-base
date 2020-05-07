@@ -1,12 +1,13 @@
 <?php
+
 return [
     'mailsender' => [
-        'name'     => 'Sender name',
-        'email'    => 'sender@somewhere.com',
-        'host'     => '0.0.0.0',
+        'name' => 'Sender name',
+        'email' => 'sender@somewhere.com',
+        'host' => '0.0.0.0',
         'username' => 'sender',
         'password' => 'password',
-        'port'     => '25'
+        'port' => '25'
     ],
 
     'test-name' => 'To Name',

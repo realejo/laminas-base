@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Retorna o HTML de um <select> apra usar em formulários
  *
@@ -55,7 +56,9 @@ class FrmEnumCheckbox extends AbstractHelper
         if (!empty($names)) {
             foreach ($names as $v => $n) {
                 if ($showDescription) {
-                    $n .= ' <span class="tip" title="' . $enum->getValueDescription($v) . '"><i class="fa fa fa-question-circle"></i></span>';
+                    $n .= ' <span class="tip" title="'
+                        . $enum->getValueDescription($v)
+                        . '"><i class="fa fa fa-question-circle"></i></span>';
                 }
 
                 $checked = ($enum instanceof EnumFlagged) ? $enum->has($v) : $enum->is($v);
@@ -65,7 +68,6 @@ class FrmEnumCheckbox extends AbstractHelper
                     $checked = ($checked) ? '<i class="fa fa-check-square-o"></i>' : '<i class="fa fa-square-o"></i>';
                     $checkbox[] = "<p class=\"form-control-static\"> $checked $n </p>";
                 } else {
-
                     $checked = ($checked) ? 'checked="checked"' : '';
                     $checkbox[] = '<div class="checkbox"> <label>'
                         . "<input type=\"checkbox\" $checked

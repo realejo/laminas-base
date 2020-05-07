@@ -275,14 +275,16 @@ class MapperAbstractTest extends BaseTestCase
         $this->mapper->setUseJoin(true);
         $select = $this->mapper->getTableSelect();
         $this->assertEquals(
-            'SELECT `album`.*, `test_table`.`test_column` AS `test_column` FROM `album` LEFT JOIN `test_table` ON `test_condition`',
+            'SELECT `album`.*, `test_table`.`test_column` AS `test_column` '
+            . ' FROM `album` LEFT JOIN `test_table` ON `test_condition`',
             $select->getSqlString($this->adapter->getPlatform())
         );
 
         $this->mapperDeprecated->setUseJoin(true);
         $select = $this->mapperDeprecated->getTableSelect();
         $this->assertEquals(
-            'SELECT `album`.*, `test_table`.`test_column` AS `test_column` FROM `album` LEFT JOIN `test_table` ON `test_condition`',
+            'SELECT `album`.*, `test_table`.`test_column` AS `test_column`'
+            . ' FROM `album` LEFT JOIN `test_table` ON `test_condition`',
             $select->getSqlString($this->adapter->getPlatform())
         );
     }
@@ -1085,7 +1087,6 @@ class MapperAbstractTest extends BaseTestCase
 
     public function testDeleteInvalidArrayMultiKey(): void
     {
-
         $this->mapper->setTableKey(
             [
                 MapperAbstract::KEY_INTEGER => 'id_int',
@@ -1176,15 +1177,27 @@ class MapperAbstractTest extends BaseTestCase
         $this->mapper->delete(['id_char' => 'C']);
 
         // Verifica se ele foi removido
-        $this->assertNotEmpty($this->mapper->fetchRow(['id_char' => 'A', 'id_int' => 1]), 'row1 ainda existe v3');
-        $this->assertNotEmpty($this->mapper->fetchRow(['id_char' => 'B', 'id_int' => 2]), 'row2 ainda existe v3');
+        $this->assertNotEmpty(
+            $this->mapper->fetchRow(['id_char' => 'A', 'id_int' => 1]),
+            'row1 ainda existe v3'
+        );
+        $this->assertNotEmpty(
+            $this->mapper->fetchRow(['id_char' => 'B', 'id_int' => 2]),
+            'row2 ainda existe v3'
+        );
 
         // Remove o registro
         $this->mapper->delete(['id_char' => 'A']);
 
         // Verifica se ele foi removido
-        $this->assertNull($this->mapper->fetchRow(['id_char' => 'A', 'id_int' => 1]), 'row1 não existe v4');
-        $this->assertNotEmpty($this->mapper->fetchRow(['id_char' => 'B', 'id_int' => 2]), 'row2 ainda existe v4');
+        $this->assertNull(
+            $this->mapper->fetchRow(['id_char' => 'A', 'id_int' => 1]),
+            'row1 não existe v4'
+        );
+        $this->assertNotEmpty(
+            $this->mapper->fetchRow(['id_char' => 'B', 'id_int' => 2]),
+            'row2 ainda existe v4'
+        );
     }
 
     public function testUpdateArrayKey(): void

@@ -1,11 +1,4 @@
 <?php
-/**
- * Classe para envio de emails
- *
- * @link      http://github.com/realejo/libraray-zf2
- * @copyright Copyright (c) 2014 Realejo (http://realejo.com.br)
- * @license   http://unlicense.org
- */
 
 namespace Realejo\Utils;
 
@@ -70,12 +63,15 @@ class MailSender
         if (empty($config)) {
             if (defined('APPLICATION_PATH') && file_exists(APPLICATION_PATH . '/config/autoload/email_config.php')) {
                 $config = require APPLICATION_PATH . '/config/autoload/email_config.php';
-            } elseif (defined('APPLICATION_PATH') && file_exists(APPLICATION_PATH . '/../config/autoload/email_config.php')) {
+            } elseif (defined('APPLICATION_PATH')
+                && file_exists(APPLICATION_PATH . '/../config/autoload/email_config.php')) {
                 $config = require APPLICATION_PATH . '/../config/autoload/email_config.php';
             } elseif (file_exists('config/autoload/email_config.php')) {
                 $config = require 'config/autoload/email_config.php';
             } else {
-                throw new RuntimeException('Error loading email configuration in ' . get_class($this) . '::__construct()');
+                throw new RuntimeException(
+                    'Error loading email configuration in ' . get_class($this) . '::__construct()'
+                );
             }
         }
 
@@ -172,7 +168,9 @@ class MailSender
 
         // Verifica o email do destinatário
         if (empty($toEmail)) {
-            throw new \InvalidArgumentException('Não há email de destino definido em ' . get_class($this) . '::setMailMessage()');
+            throw new \InvalidArgumentException(
+                'Não há email de destino definido em ' . get_class($this) . '::setMailMessage()'
+            );
         }
 
         // Verifica o nome do destinatário
@@ -325,7 +323,6 @@ class MailSender
                     }
                     $part = $f;
                     $encodingAndDispositionAreSet = true;
-
                     // Verifica se foi passado o path completo do arquivo e se o arquivo existe
                 } elseif (is_string($f) && is_file($f)) {
                     //pega as infos do arquivo
@@ -340,16 +337,18 @@ class MailSender
                     #todo verificar pois não está enviando certo o anexo no email
                 } elseif (is_resource($f)) {
                     $part = new Mime\Part($f);
-
                     //verifica se veio como array (ex: quando se faz o upload)
                 } elseif (is_array($f)) {
                     $part = new Mime\Part();
                     $encodingAndDispositionAreSet = true;
                     // seta o tipo
-                    $f = ArrayUtils::merge([
-                        'encoding' => Mime\Mime::ENCODING_BASE64,
-                        'disposition' => Mime\Mime::DISPOSITION_ATTACHMENT,
-                    ], $f);
+                    $f = ArrayUtils::merge(
+                        [
+                            'encoding' => Mime\Mime::ENCODING_BASE64,
+                            'disposition' => Mime\Mime::DISPOSITION_ATTACHMENT,
+                        ],
+                        $f
+                    );
                     //Seta as propriedades
                     foreach ($f as $property => $value) {
                         $method = 'set' . $property;
@@ -391,10 +390,10 @@ class MailSender
 
     /**
      * Remove o encoding UTF-8 para não gerar caracteres inválidos no email
-     * @todo não detecta UTF-8 depois de utf8_decode
-     *
      * @param array|string $str Texto a ser corrigido
      * @return array|string
+     * @todo não detecta UTF-8 depois de utf8_decode
+     *
      */
     private function fixEncoding($str)
     {
@@ -413,10 +412,10 @@ class MailSender
 
     /**
      * Verifica se está no padrão UTF-8
+     * @param string $str Texto para identificar se é UTF8
+     * @return boolean
      * @todo descobrir pq não funciona mb_check_encoding
      *
-     * @param  string $str Texto para identificar se é UTF8
-     * @return boolean
      */
     private function checkUTF8($str)
     {
@@ -454,9 +453,9 @@ class MailSender
     /**
      * Verifica se é um email válido
      *
-     * @uses Zend_Validate
      * @param string $email Email a ser verificado
      * @return boolean
+     * @uses Zend_Validate
      */
     public static function isEmail($email)
     {

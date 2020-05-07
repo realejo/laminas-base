@@ -62,8 +62,10 @@ class MailSenderTest extends TestCase
         //define e verifica o reply-to
         $oMailer->getMessage()->setReplyTo($config['mailsender']['email'], $config['mailsender']['name']);
         $this->assertEquals($config['mailsender']['name'], $oMailer->getMessage()->getReplyTo()->current()->getName());
-        $this->assertEquals($config['mailsender']['email'],
-            $oMailer->getMessage()->getReplyTo()->current()->getEmail());
+        $this->assertEquals(
+            $config['mailsender']['email'],
+            $oMailer->getMessage()->getReplyTo()->current()->getEmail()
+        );
 
         //verifica o assunto
         $this->assertEquals('Olá', $oMailer->getMessage()->getSubject());
@@ -161,8 +163,10 @@ class MailSenderTest extends TestCase
         //define e verifica o reply-to
         $oMailer->getMessage()->setReplyTo($config['mailsender']['email'], $config['mailsender']['name']);
         $this->assertEquals($config['mailsender']['name'], $oMailer->getMessage()->getReplyTo()->current()->getName());
-        $this->assertEquals($config['mailsender']['email'],
-            $oMailer->getMessage()->getReplyTo()->current()->getEmail());
+        $this->assertEquals(
+            $config['mailsender']['email'],
+            $oMailer->getMessage()->getReplyTo()->current()->getEmail()
+        );
 
         //verifica o assunto
         $this->assertEquals('Olá', $oMailer->getMessage()->getSubject());
@@ -210,8 +214,10 @@ class MailSenderTest extends TestCase
         //define e verifica o reply-to
         $oMailer->getMessage()->setReplyTo('another-email2@somewhere.com', 'Another sender 2');
         $this->assertEquals('Another sender 2', $oMailer->getMessage()->getReplyTo()->current()->getName());
-        $this->assertEquals('another-email2@somewhere.com',
-            $oMailer->getMessage()->getReplyTo()->current()->getEmail());
+        $this->assertEquals(
+            'another-email2@somewhere.com',
+            $oMailer->getMessage()->getReplyTo()->current()->getEmail()
+        );
 
         //verifica o assunto
         $this->assertEquals('Olá', $oMailer->getMessage()->getSubject());

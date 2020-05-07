@@ -1,10 +1,7 @@
 <?php
+
 /**
  * Aplicação de MPTT
- *
- * @link      http://github.com/realejo/libraray-zf2
- * @copyright Copyright (c) 2014 Realejo (http://realejo.com.br)
- * @license   http://unlicense.org
  *
  * @see http://www.sitepoint.com/print/hierarchical-data-database
  */

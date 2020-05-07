@@ -7,26 +7,22 @@ use Realejo\Enum\Enum;
 
 class ArrayObject implements \ArrayAccess
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $storage = [];
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $mappedKeys = null;
 
     /**
      * Define se pode usar propriedades/chaves que não estejam previamente definidas
      *
-     * @var boolean
+     * @var bool
      */
     protected $lockedKeys = true;
 
     protected $intKeys = [];
 
-    protected $booleanKeys = [];
+    protected $boolKeys = [];
 
     protected $dateKeys = [];
 
@@ -34,9 +30,7 @@ class ArrayObject implements \ArrayAccess
     protected $jsonObjectKeys = [];
     protected $jsonEncodeOptions = 0;
 
-    /**
-     * @var Enum[]
-     */
+    /** @var Enum[] */
     protected $enumKeys = [];
 
     public function __construct($data = null)
@@ -62,11 +56,7 @@ class ArrayObject implements \ArrayAccess
         if ($reverse === true) {
             $map = array_flip($map);
         }
-        if (isset($map[$key])) {
-            return $map[$key];
-        }
-
-        return $key;
+        return $map[$key] ?? $key;
     }
 
     public function populate(array $data)
@@ -75,26 +65,21 @@ class ArrayObject implements \ArrayAccess
         $useJsonArrayKeys = (is_array($this->jsonArrayKeys) && !empty($this->jsonArrayKeys));
         $useJsonObjectKeys = (is_array($this->jsonObjectKeys) && !empty($this->jsonObjectKeys));
         $useIntKeys = (is_array($this->intKeys) && !empty($this->intKeys));
-        $useBooleanKeys = (is_array($this->booleanKeys) && !empty($this->booleanKeys));
+        $useboolKeys = (is_array($this->boolKeys) && !empty($this->boolKeys));
         $useEnumKeys = (is_array($this->enumKeys) && !empty($this->enumKeys));
 
         if (!empty($data)) {
             foreach ($data as $key => $value) {
                 if ($useDateKeys && in_array($key, $this->dateKeys) && !empty($value)) {
                     $value = new DateTime($value);
-
                 } elseif ($useJsonArrayKeys && in_array($key, $this->jsonArrayKeys) && !empty($value)) {
                     $value = json_decode($value, JSON_OBJECT_AS_ARRAY);
-
                 } elseif ($useJsonObjectKeys && in_array($key, $this->jsonObjectKeys) && !empty($value)) {
                     $value = json_decode($value);
-
                 } elseif ($useIntKeys && in_array($key, $this->intKeys) && !empty($value)) {
                     $value = (int)$value;
-
-                } elseif ($useBooleanKeys && in_array($key, $this->booleanKeys) && !empty($value)) {
-                    $value = (boolean)$value;
-
+                } elseif ($useboolKeys && in_array($key, $this->boolKeys) && !empty($value)) {
+                    $value = (bool)$value;
                 } elseif ($useEnumKeys && array_key_exists($key, $this->enumKeys)) {
                     $value = new $this->enumKeys[$key]($value);
                 }
@@ -163,7 +148,7 @@ class ArrayObject implements \ArrayAccess
                 $value = $value->getValue();
             }
 
-            // desfaz boolean e int
+            // desfaz bool e int
             if (is_bool($value) || is_int($value)) {
                 $value = (int)$value;
             }
@@ -265,7 +250,7 @@ class ArrayObject implements \ArrayAccess
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getLockedKeys()
     {
@@ -273,7 +258,7 @@ class ArrayObject implements \ArrayAccess
     }
 
     /**
-     * @param boolean $lockedKeys
+     * @param bool $lockedKeys
      * @return ArrayObject
      */
     public function setLockedKeys($lockedKeys)
@@ -299,6 +284,4 @@ class ArrayObject implements \ArrayAccess
         $this->jsonEncodeOptions = $jsonEncodeOptions;
         return $this;
     }
-
-
 }

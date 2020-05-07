@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Classe mapper para ser usada nos testes
  */

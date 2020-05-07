@@ -1,9 +1,10 @@
 <?php
+
 /**
  * Estende as funcionalidades do ArrayObject com as informações disponíveis no metadata
  *
  * Ele deveria extender Realejo\Stdlib\ArrayObject mas como rescreve a maioria dos
- * metodos eu deixei numa classe a parte
+ * méetodos eu deixei numa classe a parte
  */
 
 namespace Realejo\Service\Metadata;

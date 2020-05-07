@@ -11,3 +11,4 @@ nbproject
 tmp/
 /composer.phar
 /vendor/
+/.php_cs.cache

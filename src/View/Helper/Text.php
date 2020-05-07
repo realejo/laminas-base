@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @see https://github.com/cakephp/cakephp/blob/ec23730aff39a2ca1230c2f34cbff92a96a44a75/src/Utility/Text.php
  * @link http://book.cakephp.org/3.0/en/views/helpers/text.html#truncating-text
@@ -45,17 +46,19 @@ class Text extends AbstractHelper
         $prefix = '';
         $suffix = $options['ellipsis'];
         if ($options['html']) {
-            $ellipsisLength = self::_strlen(strip_tags($options['ellipsis']), $options);
+            $ellipsisLength = self::strlen(strip_tags($options['ellipsis']), $options);
             $truncateLength = 0;
             $totalLength = 0;
             $openTags = [];
             $truncate = '';
             preg_match_all('/(<\/?([\w+]+)[^>]*>)?([^<>]*)/', $text, $tags, PREG_SET_ORDER);
             foreach ($tags as $tag) {
-                $contentLength = self::_strlen($tag[3], $options);
+                $contentLength = self::strlen($tag[3], $options);
                 if ($truncate === '') {
-                    if (!preg_match('/img|br|input|hr|area|base|basefont|col|frame|isindex|link|meta|param/i',
-                        $tag[2])) {
+                    if (!preg_match(
+                        '/img|br|input|hr|area|base|basefont|col|frame|isindex|link|meta|param/i',
+                        $tag[2]
+                    )) {
                         if (preg_match('/<[\w]+[^>]*>/', $tag[0])) {
                             array_unshift($openTags, $tag[2]);
                         } elseif (preg_match('/<\/([\w]+)[^>]*>/', $tag[0], $closeTag)) {
@@ -87,19 +90,19 @@ class Text extends AbstractHelper
                 $suffix .= '</' . $tag . '>';
             }
         } else {
-            if (self::_strlen($text, $options) <= $length) {
+            if (self::strlen($text, $options) <= $length) {
                 return $text;
             }
-            $ellipsisLength = self::_strlen($options['ellipsis'], $options);
+            $ellipsisLength = self::strlen($options['ellipsis'], $options);
         }
-        $result = self::_substr($text, 0, $length - $ellipsisLength, $options);
+        $result = self::substr($text, 0, $length - $ellipsisLength, $options);
         if (!$options['exact']) {
-            if (self::_substr($text, $length - $ellipsisLength, 1, $options) !== ' ') {
-                $result = self::_removeLastWord($result);
+            if (self::substr($text, $length - $ellipsisLength, 1, $options) !== ' ') {
+                $result = self::removeLastWord($result);
             }
             // If result is empty, then we don't need to count ellipsis in the cut.
             if (!strlen($result)) {
-                $result = self::_substr($text, 0, $length, $options);
+                $result = self::substr($text, 0, $length, $options);
             }
         }
         return $prefix . $result . $suffix;
@@ -117,7 +120,7 @@ class Text extends AbstractHelper
      * @param array $options An array of options.
      * @return int
      */
-    protected static function _strlen($text, array $options)
+    private static function strlen($text, array $options)
     {
         if (empty($options['trimWidth'])) {
             $strlen = 'mb_strlen';
@@ -130,7 +133,7 @@ class Text extends AbstractHelper
         $pattern = '/&[0-9a-z]{2,8};|&#[0-9]{1,7};|&#x[0-9a-f]{1,6};/i';
         $replace = preg_replace_callback(
             $pattern,
-            function ($match) use ($strlen) {
+            static function ($match) use ($strlen) {
                 $utf8 = html_entity_decode($match[0], ENT_HTML5 | ENT_QUOTES, 'UTF-8');
                 return str_repeat(' ', $strlen($utf8, 'UTF-8'));
             },
@@ -153,14 +156,14 @@ class Text extends AbstractHelper
      * @param array $options An array of options.
      * @return string
      */
-    protected static function _substr($text, $start, $length, array $options)
+    private static function substr($text, $start, $length, array $options)
     {
         if (empty($options['trimWidth'])) {
             $substr = 'mb_substr';
         } else {
             $substr = 'mb_strimwidth';
         }
-        $maxPosition = self::_strlen($text, ['trimWidth' => false] + $options);
+        $maxPosition = self::strlen($text, ['trimWidth' => false] + $options);
         if ($start < 0) {
             $start += $maxPosition;
             if ($start < 0) {
@@ -171,12 +174,12 @@ class Text extends AbstractHelper
             return '';
         }
         if ($length === null) {
-            $length = self::_strlen($text, $options);
+            $length = self::strlen($text, $options);
         }
         if ($length < 0) {
-            $text = self::_substr($text, $start, null, $options);
+            $text = self::substr($text, $start, null, $options);
             $start = 0;
-            $length += self::_strlen($text, $options);
+            $length += self::strlen($text, $options);
         }
         if ($length <= 0) {
             return '';
@@ -192,7 +195,7 @@ class Text extends AbstractHelper
         foreach ($parts as $part) {
             $offset = 0;
             if ($totalOffset < $start) {
-                $len = self::_strlen($part, ['trimWidth' => false] + $options);
+                $len = self::strlen($part, ['trimWidth' => false] + $options);
                 if ($totalOffset + $len <= $start) {
                     $totalOffset += $len;
                     continue;
@@ -200,16 +203,15 @@ class Text extends AbstractHelper
                 $offset = $start - $totalOffset;
                 $totalOffset = $start;
             }
-            $len = self::_strlen($part, $options);
+            $len = self::strlen($part, $options);
             if ($offset !== 0 || $totalLength + $len > $length) {
                 if (strpos($part, '&') === 0 && preg_match($pattern, $part)
-                    && $part !== html_entity_decode($part, ENT_HTML5 | ENT_QUOTES, 'UTF-8')
-                ) {
+                    && $part !== html_entity_decode($part, ENT_HTML5 | ENT_QUOTES, 'UTF-8')) {
                     // Entities cannot be passed substr.
                     continue;
                 }
                 $part = $substr($part, $offset, $length - $totalLength);
-                $len = self::_strlen($part, $options);
+                $len = self::strlen($part, $options);
             }
             $result .= $part;
             $totalLength += $len;
@@ -226,7 +228,7 @@ class Text extends AbstractHelper
      * @param string $text The input text
      * @return string
      */
-    protected static function _removeLastWord($text)
+    private static function removeLastWord(string $text): string
     {
         $spacepos = mb_strrpos($text, ' ');
         if ($spacepos !== false) {

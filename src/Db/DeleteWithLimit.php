@@ -1,4 +1,5 @@
 <?php
+
 namespace Realejo\Db;
 
 use Laminas\Db\Adapter\Driver\DriverInterface;
@@ -12,7 +13,7 @@ use Laminas\Db\Sql\Predicate;
  */
 class DeleteWithLimit extends Delete
 {
-    const SPECIFICATION_LIMIT = 'limit';
+    public const SPECIFICATION_LIMIT = 'limit';
 
     protected $specifications = [
         self::SPECIFICATION_DELETE => 'DELETE FROM %1$s',
@@ -38,11 +39,13 @@ class DeleteWithLimit extends Delete
     public function limit($limit)
     {
         if (!is_numeric($limit)) {
-            throw new \InvalidArgumentException(sprintf(
-                '%s expects parameter to be numeric, "%s" given',
-                __METHOD__,
-                (is_object($limit) ? get_class($limit) : gettype($limit))
-            ));
+            throw new \InvalidArgumentException(
+                sprintf(
+                    '%s expects parameter to be numeric, "%s" given',
+                    __METHOD__,
+                    (is_object($limit) ? get_class($limit) : gettype($limit))
+                )
+            );
         }
 
         $this->limit = $limit;

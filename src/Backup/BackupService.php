@@ -3,6 +3,7 @@
 namespace Realejo\Backup;
 
 use Laminas\Db\Adapter\Adapter;
+use RuntimeException;
 
 /**
  * Controle de backup
@@ -12,14 +13,10 @@ use Laminas\Db\Adapter\Adapter;
 class BackupService
 {
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private $config;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $dumpPath;
 
     /**
@@ -54,19 +51,21 @@ class BackupService
         $config = $this->getConfig();
 
         if (empty($config)) {
-            throw new \RuntimeException('Config not defined');
+            throw new RuntimeException('Config not defined');
         }
 
         $dumpPath = $this->getPath();
         if (empty($dumpPath)) {
-            throw new \RuntimeException('Dump path not defined');
+            throw new RuntimeException('Dump path not defined');
         }
 
         // Creates a temp file to save the password.
         // Using it directly in command it's a security hazard and mysqldump will complain
         $tempConfig = tmpfile();
-        fwrite($tempConfig,
-            "[client]\nhost={$config['hostname']}\nuser={$config['username']}\npassword={$config['password']}");
+        fwrite(
+            $tempConfig,
+            "[client]\nhost={$config['hostname']}\nuser={$config['username']}\npassword={$config['password']}"
+        );
         $tempConfigPath = stream_get_meta_data($tempConfig)['uri'];
 
         // Defines the zip file location and name
@@ -85,13 +84,12 @@ class BackupService
             $command = "zip -mjq  $backupFile $tempFilename";
             system($command);
         } else {
-
             // creates a temp path to save the dump files
             $dumpTempFolder = $dumpPath . '/' . date('Ymd-Hi');
             if (!file_exists($dumpTempFolder)) {
                 $oldumask = umask(0);
                 if (!@mkdir($dumpTempFolder, 0777, true) && !is_dir($dumpTempFolder)) {
-                    throw new \RuntimeException("Não foi possível criar a pasta $dumpTempFolder");
+                    throw new RuntimeException("Não foi possível criar a pasta $dumpTempFolder");
                 }
                 umask($oldumask);
             }
@@ -243,7 +241,8 @@ RESTORESCRIPT;
         $script = str_replace(
             ['{{hostname}}', '{{database}}', '{{user}}'],
             [$config['hostname'], $config['database'], $config['username']],
-            $script);
+            $script
+        );
 
         // Returns the script
         return $script;
@@ -286,7 +285,8 @@ RESTORESCRIPT;
         // Recover tables from database
         $adapter = new Adapter($config);
         $tables = $adapter->query(
-            "SELECT * FROM `INFORMATION_SCHEMA`.`TABLES` where `TABLE_SCHEMA` ='{$config['database']}' and `TABLE_TYPE` = 'BASE TABLE'",
+            "SELECT * FROM `INFORMATION_SCHEMA`.`TABLES` 
+                    WHERE `TABLE_SCHEMA` ='{$config['database']}' AND `TABLE_TYPE` = 'BASE TABLE'",
             Adapter::QUERY_MODE_EXECUTE
         )->toArray();
 
