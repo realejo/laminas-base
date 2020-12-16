@@ -7,13 +7,14 @@ php:
   - 7.2
   - 7.3
   - 7.4
+  - 8.0
 
 services:
   - mysql
 
 # optionally specify a list of environments, for example to test different RDBMS
 env:
-  - TRAVIS=true EXECUTE_CS_CHECK=true EXECUTE_TEST_COVERALLS=true
+  - TRAVIS=true
 
 before_install:
   - composer self-update
@@ -23,9 +24,5 @@ before_script:
   - mysql -e 'create database IF NOT EXISTS test';
 
 script:
-- if [[ "$EXECUTE_TEST_COVERALLS" == true ]]; then ./vendor/bin/phpunit --coverage-clover clover.xml ; fi
-- if [[ "$EXECUTE_TEST_COVERALLS" != true ]]; then composer test ; fi
-- if [[ "$EXECUTE_CS_CHECK" == true ]]; then composer cs-check-travis  ; fi
-
-after_script:
-  - if [[ "$EXECUTE_TEST_COVERALLS" == true ]]; then ./vendor/bin/coveralls --root_dir src --config ../.coveralls.yml ; fi
+- composer test
+- composer cs-check-travis
