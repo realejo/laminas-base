@@ -14,15 +14,21 @@ services:
 
 # optionally specify a list of environments, for example to test different RDBMS
 env:
-  - TRAVIS=true
+  - TRAVIS=true EXECUTE_CS_CHECK=true EXECUTE_TEST_COVERALLS=true
 
 before_install:
   - composer self-update
 
 before_script:
+  - echo "xdebug.mode=coverage" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - composer install --no-interaction --ignore-platform-reqs
   - mysql -e 'create database IF NOT EXISTS test';
 
 script:
-- composer test
-- composer cs-check-travis
+- if [[ "$EXECUTE_TEST_COVERALLS" == true ]]; then ./vendor/bin/phpunit --coverage-clover clover.xml ; fi
+- phpenv config-rm xdebug.ini || return 0
+- if [[ "$EXECUTE_TEST_COVERALLS" != true ]]; then composer test ; fi
+- if [[ "$EXECUTE_CS_CHECK" == true ]]; then composer cs-check-travis  ; fi
+
+after_script:
+  - if [[ "$EXECUTE_TEST_COVERALLS" == true ]]; then ./vendor/bin/coveralls --root_dir src --config ../.coveralls.yml ; fi
