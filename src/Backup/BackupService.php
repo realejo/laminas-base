@@ -3,7 +3,6 @@
 namespace Realejo\Backup;
 
 use Laminas\Db\Adapter\Adapter;
-use RuntimeException;
 
 /**
  * Controle de backup
@@ -51,12 +50,12 @@ class BackupService
         $config = $this->getConfig();
 
         if (empty($config)) {
-            throw new RuntimeException('Config not defined');
+            throw new BackupException('Config not defined');
         }
 
         $dumpPath = $this->getPath();
         if (empty($dumpPath)) {
-            throw new RuntimeException('Dump path not defined');
+            throw new BackupException('Dump path not defined');
         }
 
         // Creates a temp file to save the password.
@@ -76,7 +75,10 @@ class BackupService
 
             // Creates the mysqldump command
             $command = "mysqldump --defaults-extra-file=$tempConfigPath"
-                . ' --opt --quote-names --default-character-set=utf8 --dump-date'
+                . ' --opt --quote-names'
+                . ' --set-gtid-purged=OFF'
+                . ' --default-character-set=utf8'
+                . ' --dump-date'
                 . " {$config['database']} > $tempFilename;";
             system($command);
 
@@ -89,17 +91,20 @@ class BackupService
             if (!file_exists($dumpTempFolder)) {
                 $oldumask = umask(0);
                 if (!@mkdir($dumpTempFolder, 0777, true) && !is_dir($dumpTempFolder)) {
-                    throw new RuntimeException("Não foi possível criar a pasta $dumpTempFolder");
+                    throw new BackupException("Não foi possível criar a pasta $dumpTempFolder");
                 }
                 umask($oldumask);
             }
 
-            foreach ($tables as $k => $tableName) {
+            foreach ($tables as $tableName) {
                 $tempFilename = $dumpTempFolder . '/' . $tableName . '.sql';
 
                 // Creates the mysqldump command
                 $command = "mysqldump --defaults-extra-file=$tempConfigPath"
-                    . ' --opt --quote-names --default-character-set=utf8 --dump-date'
+                    . ' --opt --quote-names'
+                    . ' --set-gtid-purged=OFF'
+                    . ' --default-character-set=utf8'
+                    . ' --dump-date'
                     . " {$config['database']} $tableName > $tempFilename;";
                 system($command);
             }
