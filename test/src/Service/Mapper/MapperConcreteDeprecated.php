@@ -7,10 +7,10 @@ use Laminas\Db\Sql\Select;
 
 class MapperConcreteDeprecated extends MapperAbstract
 {
-    protected $tableName = 'album';
+    protected string $tableName = 'album';
     protected $tableKey = 'id';
 
-    protected $tableJoinLeft = [
+    protected array $tableJoinLeft = [
         'test' => [
             'table' => 'test_table',
             'condition' => 'test_condition',

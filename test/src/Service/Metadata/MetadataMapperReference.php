@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Classe mapper para ser usada nos testes
  */
@@ -10,6 +12,6 @@ use Realejo\Service\MapperAbstract;
 
 class MetadataMapperReference extends MapperAbstract
 {
-    protected $tableName = 'tblreference';
+    protected string $tableName = 'tblreference';
     protected $tableKey = 'id_reference';
 }

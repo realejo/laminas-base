@@ -1,46 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Realejo\Service;
 
-use Psr\Container\ContainerInterface;
-use Realejo\Cache\CacheService;
-use Realejo\Paginator\Paginator;
-use Realejo\Stdlib\ArrayObject;
+use InvalidArgumentException;
 use Laminas\Cache\Storage as CacheStorage;
+use Laminas\Cache\Storage\Adapter\Filesystem;
 use Laminas\Db\ResultSet\HydratingResultSet;
 use Laminas\Db\Sql\Select;
 use Laminas\Paginator\Adapter\DbSelect;
 use Laminas\ServiceManager\ServiceManager;
+use Psr\Container\ContainerInterface;
+use Realejo\Cache\CacheService;
+use Realejo\Paginator\Paginator;
+use Realejo\Stdlib\ArrayObject;
+use RuntimeException;
 
 abstract class ServiceAbstract
 {
 
-    /**
-     * @var MapperAbstract
-     */
-    protected $mapper;
+    protected MapperAbstract $mapper;
+
+    protected string $mapperClass;
+
+    protected bool $useCache = false;
 
     /**
-     * @var string
-     */
-    protected $mapperClass = null;
-
-    /**
-     * @var boolean
-     */
-    protected $useCache = false;
-
-    /**
-     * @var \Laminas\Cache\Storage\Adapter\Filesystem
+     * @var Filesystem
      */
     protected $cache;
 
     /**
      * Campo a ser usado no <option>
-     *
-     * @var string
      */
-    protected $htmlSelectOption = '{nome}';
+    protected string $htmlSelectOption = '{nome}';
 
     /**
      * Campos a serem adicionados no <option> como data
@@ -49,17 +43,14 @@ abstract class ServiceAbstract
      */
     protected $htmlSelectOptionData;
 
-    /**
-     * @var ContainerInterface
-     */
-    protected $serviceLocator;
+    protected ContainerInterface $serviceLocator;
 
     /**
      * Retorna o HTML de um <select> para usar em formulários
      *
      * @param string $nome Name/ID a ser usado no <select>
-     * @param string $selecionado Valor pré selecionado
-     * @param string $opts Opções adicionais
+     * @param string|int|null $selecionado Valor pré selecionado
+     * @param array $opts Opções adicionais
      *
      * Os valores de option serão os valores dos campos definidos em $htmlSelectOption
      * Aos options serão adicionados data-* de acordo com os campos definidos em $htmlSelectOptionData
@@ -76,16 +67,16 @@ abstract class ServiceAbstract
      *
      * @return string
      */
-    public function getHtmlSelect($nome, $selecionado = null, $opts = null)
+    public function getHtmlSelect(string $nome, $selecionado = null, array $opts = []): string
     {
         // Recupera os registros
-        $where = (isset($opts['where'])) ? $opts['where'] : null;
+        $where = $opts['where'] ?? [];
         $findAll = $this->findAll($where);
 
         // Verifica o select_option_data
         if (isset($this->htmlSelectOptionData) && is_string($this->htmlSelectOptionData)) {
             $this->htmlSelectOptionData = [
-                $this->htmlSelectOptionData
+                $this->htmlSelectOptionData,
             ];
         }
 
@@ -94,12 +85,12 @@ abstract class ServiceAbstract
         $neverShowEmpty = (isset($opts['show-empty']) && $opts['show-empty'] === false);
 
         // Define ao placeholder a ser usado
-        $placeholder = $selectPlaceholder = (isset($opts['placeholder'])) ? $opts['placeholder'] : '';
+        $placeholder = $selectPlaceholder = $opts['placeholder'] ?? '';
         if (!empty($placeholder)) {
             $selectPlaceholder = "placeholder=\"$selectPlaceholder\"";
         }
 
-        $grouped = (isset($opts['grouped'])) ? $opts['grouped'] : false;
+        $grouped = $opts['grouped'] ?? false;
 
         // Define a chave a ser usada
         if (isset($opts['key']) && !empty($opts['key']) && is_string($opts['key'])) {
@@ -189,12 +180,12 @@ abstract class ServiceAbstract
      *
      * @param string|array $where OPTIONAL An SQL WHERE clause
      * @param string|array $order OPTIONAL An SQL ORDER clause.
-     * @param int $count OPTIONAL An SQL LIMIT count.
-     * @param int $offset OPTIONAL An SQL LIMIT offset.
+     * @param int|null $count OPTIONAL An SQL LIMIT count.
+     * @param int|null $offset OPTIONAL An SQL LIMIT offset.
      *
      * @return ArrayObject[] | null
      */
-    public function findAll($where = null, $order = null, $count = null, $offset = null)
+    public function findAll(array $where = [], $order = null, int $count = null, int $offset = null)
     {
         // Cria a assinatura da consulta
         $cacheKey = 'findAll'
@@ -229,7 +220,7 @@ abstract class ServiceAbstract
     {
         if (!isset($this->mapper)) {
             if (!isset($this->mapperClass)) {
-                throw new \RuntimeException('Mapper class not defined at ' . get_class($this));
+                throw new RuntimeException('Mapper class not defined at ' . get_class($this));
             }
             $this->mapper = new $this->mapperClass();
             $this->mapper->setCache($this->getCache());
@@ -243,18 +234,17 @@ abstract class ServiceAbstract
 
     /**
      * @param MapperAbstract|string $mapper
-     * @return $this
      */
-    public function setMapper($mapper)
+    public function setMapper($mapper): self
     {
         if (is_string($mapper)) {
             $this->mapperClass = $mapper;
-            $this->mapper = null;
+            unset($this->mapper);
         } elseif ($mapper instanceof MapperAbstract) {
             $this->mapper = $mapper;
             $this->mapperClass = get_class($mapper);
         } else {
-            throw new \InvalidArgumentException('Mapper invalido em ' . get_class($this) . '::setMapper()');
+            throw new InvalidArgumentException('Mapper invalido em ' . get_class($this) . '::setMapper()');
         }
 
         return $this;
@@ -263,7 +253,7 @@ abstract class ServiceAbstract
     /**
      * Configura o cache
      *
-     * @return CacheStorage\Adapter\Filesystem | CacheStorage\StorageInterface
+     * @return Filesystem | CacheStorage\StorageInterface
      */
     public function getCache()
     {
@@ -283,77 +273,53 @@ abstract class ServiceAbstract
     public function setCache(CacheStorage\StorageInterface $cache)
     {
         $this->cache = $cache;
+
         return $this;
     }
 
-    public function hasServiceLocator()
+    public function hasServiceLocator(): bool
     {
-        return null !== $this->serviceLocator;
+        return isset($this->serviceLocator);
     }
 
-    /**
-     * @return ContainerInterface
-     */
-    public function getServiceLocator()
+    public function getServiceLocator(): ContainerInterface
     {
         return $this->serviceLocator;
     }
 
-    /**
-     * @param ContainerInterface $serviceLocator
-     * @return ServiceAbstract
-     */
-    public function setServiceLocator(ContainerInterface $serviceLocator)
+    public function setServiceLocator(ContainerInterface $serviceLocator): self
     {
         $this->serviceLocator = $serviceLocator;
 
         return $this;
     }
 
-    /**
-     * Retorna se deve usar o cache
-     * @return boolean
-     */
-    public function getUseCache()
+    public function getUseCache(): bool
     {
         return $this->useCache;
     }
 
-    /**
-     * Define se deve usar o cache
-     * @param boolean $useCache
-     * @return ServiceAbstract
-     */
-    public function setUseCache($useCache)
+    public function setUseCache(bool $useCache): self
     {
         $this->useCache = $useCache;
         $this->getMapper()->setUseCache($useCache);
+
         return $this;
     }
 
-    /**
-     *
-     * @return string
-     */
-    public function getHtmlSelectOption()
+    public function getHtmlSelectOption(): string
     {
         return $this->htmlSelectOption;
     }
 
-    /**
-     *
-     * @param string $htmlSelectOption
-     *
-     * @return self
-     */
-    public function setHtmlSelectOption($htmlSelectOption)
+    public function setHtmlSelectOption(string $htmlSelectOption): self
     {
         $this->htmlSelectOption = $htmlSelectOption;
+
         return $this;
     }
 
     /**
-     *
      * @return array|string
      */
     public function getHtmlSelectOptionData()
@@ -367,35 +333,34 @@ abstract class ServiceAbstract
      *
      * @return self
      */
-    public function setHtmlSelectOptionData($htmlSelectOptionData)
+    public function setHtmlSelectOptionData($htmlSelectOptionData): self
     {
         $this->htmlSelectOptionData = $htmlSelectOptionData;
+
         return $this;
     }
 
     /**
      * Retorna um registro
      *
-     * @param string|array $where OPTIONAL An SQL WHERE clause
+     * @param array|string $where OPTIONAL An SQL WHERE clause
      * @param string|array $order OPTIONAL An SQL ORDER clause.
      * @return null|ArrayObject
      */
     public function findOne($where = null, $order = null)
     {
-        $where = $this->getWhere($where);
-
         // Define se é a chave da tabela, assim como é verificado no Mapper::fetchRow()
         if (is_numeric($where) || is_string($where)) {
             // Verifica se há chave definida
             if (empty($this->getMapper()->getTableKey())) {
-                throw new \InvalidArgumentException('Chave não definida em ' . get_class($this));
+                throw new InvalidArgumentException('Chave não definida em ' . get_class($this));
             }
 
             // Verifica se é uma chave múltipla ou com cast
             if (is_array($this->getMapper()->getTableKey())) {
                 // Verifica se é uma chave simples com cast
                 if (count($this->getMapper()->getTableKey()) !== 1) {
-                    throw new \InvalidArgumentException(
+                    throw new InvalidArgumentException(
                         'Não é possível acessar chaves múltiplas informando apenas uma'
                     );
                 }
@@ -403,6 +368,8 @@ abstract class ServiceAbstract
             } else {
                 $where = [$this->getMapper()->getTableKey() => $where];
             }
+        } elseif (!is_array($where)) {
+            throw new InvalidArgumentException('Invalid $where param');
         }
 
         // Cria a assinatura da consulta
@@ -431,11 +398,8 @@ abstract class ServiceAbstract
 
     /**
      * Consultas especiais do service
-     *
-     * @param array $where
-     * @return array
      */
-    public function getWhere($where)
+    public function getWhere(array $where): array
     {
         return $where;
     }
@@ -449,12 +413,12 @@ abstract class ServiceAbstract
      *
      * @param string|array $where OPTIONAL An SQL WHERE clause
      * @param string|array $order OPTIONAL An SQL ORDER clause.
-     * @param int $count OPTIONAL An SQL LIMIT count.
-     * @param int $offset OPTIONAL An SQL LIMIT offset.
+     * @param int|null $count OPTIONAL An SQL LIMIT count.
+     * @param int|null $offset OPTIONAL An SQL LIMIT offset.
      *
      * @return ArrayObject[] | null
      */
-    public function findAssoc($where = null, $order = null, $count = null, $offset = null)
+    public function findAssoc(array $where = [], $order = null, int $count = null, int $offset = null)
     {
         // Cria a assinatura da consulta
         $cacheKey = 'findAssoc'
@@ -492,12 +456,12 @@ abstract class ServiceAbstract
      *
      * @param string|array $where OPTIONAL An SQL WHERE clause
      * @param string|array $order OPTIONAL An SQL ORDER clause.
-     * @param int $count OPTIONAL An SQL LIMIT count.
-     * @param int $offset OPTIONAL An SQL LIMIT offset.
+     * @param int|null $count OPTIONAL An SQL LIMIT count.
+     * @param int|null $offset OPTIONAL An SQL LIMIT offset.
      *
      * @return Paginator
      */
-    public function findPaginated($where = null, $order = null, $count = null, $offset = null)
+    public function findPaginated(array $where = [], $order = null, int $count = null, int $offset = null)
     {
         // Define a consulta
         if ($where instanceof Select) {
@@ -534,10 +498,7 @@ abstract class ServiceAbstract
         return $findPaginated;
     }
 
-    /**
-     * @return PaginatorOptions
-     */
-    public function getPaginatorOptions()
+    public function getPaginatorOptions(): PaginatorOptions
     {
         if (!isset($this->paginatorOptions)) {
             $this->paginatorOptions = new PaginatorOptions();
@@ -572,7 +533,7 @@ abstract class ServiceAbstract
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getUseJoin()
     {
@@ -580,12 +541,13 @@ abstract class ServiceAbstract
     }
 
     /**
-     * @param boolean $useJoin
+     * @param bool $useJoin
      * @return ServiceAbstract
      */
     public function setUseJoin($useJoin)
     {
         $this->getMapper()->setUseJoin($useJoin);
+
         return $this;
     }
 
@@ -601,19 +563,14 @@ abstract class ServiceAbstract
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getAutoCleanCache()
     {
         return $this->getMapper()->getAutoCleanCache();
     }
 
-    /**
-     * @param boolean $autoCleanCache
-     *
-     * @return ServiceAbstract
-     */
-    public function setAutoCleanCache($autoCleanCache)
+    public function setAutoCleanCache(bool $autoCleanCache): self
     {
         $this->getMapper()->setAutoCleanCache($autoCleanCache);
 

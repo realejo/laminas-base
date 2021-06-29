@@ -1,13 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RealejoTest;
 
 use PHPUnit\Framework\TestCase;
 
 class BaseTestCaseTest extends TestCase
 {
-    /** @var BaseTestCase */
-    private $baseTestCase;
+    private BaseTestCase $baseTestCase;
 
     protected function setUp(): void
     {
@@ -16,10 +17,10 @@ class BaseTestCaseTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->baseTestCase = null;
+        unset($this->baseTestCase);
     }
 
-    public function testTestSetupMysql()
+    public function testTestSetupMysql():void
     {
         $tables = ['album'];
         $this->baseTestCase->setTables($tables);
@@ -68,7 +69,7 @@ class BaseTestCaseTest extends TestCase
         $this->baseTestCase->clearApplicationData();
 
         // Verifica se está vazia
-        $files = $objects = scandir(TEST_DATA);
+        $files = scandir(TEST_DATA);
         $this->assertCount(3, $files, 'não tem mais nada no APPLICATION_DATA');
         $this->assertEquals(['.', '..', 'cache'], $files, 'não tem mais nada no APPLICATION_DATA');
 

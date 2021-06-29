@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RealejoTest\Service\Mptt;
 
+use Exception;
 use Realejo\Cache\CacheService;
 use Realejo\Service;
 use RealejoTest\BaseTestCase;
@@ -11,10 +14,8 @@ class MpttTest extends BaseTestCase
     /**
      * Árvore mptt completa e *correta*
      * com left,right ordenado pelo id
-     *
-     * @var array
      */
-    protected $idOrderedTree = [
+    protected array $idOrderedTree = [
         [1, 'Food', null, 1, 24],
         [2, 'Fruit', 1, 2, 13],
         [3, 'Red', 2, 3, 6],
@@ -32,10 +33,8 @@ class MpttTest extends BaseTestCase
     /**
      * Árvore mptt completa e *correta*
      * com left,right ordenado pelo name
-     *
-     * @var array
      */
-    protected $nameOrderedTree = [
+    protected array $nameOrderedTree = [
         [1, 'Food', null, 1, 24],
         [2, 'Fruit', 1, 2, 13],
         [3, 'Red', 2, 5, 8],
@@ -52,18 +51,16 @@ class MpttTest extends BaseTestCase
 
     /**
      * Será populada com os valores da arvore completa
-     * @var array
      */
-    protected $idOrderedRows = [];
-    protected $nameOrderedRows = [];
+    protected array $idOrderedRows = [];
+    protected array $nameOrderedRows = [];
 
     /**
      * Será populada com os valores da arvore completa sem as informações left,right
-     * @var array
      */
-    protected $defaultRows = [];
+    protected array $defaultRows = [];
 
-    protected $tables = ['mptt'];
+    protected array $tables = ['mptt'];
 
     protected function setUp(): void
     {
@@ -97,9 +94,9 @@ class MpttTest extends BaseTestCase
         $mptt = new ServiceConcrete($mapper, 'id');
         $mptt->setCache($cacheService->getFrontend());
 
-        $this->assertInstanceOf(Service\Mptt\MpttServiceAbstract::class, $mptt);
-        $this->assertInstanceOf(Service\ServiceAbstract::class, $mptt);
-        $this->assertInstanceOf(MapperConcrete::class, $mptt->getMapper());
+        self::assertInstanceOf(Service\Mptt\MpttServiceAbstract::class, $mptt);
+        self::assertInstanceOf(Service\ServiceAbstract::class, $mptt);
+        self::assertInstanceOf(MapperConcrete::class, $mptt->getMapper());
     }
 
     public function testSetTraversalIncomplete(): void
@@ -114,14 +111,14 @@ class MpttTest extends BaseTestCase
         $mptt = new ServiceConcrete($mapper, 'id');
         $mptt->setCache($cacheService->getFrontend());
 
-        $this->assertInstanceOf(Service\Mptt\MpttServiceAbstract::class, $mptt);
-        $this->assertInstanceOf(Service\ServiceAbstract::class, $mptt);
+        self::assertInstanceOf(Service\Mptt\MpttServiceAbstract::class, $mptt);
+        self::assertInstanceOf(Service\ServiceAbstract::class, $mptt);
 
         $mptt = $mptt->setTraversal([]);
 
-        $this->assertInstanceOf(Service\Mptt\MpttServiceAbstract::class, $mptt);
+        self::assertInstanceOf(Service\Mptt\MpttServiceAbstract::class, $mptt);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $mptt->setTraversal(['invalid' => 'invalid']);
     }
 
@@ -141,7 +138,7 @@ class MpttTest extends BaseTestCase
         $expected = ['id', 'name', 'parent_id', 'lft', 'rgt'];
         self::assertCount(count($expected), $columns);
         foreach ($expected as $item) {
-            $this->assertContains($item, $expected);
+            self::assertContains($item, $expected);
         }
     }
 
@@ -157,9 +154,9 @@ class MpttTest extends BaseTestCase
         $mptt = new ServiceConcrete($mapper, 'id');
         $mptt->setCache($cacheService->getFrontend());
 
-        $this->assertFalse($mptt->isTraversable());
+        self::assertFalse($mptt->isTraversable());
         $mptt->setTraversal('parent_id');
-        $this->assertTrue($mptt->isTraversable());
+        self::assertTrue($mptt->isTraversable());
     }
 
     public function testRebuildTreeTraversal(): void
@@ -175,17 +172,17 @@ class MpttTest extends BaseTestCase
         $mptt = new ServiceConcrete($mapper, 'id');
         $mptt->setCache($cacheService->getFrontend());
 
-        $this->assertNull($mptt->getMapper()->fetchAll());
+        self::assertNull($mptt->getMapper()->fetchAll());
         foreach ($this->defaultRows as $row) {
             $mptt->insert($row);
         }
-        $this->assertNotNull($mptt->getMapper()->fetchAll());
-        $this->assertCount(count($this->defaultRows), $mptt->getMapper()->fetchAll());
+        self::assertNotNull($mptt->getMapper()->fetchAll());
+        self::assertCount(count($this->defaultRows), $mptt->getMapper()->fetchAll());
 
         // Set traversal
-        $this->assertFalse($mptt->isTraversable());
+        self::assertFalse($mptt->isTraversable());
         $mptt->setTraversal('parent_id');
-        $this->assertTrue($mptt->isTraversable());
+        self::assertTrue($mptt->isTraversable());
 
         // Rebuild Tree
         $mptt->rebuildTreeTraversal();
@@ -194,18 +191,18 @@ class MpttTest extends BaseTestCase
         foreach ($mptt->getMapper()->fetchAll() as $value) {
             $fetchArray[] = $value->toArray();
         }
-        $this->assertEquals($this->idOrderedRows, $fetchArray);
+        self::assertEquals($this->idOrderedRows, $fetchArray);
         $mptt->setTraversal(['refColumn' => 'parent_id', 'order' => 'name']);
 
         // Rebuild Tree
         $mptt->rebuildTreeTraversal();
-        $this->assertTrue($mptt->isTraversable());
+        self::assertTrue($mptt->isTraversable());
 
         $fetchArray = [];
         foreach ($mptt->getMapper()->fetchAll() as $value) {
             $fetchArray[] = $value->toArray();
         }
-        $this->assertEquals($this->nameOrderedRows, $fetchArray);
+        self::assertEquals($this->nameOrderedRows, $fetchArray);
     }
 
     public function testInsert(): void
@@ -222,48 +219,48 @@ class MpttTest extends BaseTestCase
         $mptt->setCache($cacheService->getFrontend());
 
         $mptt->getMapper()->setOrder('id');
-        $this->assertNull($mptt->getMapper()->fetchAll());
+        self::assertNull($mptt->getMapper()->fetchAll());
 
         // Set traversal
-        $this->assertFalse($mptt->isTraversable());
+        self::assertFalse($mptt->isTraversable());
         $mptt->setTraversal(['refColumn' => 'parent_id', 'order' => 'name']);
-        $this->assertTrue($mptt->isTraversable());
+        self::assertTrue($mptt->isTraversable());
 
         // Insert default rows
         foreach ($this->defaultRows as $row) {
             $mptt->insert($row);
         }
-        $this->assertNotNull($mptt->getMapper()->fetchAll());
-        $this->assertCount(count($this->defaultRows), $mptt->getMapper()->fetchAll());
+        self::assertNotNull($mptt->getMapper()->fetchAll());
+        self::assertCount(count($this->defaultRows), $mptt->getMapper()->fetchAll());
 
         // Assert if left/right is correct
         $fetchArray = [];
         foreach ($mptt->getMapper()->fetchAll() as $value) {
             $fetchArray[] = $value->toArray();
         }
-        $this->assertEquals($this->nameOrderedRows, $fetchArray);
+        self::assertEquals($this->nameOrderedRows, $fetchArray);
 
         // reset the table
         $this->dropTables()->createTables();
-        $this->assertNull($mptt->getMapper()->fetchAll());
+        self::assertNull($mptt->getMapper()->fetchAll());
 
         // Set traversal ordered by id
         $mptt->setTraversal(['refColumn' => 'parent_id']);
-        $this->assertTrue($mptt->isTraversable());
+        self::assertTrue($mptt->isTraversable());
 
         // insert default rows
         foreach ($this->defaultRows as $row) {
             $mptt->insert($row);
         }
-        $this->assertNotNull($mptt->getMapper()->fetchAll());
-        $this->assertCount(count($this->defaultRows), $mptt->getMapper()->fetchAll());
+        self::assertNotNull($mptt->getMapper()->fetchAll());
+        self::assertCount(count($this->defaultRows), $mptt->getMapper()->fetchAll());
 
         // Assert if left/right is correct
         $fetchArray = [];
         foreach ($mptt->getMapper()->fetchAll() as $value) {
             $fetchArray[] = $value->toArray();
         }
-        $this->assertEquals($this->idOrderedRows, $fetchArray);
+        self::assertEquals($this->idOrderedRows, $fetchArray);
     }
 
     public function testDelete(): void
@@ -280,59 +277,59 @@ class MpttTest extends BaseTestCase
         $mptt->setCache($cacheService->getFrontend());
 
         $mptt->getMapper()->setOrder('id');
-        $this->assertNull($mptt->getMapper()->fetchAll());
+        self::assertNull($mptt->getMapper()->fetchAll());
 
         // Set traversal
-        $this->assertFalse($mptt->isTraversable());
+        self::assertFalse($mptt->isTraversable());
         $mptt->setTraversal(['refColumn' => 'parent_id', 'order' => 'name']);
-        $this->assertTrue($mptt->isTraversable());
+        self::assertTrue($mptt->isTraversable());
 
         // Insert default rows
         foreach ($this->defaultRows as $row) {
             $mptt->insert($row);
         }
-        $this->assertNotNull($mptt->getMapper()->fetchAll());
-        $this->assertCount(count($this->defaultRows), $mptt->getMapper()->fetchAll());
+        self::assertNotNull($mptt->getMapper()->fetchAll());
+        self::assertCount(count($this->defaultRows), $mptt->getMapper()->fetchAll());
 
         // Assert if left/right is correct
         $fetchArray = [];
         foreach ($mptt->getMapper()->fetchAll() as $value) {
             $fetchArray[] = $value->toArray();
         }
-        $this->assertEquals($this->nameOrderedRows, $fetchArray);
+        self::assertEquals($this->nameOrderedRows, $fetchArray);
 
         // Remove a single node (Beef/9)
         $mptt->delete(9);
 
         // Verify its parent (Meat/8)
         $row = $mptt->getMapper()->fetchRow(8);
-        $this->assertNotNull($row);
-        $this->assertEquals(14, $row['lft']);
-        $this->assertEquals(17, $row['rgt']);
+        self::assertNotNull($row);
+        self::assertEquals(14, $row['lft']);
+        self::assertEquals(17, $row['rgt']);
 
         // Verify its sibling (Pork/10)
         $row = $mptt->getMapper()->fetchRow(10);
-        $this->assertNotNull($row);
-        $this->assertEquals(15, $row['lft']);
-        $this->assertEquals(16, $row['rgt']);
+        self::assertNotNull($row);
+        self::assertEquals(15, $row['lft']);
+        self::assertEquals(16, $row['rgt']);
 
         // Verify the root (Food/1)
         $row = $mptt->getMapper()->fetchRow(1);
-        $this->assertNotNull($row);
-        $this->assertEquals(1, $row['lft']);
-        $this->assertEquals(22, $row['rgt']);
+        self::assertNotNull($row);
+        self::assertEquals(1, $row['lft']);
+        self::assertEquals(22, $row['rgt']);
 
         // Verify its uncle (Vegetable/11)
         $row = $mptt->getMapper()->fetchRow(11);
-        $this->assertNotNull($row);
-        $this->assertEquals(18, $row['lft']);
-        $this->assertEquals(21, $row['rgt']);
+        self::assertNotNull($row);
+        self::assertEquals(18, $row['lft']);
+        self::assertEquals(21, $row['rgt']);
 
         // Verify its another uncle (Fruit/2)
         $row = $mptt->getMapper()->fetchRow(2);
-        $this->assertNotNull($row);
-        $this->assertEquals(2, $row['lft']);
-        $this->assertEquals(13, $row['rgt']);
+        self::assertNotNull($row);
+        self::assertEquals(2, $row['lft']);
+        self::assertEquals(13, $row['rgt']);
 
         // Put it back
         $mptt->insert($this->defaultRows[9 - 1]);
@@ -342,33 +339,33 @@ class MpttTest extends BaseTestCase
         foreach ($mptt->getMapper()->fetchAll() as $value) {
             $fetchArray[] = $value->toArray();
         }
-        $this->assertEquals($this->nameOrderedRows, $fetchArray);
+        self::assertEquals($this->nameOrderedRows, $fetchArray);
 
         // Remove a node with child (Meat/8)
         $mptt->delete(8);
 
         // Verify its childs is gone
-        $this->assertNull($mptt->getMapper()->fetchRow(8));
-        $this->assertNull($mptt->getMapper()->fetchRow(9));
-        $this->assertNull($mptt->getMapper()->fetchRow(10));
+        self::assertNull($mptt->getMapper()->fetchRow(8));
+        self::assertNull($mptt->getMapper()->fetchRow(9));
+        self::assertNull($mptt->getMapper()->fetchRow(10));
 
         // Verify the root (Food/1)
         $row = $mptt->getMapper()->fetchRow(1);
-        $this->assertNotNull($row);
-        $this->assertEquals(1, $row['lft']);
-        $this->assertEquals(18, $row['rgt']);
+        self::assertNotNull($row);
+        self::assertEquals(1, $row['lft']);
+        self::assertEquals(18, $row['rgt']);
 
         // Verify its uncle (Vegetable/11)
         $row = $mptt->getMapper()->fetchRow(11);
-        $this->assertNotNull($row);
-        $this->assertEquals(14, $row['lft']);
-        $this->assertEquals(17, $row['rgt']);
+        self::assertNotNull($row);
+        self::assertEquals(14, $row['lft']);
+        self::assertEquals(17, $row['rgt']);
 
         // Verify its another uncle (Fruit/2)
         $row = $mptt->getMapper()->fetchRow(2);
-        $this->assertNotNull($row);
-        $this->assertEquals(2, $row['lft']);
-        $this->assertEquals(13, $row['rgt']);
+        self::assertNotNull($row);
+        self::assertEquals(2, $row['lft']);
+        self::assertEquals(13, $row['rgt']);
 
         // Put them back
         $mptt->insert($this->defaultRows[8 - 1]);
@@ -380,6 +377,6 @@ class MpttTest extends BaseTestCase
         foreach ($mptt->getMapper()->fetchAll() as $value) {
             $fetchArray[] = $value->toArray();
         }
-        $this->assertEquals($this->nameOrderedRows, $fetchArray);
+        self::assertEquals($this->nameOrderedRows, $fetchArray);
     }
 }

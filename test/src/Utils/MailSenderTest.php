@@ -1,17 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RealejoTest\Utils;
 
-use PHPUnit\Framework\TestCase;
-use Realejo\Utils\MailSender;
+use Exception;
 use Laminas\Mail;
 use Laminas\Mime;
+use PHPUnit\Framework\TestCase;
+use Realejo\Utils\MailSender;
 
 class MailSenderTest extends TestCase
 {
     public function testConstructError(): void
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         new MailSender();
     }
 
@@ -29,8 +32,8 @@ class MailSenderTest extends TestCase
     {
         $config = $this->getMailSenderConfig();
         $oMailer = new MailSender($config['mailsender']);
-        $this->assertInstanceOf(MailSender::class, $oMailer);
-        $this->assertInstanceOf(Mail\Transport\Smtp::class, $oMailer->getTransport());
+        self::assertInstanceOf(MailSender::class, $oMailer);
+        self::assertInstanceOf(Mail\Transport\Smtp::class, $oMailer->getTransport());
     }
 
     public function testSetEmailComAnexoStrings(): void
@@ -40,7 +43,7 @@ class MailSenderTest extends TestCase
 
         $files = [
             TEST_ROOT . '/assets/sql/album.create.sql',
-            TEST_ROOT . '/assets/sql/album.drop.sql'
+            TEST_ROOT . '/assets/sql/album.drop.sql',
         ];
 
         $oMailer->setEmailMessage(
@@ -54,34 +57,34 @@ class MailSenderTest extends TestCase
         );
 
         //verifica se os remetentes e destinatarios estao ok
-        $this->assertEquals($config['mailsender']['name'], $oMailer->getMessage()->getFrom()->current()->getName());
-        $this->assertEquals($config['mailsender']['email'], $oMailer->getMessage()->getFrom()->current()->getEmail());
-        $this->assertEquals($config['test-name'], $oMailer->getMessage()->getTo()->current()->getName());
-        $this->assertEquals($config['test-email'], $oMailer->getMessage()->getTo()->current()->getEmail());
+        self::assertEquals($config['mailsender']['name'], $oMailer->getMessage()->getFrom()->current()->getName());
+        self::assertEquals($config['mailsender']['email'], $oMailer->getMessage()->getFrom()->current()->getEmail());
+        self::assertEquals($config['test-name'], $oMailer->getMessage()->getTo()->current()->getName());
+        self::assertEquals($config['test-email'], $oMailer->getMessage()->getTo()->current()->getEmail());
 
         //define e verifica o reply-to
         $oMailer->getMessage()->setReplyTo($config['mailsender']['email'], $config['mailsender']['name']);
-        $this->assertEquals($config['mailsender']['name'], $oMailer->getMessage()->getReplyTo()->current()->getName());
-        $this->assertEquals(
+        self::assertEquals($config['mailsender']['name'], $oMailer->getMessage()->getReplyTo()->current()->getName());
+        self::assertEquals(
             $config['mailsender']['email'],
             $oMailer->getMessage()->getReplyTo()->current()->getEmail()
         );
 
         //verifica o assunto
-        $this->assertEquals('Olá', $oMailer->getMessage()->getSubject());
+        self::assertEquals('Olá', $oMailer->getMessage()->getSubject());
 
         //verifica se existe o mime part html
-        $this->assertNotEmpty($oMailer->getMessage()->getBody());
-        $this->assertNotEmpty(3, count($oMailer->getMessage()->getBody()->getParts()));
+        self::assertNotEmpty($oMailer->getMessage()->getBody());
+        self::assertCount(3, $oMailer->getMessage()->getBody()->getParts());
 
         $parts = $oMailer->getMessage()->getBody()->getParts();
-        $this->assertInstanceOf(Mime\Part::class, $parts[0]);
-        $this->assertInstanceOf(Mime\Part::class, $parts[1]);
-        $this->assertInstanceOf(Mime\Part::class, $parts[2]);
+        self::assertInstanceOf(Mime\Part::class, $parts[0]);
+        self::assertInstanceOf(Mime\Part::class, $parts[1]);
+        self::assertInstanceOf(Mime\Part::class, $parts[2]);
 
-        $this->assertEquals('Olá mundo, teste do anexo com array de strings', $parts[0]->getContent());
-        $this->assertEquals('album.create.sql', $parts[1]->getFileName());
-        $this->assertEquals('album.drop.sql', $parts[2]->getFileName());
+        self::assertEquals('Olá mundo, teste do anexo com array de strings', $parts[0]->getContent());
+        self::assertEquals('album.create.sql', $parts[1]->getFileName());
+        self::assertEquals('album.drop.sql', $parts[2]->getFileName());
     }
 
     public function testEnvioEmailComAnexoSource(): void
@@ -108,34 +111,34 @@ class MailSenderTest extends TestCase
         );
 
         //verifica se os remetentes e destinatarios estao ok
-        $this->assertEquals($config['mailsender']['name'], $oMailer->getMessage()->getFrom()->current()->getName());
-        $this->assertEquals($config['mailsender']['email'], $oMailer->getMessage()->getFrom()->current()->getEmail());
-        $this->assertEquals($config['test-name'], $oMailer->getMessage()->getTo()->current()->getName());
-        $this->assertEquals($config['test-email'], $oMailer->getMessage()->getTo()->current()->getEmail());
+        self::assertEquals($config['mailsender']['name'], $oMailer->getMessage()->getFrom()->current()->getName());
+        self::assertEquals($config['mailsender']['email'], $oMailer->getMessage()->getFrom()->current()->getEmail());
+        self::assertEquals($config['test-name'], $oMailer->getMessage()->getTo()->current()->getName());
+        self::assertEquals($config['test-email'], $oMailer->getMessage()->getTo()->current()->getEmail());
 
         //define e verifica o reply-to
         $oMailer->getMessage()->setReplyTo($config['mailsender']['email'], $config['mailsender']['name']);
-        $this->assertEquals($config['mailsender']['name'], $oMailer->getMessage()->getReplyTo()->current()->getName());
-        $this->assertEquals(
+        self::assertEquals($config['mailsender']['name'], $oMailer->getMessage()->getReplyTo()->current()->getName());
+        self::assertEquals(
             $config['mailsender']['email'],
             $oMailer->getMessage()->getReplyTo()->current()->getEmail()
         );
 
         //verifica o assunto
-        $this->assertEquals('Olá', $oMailer->getMessage()->getSubject());
+        self::assertEquals('Olá', $oMailer->getMessage()->getSubject());
 
         //verifica se existe o mime part html
-        $this->assertNotEmpty($oMailer->getMessage()->getBody());
-        $this->assertNotEmpty(3, count($oMailer->getMessage()->getBody()->getParts()));
+        self::assertNotEmpty($oMailer->getMessage()->getBody());
+        self::assertCount(3, $oMailer->getMessage()->getBody()->getParts());
 
         $parts = $oMailer->getMessage()->getBody()->getParts();
-        $this->assertInstanceOf(Mime\Part::class, $parts[0]);
-        $this->assertInstanceOf(Mime\Part::class, $parts[1]);
-        $this->assertInstanceOf(Mime\Part::class, $parts[2]);
+        self::assertInstanceOf(Mime\Part::class, $parts[0]);
+        self::assertInstanceOf(Mime\Part::class, $parts[1]);
+        self::assertInstanceOf(Mime\Part::class, $parts[2]);
 
-        $this->assertEquals('Olá mundo, teste do anexo com array de strings', $parts[0]->getContent());
-        $this->assertEquals('application/octet-stream', $parts[1]->getType());
-        $this->assertEquals('application/octet-stream', $parts[2]->getType());
+        self::assertEquals('Olá mundo, teste do anexo com array de strings', $parts[0]->getContent());
+        self::assertEquals('application/octet-stream', $parts[1]->getType());
+        self::assertEquals('application/octet-stream', $parts[2]->getType());
     }
 
     public function testEnvioEmailHtmlSuccess(): void
@@ -155,37 +158,37 @@ class MailSenderTest extends TestCase
         );
 
         //verifica se os remetentes e destinatarios estao ok
-        $this->assertEquals($config['mailsender']['name'], $oMailer->getMessage()->getFrom()->current()->getName());
-        $this->assertEquals($config['mailsender']['email'], $oMailer->getMessage()->getFrom()->current()->getEmail());
-        $this->assertEquals($config['test-name'], $oMailer->getMessage()->getTo()->current()->getName());
-        $this->assertEquals($config['test-email'], $oMailer->getMessage()->getTo()->current()->getEmail());
+        self::assertEquals($config['mailsender']['name'], $oMailer->getMessage()->getFrom()->current()->getName());
+        self::assertEquals($config['mailsender']['email'], $oMailer->getMessage()->getFrom()->current()->getEmail());
+        self::assertEquals($config['test-name'], $oMailer->getMessage()->getTo()->current()->getName());
+        self::assertEquals($config['test-email'], $oMailer->getMessage()->getTo()->current()->getEmail());
 
         //define e verifica o reply-to
         $oMailer->getMessage()->setReplyTo($config['mailsender']['email'], $config['mailsender']['name']);
-        $this->assertEquals($config['mailsender']['name'], $oMailer->getMessage()->getReplyTo()->current()->getName());
-        $this->assertEquals(
+        self::assertEquals($config['mailsender']['name'], $oMailer->getMessage()->getReplyTo()->current()->getName());
+        self::assertEquals(
             $config['mailsender']['email'],
             $oMailer->getMessage()->getReplyTo()->current()->getEmail()
         );
 
         //verifica o assunto
-        $this->assertEquals('Olá', $oMailer->getMessage()->getSubject());
+        self::assertEquals('Olá', $oMailer->getMessage()->getSubject());
 
         //verifica se existe o mime part html
-        $this->assertNotEmpty($oMailer->getMessage()->getBody());
-        $this->assertNotEmpty(1, count($oMailer->getMessage()->getBody()->getParts()));
+        self::assertNotEmpty($oMailer->getMessage()->getBody());
+        self::assertCount(1, $oMailer->getMessage()->getBody()->getParts());
 
         $parts = $oMailer->getMessage()->getBody()->getParts();
-        $this->assertInstanceOf(Mime\Part::class, $parts[0]);
+        self::assertInstanceOf(Mime\Part::class, $parts[0]);
 
-        $this->assertEquals(
+        self::assertEquals(
             '<html><head><title>Olá mundo</title></head>'
             . '<body><h2>Teste do html</h2>Aqui é um post em html<br/></body></html>',
             $parts[0]->getContent()
         );
 
         if ($config['test-really-send-email'] === true) {
-            $this->assertNull($oMailer->send());
+            self::assertNull($oMailer->send());
         }
     }
 
@@ -206,43 +209,43 @@ class MailSenderTest extends TestCase
         );
 
         //verifica se os remetentes e destinatarios estao ok
-        $this->assertEquals('Another sender', $oMailer->getMessage()->getFrom()->current()->getName());
-        $this->assertEquals('another-email@somewhere.com', $oMailer->getMessage()->getFrom()->current()->getEmail());
-        $this->assertEquals($config['test-name'], $oMailer->getMessage()->getTo()->current()->getName());
-        $this->assertEquals($config['test-email'], $oMailer->getMessage()->getTo()->current()->getEmail());
+        self::assertEquals('Another sender', $oMailer->getMessage()->getFrom()->current()->getName());
+        self::assertEquals('another-email@somewhere.com', $oMailer->getMessage()->getFrom()->current()->getEmail());
+        self::assertEquals($config['test-name'], $oMailer->getMessage()->getTo()->current()->getName());
+        self::assertEquals($config['test-email'], $oMailer->getMessage()->getTo()->current()->getEmail());
 
         //define e verifica o reply-to
         $oMailer->getMessage()->setReplyTo('another-email2@somewhere.com', 'Another sender 2');
-        $this->assertEquals('Another sender 2', $oMailer->getMessage()->getReplyTo()->current()->getName());
-        $this->assertEquals(
+        self::assertEquals('Another sender 2', $oMailer->getMessage()->getReplyTo()->current()->getName());
+        self::assertEquals(
             'another-email2@somewhere.com',
             $oMailer->getMessage()->getReplyTo()->current()->getEmail()
         );
 
         //verifica o assunto
-        $this->assertEquals('Olá', $oMailer->getMessage()->getSubject());
+        self::assertEquals('Olá', $oMailer->getMessage()->getSubject());
 
         //verifica se existe o mime part html
-        $this->assertNotEmpty($oMailer->getMessage()->getBody());
-        $this->assertNotEmpty(1, count($oMailer->getMessage()->getBody()->getParts()));
+        self::assertNotEmpty($oMailer->getMessage()->getBody());
+        self::assertCount(1, $oMailer->getMessage()->getBody()->getParts());
 
         $parts = $oMailer->getMessage()->getBody()->getParts();
-        $this->assertInstanceOf(Mime\Part::class, $parts[0]);
+        self::assertInstanceOf(Mime\Part::class, $parts[0]);
 
-        $this->assertEquals(
+        self::assertEquals(
             '<html><head><title>Olá mundo</title></head>'
             . '<body><h2>Teste do html</h2>Aqui é um post em html<br/></body></html>',
             $parts[0]->getContent()
         );
 
         if ($config['test-really-send-email'] === true) {
-            $this->assertNull($oMailer->send());
+            self::assertNull($oMailer->send());
         }
     }
 
     public function testIsValid(): void
     {
-        $this->assertFalse(MailSender::isEmail('wrooong'));
-        $this->assertTrue(MailSender::isEmail('test@email.com'));
+        self::assertFalse(MailSender::isEmail('wrooong'));
+        self::assertTrue(MailSender::isEmail('test@email.com'));
     }
 }

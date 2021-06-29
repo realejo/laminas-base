@@ -331,8 +331,6 @@ class MetadataServiceTest extends BaseTestCase
         $this->assertIsArray($this->metadataService->getWhere([]));
         $this->assertEquals([], $this->metadataService->getWhere([]));
 
-        $this->assertNull($this->metadataService->getWhere(null));
-
         $this->assertIsArray($this->metadataService->getWhere(['metadata' => []]));
         $this->assertEquals([], $this->metadataService->getWhere(['metadata' => []]));
 
@@ -776,9 +774,9 @@ class MetadataServiceTest extends BaseTestCase
         $this->expectException(Exception::class);
 
         $service->setMetadataMappers(
-            new MetadataMapper('tablename', 'keyname'),
-            null,
-            null
+            '',
+            '',
+            ''
         );
     }
 
@@ -791,8 +789,8 @@ class MetadataServiceTest extends BaseTestCase
 
         $service->setMetadataMappers(
             'tableone',
-            new MetadataMapper('tablename', 'keyname'),
-            null
+            '',
+            ''
         );
     }
 
@@ -803,6 +801,6 @@ class MetadataServiceTest extends BaseTestCase
         $this->expectExceptionMessage("mapperForeignKey invalid");
         $this->expectException(Exception::class);
 
-        $service->setMetadataMappers('tableone', 'tableone', null);
+        $service->setMetadataMappers('tableone', 'tableone', '');
     }
 }

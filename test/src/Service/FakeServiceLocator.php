@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RealejoTest\Service;
 
 use Psr\Container\ContainerExceptionInterface;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RealejoTest\Stdlib;
 
 use DateTime;
@@ -19,17 +21,17 @@ use stdClass;
  */
 class ArrayObjectTypedKeys extends ArrayObject
 {
-    protected $booleanKeys = ['booleanKey'];
+    protected array $booleanKeys = ['booleanKey'];
 
-    protected $intKeys = ['intKey'];
+    protected array $intKeys = ['intKey'];
 
-    protected $jsonArrayKeys = ['jsonArrayKey'];
+    protected array $jsonArrayKeys = ['jsonArrayKey'];
 
-    protected $jsonObjectKeys = ['jsonObjectKey'];
+    protected array $jsonObjectKeys = ['jsonObjectKey'];
 
-    protected $dateKeys = ['datetimeKey'];
+    protected array $dateKeys = ['datetimeKey'];
 
-    protected $enumKeys = [
+    protected array $enumKeys = [
         'enum' => EnumConcrete::class,
         'enumFlagged' => EnumFlaggedConcrete::class
     ];

@@ -1,14 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Realejo\Service;
 
 use ArrayIterator;
 use InvalidArgumentException;
-use LogicException;
-use Psr\Container\ContainerInterface;
-use Realejo\Cache\CacheService;
-use Realejo\Stdlib\ArrayObject;
-use RuntimeException;
 use Laminas\Cache\Storage as CacheStorage;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\ResultSet\HydratingResultSet;
@@ -18,6 +15,11 @@ use Laminas\Db\Sql\Select;
 use Laminas\Db\TableGateway\Feature\GlobalAdapterFeature;
 use Laminas\Db\TableGateway\TableGateway;
 use Laminas\Hydrator\ArraySerializable;
+use LogicException;
+use Psr\Container\ContainerInterface;
+use Realejo\Cache\CacheService;
+use Realejo\Stdlib\ArrayObject;
+use RuntimeException;
 
 abstract class MapperAbstract
 {
@@ -34,21 +36,14 @@ abstract class MapperAbstract
      */
     protected $hydrator;
 
-    /**
-     * @var bool
-     */
-    protected $useHydrateResultSet = false;
+    protected bool $useHydrateResultSet = false;
 
     /**
      * Nome da tabela a ser usada
-     * @var string
      */
-    protected $tableName;
+    protected string $tableName;
 
-    /**
-     * @var TableGateway
-     */
-    protected $tableGateway;
+    protected ?TableGateway $tableGateway = null;
 
     /**
      * Define o nome da chave
@@ -63,71 +58,50 @@ abstract class MapperAbstract
      *
      * @var array
      */
-    protected $tableJoinLeft = false;
+    protected array $tableJoinLeft;
 
     /**
      * Join lefts que devem ser usados no mapper
-     *
-     * @var array
      */
-    protected $tableJoin;
+    protected array $tableJoin;
 
     /**
      * Join lefts que devem ser usados no mapper
-     *
-     * @var bool
      */
-    protected $useJoin = false;
+    protected bool $useJoin = false;
 
     /**
      * Define se deve usar todas as chaves para os operações de update e delete
-     *
-     * @var bool
      */
-    protected $useAllKeys = true;
+    protected bool $useAllKeys = true;
 
     /**
      * Define a ordem padrão a ser usada na consultas
      *
-     * @var string|array
+     * @var string|array|Expression
      */
     protected $order;
 
     /**
      * Define o adapter a ser usado
-     *
-     * @var Adapter
      */
-    protected $adapter;
+    protected ?Adapter $adapter = null;
 
     /**
      * Define se deve remover os registros ou apenas marcar como removido
-     *
-     * @var bool
      */
-    protected $useDeleted = false;
+    protected bool $useDeleted = false;
 
     /**
      * Define se deve mostrar os registros marcados como removido
-     *
-     * @var bool
      */
-    protected $showDeleted = false;
+    protected bool $showDeleted = false;
 
-    /**
-     * @var bool
-     */
-    protected $useCache = false;
+    protected bool $useCache = false;
 
-    /**
-     * @var ContainerInterface
-     */
-    protected $serviceLocator;
+    protected ?ContainerInterface $serviceLocator = null;
 
-    /**
-     * @var bool
-     */
-    protected $autoCleanCache = true;
+    protected bool $autoCleanCache = true;
     protected $cache;
     protected $lastInsertSet;
     protected $lastInsertKey;
@@ -138,11 +112,11 @@ abstract class MapperAbstract
 
     /**
      *
-     * @param string $tableName Nome da tabela a ser usada
+     * @param string|null $tableName Nome da tabela a ser usada
      * @param string|array $tableKey Nome ou array de chaves a serem usadas
      *
      */
-    public function __construct($tableName = null, $tableKey = null)
+    public function __construct(string $tableName = null, $tableKey = null)
     {
         // Verifica o nome da tabela
         if (!empty($tableName) && is_string($tableName)) {
@@ -160,9 +134,9 @@ abstract class MapperAbstract
      *
      * @param int|array $key Código da registro a ser excluído
      *
-     * @return bool Informa se teve o registro foi removido
+     * @return int Informa se teve o registro foi removido
      */
-    public function delete($key)
+    public function delete($key): int
     {
         if (empty($key)) {
             throw new InvalidArgumentException("Chave <b>'$key'</b> inválida");
@@ -182,7 +156,7 @@ abstract class MapperAbstract
             $return = $this->getTableGateway()->delete($this->getKeyWhere($key));
         }
 
-        // Limpa o cache se necessario
+        // Limpa o cache se necessário
         if ($this->getUseCache() && $this->getAutoCleanCache()) {
             $this->getCache()->flush();
         }
@@ -197,18 +171,13 @@ abstract class MapperAbstract
      * @param bool $returnSingle Quando for uma chave multipla, use TRUE para retorna a primeira chave
      * @return array|string
      */
-    public function getTableKey($returnSingle = false)
+    public function getTableKey(bool $returnSingle = false)
     {
         $key = $this->tableKey;
 
         // Verifica se é para retorna apenas a primeira da chave multipla
         if (is_array($key) && $returnSingle === true) {
-            if (is_array($key)) {
-                foreach ($key as $type => $keyName) {
-                    $key = $keyName;
-                    break;
-                }
-            }
+            $key = array_shift($key);
         }
 
         return $key;
@@ -219,7 +188,7 @@ abstract class MapperAbstract
      *
      * @return MapperAbstract
      */
-    public function setTableKey($key)
+    public function setTableKey($key): self
     {
         if (empty($key) && !is_string($key) && !is_array($key)) {
             throw new InvalidArgumentException('Chave inválida em ' . get_class($this));
@@ -230,10 +199,7 @@ abstract class MapperAbstract
         return $this;
     }
 
-    /**
-     * @return TableGateway
-     */
-    public function getTableGateway()
+    public function getTableGateway(): TableGateway
     {
         if (null === $this->tableName) {
             throw new InvalidArgumentException('Tabela não definida em ' . get_class($this));
@@ -248,14 +214,12 @@ abstract class MapperAbstract
         return $this->tableGateway;
     }
 
-    /**
-     * @return Adapter
-     */
-    public function getAdapter()
+    public function getAdapter(): Adapter
     {
         if (null === $this->adapter) {
             if ($this->hasServiceLocator() && $this->getServiceLocator()->has(Adapter::class)) {
                 $this->adapter = $this->getServiceLocator()->get(Adapter::class);
+
                 return $this->adapter;
             }
 
@@ -265,35 +229,24 @@ abstract class MapperAbstract
         return $this->adapter;
     }
 
-    /**
-     * @param Adapter $adapter
-     *
-     * @return MapperAbstract
-     */
-    public function setAdapter(Adapter $adapter)
+    public function setAdapter(Adapter $adapter): self
     {
         $this->adapter = $adapter;
+
         return $this;
     }
 
-    public function hasServiceLocator()
+    public function hasServiceLocator(): bool
     {
         return null !== $this->serviceLocator;
     }
 
-    /**
-     * @return ContainerInterface
-     */
-    public function getServiceLocator()
+    public function getServiceLocator(): ContainerInterface
     {
         return $this->serviceLocator;
     }
 
-    /**
-     * @param ContainerInterface $serviceLocator
-     * @return MapperAbstract
-     */
-    public function setServiceLocator(ContainerInterface $serviceLocator)
+    public function setServiceLocator(ContainerInterface $serviceLocator): self
     {
         $this->serviceLocator = $serviceLocator;
 
@@ -372,8 +325,9 @@ abstract class MapperAbstract
 
         // Verifica se todas as chaves foram usadas
         if (
-            $this->getUseAllKeys() === true && is_array($this->getTableKey()) && count($usedKeys) !==
-            count($this->getTableKey())
+            $this->getUseAllKeys()
+            && is_array($this->getTableKey())
+            && count($usedKeys) !== count($this->getTableKey())
         ) {
             throw new LogicException('Não é permitido usar chaves parciais em ' . get_class($this));
         }
@@ -386,23 +340,13 @@ abstract class MapperAbstract
         return $this->useAllKeys;
     }
 
-    /**
-     * @param bool $useAllKeys
-     *
-     * @return $this
-     */
-    public function setUseAllKeys(bool $useAllKeys)
+    public function setUseAllKeys(bool $useAllKeys): self
     {
         $this->useAllKeys = $useAllKeys;
 
         return $this;
     }
 
-    /**
-     * Retorna se deve usar o cache
-     *
-     * @return bool
-     */
     public function getUseCache(): bool
     {
         return $this->useCache;
@@ -410,11 +354,8 @@ abstract class MapperAbstract
 
     /**
      * Define se deve usar o cache
-     *
-     * @param bool $useCache
-     * @return MapperAbstract
      */
-    public function setUseCache(bool $useCache)
+    public function setUseCache(bool $useCache): self
     {
         $this->useCache = $useCache;
 
@@ -426,12 +367,7 @@ abstract class MapperAbstract
         return $this->autoCleanCache;
     }
 
-    /**
-     * @param bool $autoCleanCache
-     *
-     * @return MapperAbstract
-     */
-    public function setAutoCleanCache(bool $autoCleanCache)
+    public function setAutoCleanCache(bool $autoCleanCache): MapperAbstract
     {
         $this->autoCleanCache = $autoCleanCache;
 
@@ -452,13 +388,10 @@ abstract class MapperAbstract
         return $this->cache;
     }
 
-    /**
-     * @param CacheStorage\StorageInterface $cache
-     * @return MapperAbstract
-     */
-    public function setCache(CacheStorage\StorageInterface $cache)
+    public function setCache(CacheStorage\StorageInterface $cache): self
     {
         $this->cache = $cache;
+
         return $this;
     }
 
@@ -531,7 +464,7 @@ abstract class MapperAbstract
                         // Grava a chave como integer
                         if (is_numeric($value) || $type === self::KEY_INTEGER) {
                             $key[$value] = $set[$value];
-                        // Grava a chave como string
+                            // Grava a chave como string
                         } elseif ($type === self::KEY_STRING) {
                             $key[$value] = $set[$value];
                         }
@@ -573,14 +506,9 @@ abstract class MapperAbstract
         return new ArraySerializable();
     }
 
-    /**
-     * @param ArraySerializable $hydrator
-     *
-     * @return MapperAbstract
-     */
-    public function setHydrator(ArraySerializable $hydrator)
+    public function setHydrator(ArraySerializable $hydrator): self
     {
-        if (empty($hydrator)) {
+        if ($hydrator === null) {
             throw new InvalidArgumentException('Invalid hydrator');
         }
         $this->hydrator = $hydrator;
@@ -608,7 +536,7 @@ abstract class MapperAbstract
             // Verifica se é uma chave múltipla ou com cast
             if (is_array($this->tableKey)) {
                 // Verifica se é uma chave simples com cast
-                if (count($this->tableKey) != 1) {
+                if (count($this->tableKey) !== 1) {
                     throw new InvalidArgumentException('Não é possível acessar chaves múltiplas informando apenas uma');
                 }
                 $where = [$this->getTableKey(true) => $where];
@@ -635,7 +563,7 @@ abstract class MapperAbstract
      *
      * @return ArrayObject[]|HydratingResultSet
      */
-    public function fetchAll($where = null, $order = null, $count = null, $offset = null)
+    public function fetchAll(array $where = null, $order = null, int $count = null, int $offset = null)
     {
         // Cria a assinatura da consulta
         if ($where instanceof Select) {
@@ -681,15 +609,17 @@ abstract class MapperAbstract
             if ($this->getUseCache()) {
                 $this->getCache()->setItem($cacheKey, $fetchAll);
             }
+
             return $fetchAll;
         }
 
         $hydrator = $this->getHydrator();
-        if (empty($hydrator)) {
+        if ($hydrator === null) {
             // Grava a consulta no cache
             if ($this->getUseCache()) {
                 $this->getCache()->setItem($cacheKey, $fetchAll);
             }
+
             return $fetchAll;
         }
         $hydratorEntity = $this->getHydratorEntity();
@@ -722,14 +652,14 @@ abstract class MapperAbstract
     /**
      * Retorna o select para a consulta
      *
-     * @param string|array $where OPTIONAL An SQL WHERE clause
-     * @param string|array $order OPTIONAL An SQL ORDER clause.
-     * @param int $count OPTIONAL An SQL LIMIT count.
-     * @param int $offset OPTIONAL An SQL LIMIT offset.
+     * @param array $where OPTIONAL An SQL WHERE clause
+     * @param string|array|Expression $order OPTIONAL An SQL ORDER clause.
+     * @param int|null $count OPTIONAL An SQL LIMIT count.
+     * @param int|null $offset OPTIONAL An SQL LIMIT offset.
      *
      * @return Select
      */
-    public function getSelect(array $where = null, $order = null, $count = null, $offset = null)
+    public function getSelect(array $where = null, $order = null, int $count = null, int $offset = null)
     {
         // Retorna o select para a tabela
         $select = $this->getTableSelect();
@@ -834,14 +764,12 @@ abstract class MapperAbstract
 
     /**
      * Retorna o select a ser usado no fetchAll e fetchRow
-     *
-     * @return Select
      */
-    public function getTableSelect()
+    public function getTableSelect(): Select
     {
         $select = $this->getTableGateway()->getSql()->select();
 
-        $tableJoinDefinition = $this->tableJoin ?? $this->tableJoinLeft;
+        $tableJoinDefinition = $this->tableJoin ?? $this->tableJoinLeft ?? null;
 
         if (!empty($tableJoinDefinition) && $this->getUseJoin()) {
             foreach ($tableJoinDefinition as $definition) {
@@ -889,43 +817,30 @@ abstract class MapperAbstract
         return $select;
     }
 
-    /**
-     * @return bool
-     */
-    public function getUseJoin()
+    public function getUseJoin(): bool
     {
         return $this->useJoin;
     }
 
-    /**
-     * @param bool $useJoin
-     *
-     * @return MapperAbstract
-     */
-    public function setUseJoin($useJoin)
+    public function setUseJoin(bool $useJoin): self
     {
         $this->useJoin = $useJoin;
+
         return $this;
     }
 
     /**
      * Retorna se irá usar o campo deleted ou remover o registro quando usar delete()
-     *
-     * @return bool
      */
-    public function getUseDeleted()
+    public function getUseDeleted(): bool
     {
         return $this->useDeleted;
     }
 
     /**
      * Define se irá usar o campo deleted ou remover o registro quando usar delete()
-     *
-     * @param bool $useDeleted
-     *
-     * @return MapperAbstract
      */
-    public function setUseDeleted($useDeleted)
+    public function setUseDeleted(bool $useDeleted): self
     {
         $this->useDeleted = $useDeleted;
 
@@ -934,22 +849,16 @@ abstract class MapperAbstract
 
     /**
      * Retorna se deve retornar os registros marcados como removidos
-     *
-     * @return bool
      */
-    public function getShowDeleted()
+    public function getShowDeleted(): bool
     {
         return $this->showDeleted;
     }
 
     /**
      * Define se deve retornar os registros marcados como removidos
-     *
-     * @param bool $showDeleted
-     *
-     * @return MapperAbstract
      */
-    public function setShowDeleted($showDeleted)
+    public function setShowDeleted(bool $showDeleted): MapperAbstract
     {
         $this->showDeleted = $showDeleted;
 
@@ -958,21 +867,16 @@ abstract class MapperAbstract
 
     /**
      * Processa as clausulas especiais do where
-     *
-     * @param array|string $where
-     *
-     * @return array
      */
-    public function getWhere($where)
+    public function getWhere(array $where): array
     {
         return $where;
     }
 
     /**
-     * @param bool $asObject
      * @return ArrayObject|string
      */
-    public function getHydratorEntity($asObject = true)
+    public function getHydratorEntity(bool $asObject = true)
     {
         if ($asObject === false) {
             return $this->hydratorEntity;
@@ -980,18 +884,14 @@ abstract class MapperAbstract
 
         if (isset($this->hydratorEntity)) {
             $hydrator = $this->hydratorEntity;
+
             return new $hydrator();
         }
 
         return new ArrayObject();
     }
 
-    /**
-     * @param string $hydratorEntity
-     *
-     * @return MapperAbstract
-     */
-    public function setHydratorEntity(string $hydratorEntity)
+    public function setHydratorEntity(string $hydratorEntity): MapperAbstract
     {
         $this->hydratorEntity = $hydratorEntity;
 
@@ -1001,7 +901,7 @@ abstract class MapperAbstract
     /**
      * Altera um registro
      *
-     * @param array $set Dados a serem atualizados
+     * @param array|ArrayObject $set Dados a serem atualizados
      * @param int|array $key Chave do registro a ser alterado
      *
      * @return bool
@@ -1027,7 +927,7 @@ abstract class MapperAbstract
         $row = $this->fetchRow($key);
 
         // Verifica se existe o registro
-        if (empty($row)) {
+        if ($row === null) {
             return false;
         }
 
@@ -1101,6 +1001,7 @@ abstract class MapperAbstract
                 $difference[$key] = $value;
             }
         }
+
         return $difference;
     }
 
@@ -1215,6 +1116,7 @@ abstract class MapperAbstract
     public function setUseHydrateResultSet(bool $useHydrateResultSet)
     {
         $this->useHydrateResultSet = $useHydrateResultSet;
+
         return $this;
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Estende as funcionalidades do ArrayObject com as informações disponíveis no metadata
  *
@@ -10,6 +12,7 @@
 namespace Realejo\Service\Metadata;
 
 use Realejo\Stdlib\ArrayObject as StdlibArrayObject;
+use RuntimeException;
 
 class ArrayObject extends StdlibArrayObject
 {
@@ -18,16 +21,14 @@ class ArrayObject extends StdlibArrayObject
      */
     protected $metadata;
 
-    protected $metadataKeyName = 'metadata';
+    protected string $metadataKeyName = 'metadata';
 
-    /**
-     * @return MetadataArrayObject
-     */
-    public function getMetadata()
+    public function getMetadata(): MetadataArrayObject
     {
         if ($this->metadata === null) {
             $this->metadata = new MetadataArrayObject();
         }
+
         return $this->metadata;
     }
 
@@ -59,14 +60,14 @@ class ArrayObject extends StdlibArrayObject
 
     /**
      * @param string $key
-     * @return boolean
+     * @return bool
      */
-    public function hasMetadata($key)
+    public function hasMetadata($key): bool
     {
         return $this->getMetadata()->offsetExists($key);
     }
 
-    public function populate(array $data)
+    public function populate(array $data): void
     {
         if (isset($data[$this->metadataKeyName])) {
             if (is_string($data[$this->metadataKeyName])) {
@@ -85,7 +86,7 @@ class ArrayObject extends StdlibArrayObject
      * @param bool $unMapKeys
      * @return array
      */
-    public function toArray($unMapKeys = true)
+    public function toArray(bool $unMapKeys = true): array
     {
         $toArray = parent::toArray($unMapKeys);
         if (!empty($this->getMetadata()->count())) {
@@ -95,7 +96,7 @@ class ArrayObject extends StdlibArrayObject
         return $toArray;
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         $offset = $this->getMappedKey($offset);
         if (parent::offsetExists($offset)) {
@@ -120,17 +121,19 @@ class ArrayObject extends StdlibArrayObject
         trigger_error("Undefined index: $offset");
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $offset = $this->getMappedKey($offset, true);
 
         if (parent::offsetExists($offset)) {
             parent::offsetSet($offset, $value);
+
             return;
         }
 
         if ($this->hasMetadata($offset)) {
             $this->getMetadata()->offsetSet($offset, $value);
+
             return;
         }
 
@@ -138,24 +141,27 @@ class ArrayObject extends StdlibArrayObject
         //@todo tem que testar isso!!
         if (!$this->getLockedKeys()) {
             $this->storage[$offset] = $value;
+
             return;
         }
 
         trigger_error("Undefined index: $offset");
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         if (parent::offsetExists($offset)) {
             parent::offsetUnset($offset);
+
             return;
         }
 
         if ($this->hasMetadata($offset)) {
             $this->getMetadata()->offsetUnset($offset);
+
             return;
         }
 
-        throw new \RuntimeException("You cannot remove a property");
+        throw new RuntimeException("You cannot remove a property");
     }
 }

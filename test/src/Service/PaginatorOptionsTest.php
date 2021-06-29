@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RealejoTest\Service;
 
 use PHPUnit\Framework\TestCase;
@@ -12,16 +14,16 @@ class PaginatorOptionsTest extends TestCase
     {
         $paginator = new PaginatorOptions();
 
-        $this->assertEquals(1, $paginator->getCurrentPageNumber());
-        $this->assertInstanceOf(get_class($paginator), $paginator->setCurrentPageNumber(2));
-        $this->assertEquals(2, $paginator->getCurrentPageNumber());
+        self::assertEquals(1, $paginator->getCurrentPageNumber());
+        self::assertInstanceOf(get_class($paginator), $paginator->setCurrentPageNumber(2));
+        self::assertEquals(2, $paginator->getCurrentPageNumber());
 
-        $this->assertEquals(10, $paginator->getItemCountPerPage());
-        $this->assertInstanceOf(get_class($paginator), $paginator->setItemCountPerPage(20));
-        $this->assertEquals(20, $paginator->getItemCountPerPage());
+        self::assertEquals(10, $paginator->getItemCountPerPage());
+        self::assertInstanceOf(get_class($paginator), $paginator->setItemCountPerPage(20));
+        self::assertEquals(20, $paginator->getItemCountPerPage());
 
-        $this->assertEquals(10, $paginator->getPageRange());
-        $this->assertInstanceOf(get_class($paginator), $paginator->setPageRange(30));
-        $this->assertEquals(30, $paginator->getPageRange());
+        self::assertEquals(10, $paginator->getPageRange());
+        self::assertInstanceOf(get_class($paginator), $paginator->setPageRange(30));
+        self::assertEquals(30, $paginator->getPageRange());
     }
 }

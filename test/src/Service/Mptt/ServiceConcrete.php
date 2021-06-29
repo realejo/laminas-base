@@ -1,13 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RealejoTest\Service\Mptt;
 
 use Realejo\Service\Mptt\MpttServiceAbstract;
 
 class ServiceConcrete extends MpttServiceAbstract
 {
-    /**
-     * @var string
-     */
-    protected $mapperClass = MapperConcrete::class;
+    protected string $mapperClass = MapperConcrete::class;
 }

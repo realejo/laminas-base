@@ -4,9 +4,9 @@ namespace Realejo\Service\Metadata;
 
 use DateTime;
 use InvalidArgumentException;
+use Laminas\Db\Sql\Expression;
 use Realejo\Service\ServiceAbstract;
 use Realejo\Utils\DateHelper;
-use Laminas\Db\Sql\Expression;
 
 class MetadataService extends ServiceAbstract
 {
@@ -38,9 +38,9 @@ class MetadataService extends ServiceAbstract
 
     protected $infoForeignKeyName = 'fk_info';
 
-    public function getWhere($where)
+    public function getWhere(array $where): array
     {
-        if (empty($where) || !is_array($where)) {
+        if (empty($where)) {
             return parent::getWhere($where);
         }
 
@@ -160,15 +160,15 @@ class MetadataService extends ServiceAbstract
      * @param string $mapperForeignKey Chave Estrangeira para localizar um metadado na tabelas de valores
      * @return MetadataService
      */
-    public function setMetadataMappers($schemaTable, $valueTable, $mapperForeignKey)
+    public function setMetadataMappers(string $schemaTable, string $valueTable, string $mapperForeignKey): self
     {
-        if (!is_string($schemaTable) || empty($schemaTable)) {
+        if (empty($schemaTable)) {
             throw new InvalidArgumentException("schemaTable invalid");
         }
-        if (!is_string($valueTable) || empty($valueTable)) {
+        if (empty($valueTable)) {
             throw new InvalidArgumentException("valueTable invalid");
         }
-        if (!is_string($mapperForeignKey) || empty($mapperForeignKey)) {
+        if (empty($mapperForeignKey)) {
             throw new InvalidArgumentException("mapperForeignKey invalid");
         }
 
@@ -180,7 +180,7 @@ class MetadataService extends ServiceAbstract
         return $this;
     }
 
-    public function getSchemaByKeyNames($useCache = true)
+    public function getSchemaByKeyNames($useCache = true): array
     {
         $schema = $this->getSchema($useCache);
         $schemaByKeynames = null;
@@ -190,6 +190,7 @@ class MetadataService extends ServiceAbstract
                 $schemaByKeynames[$row['nick']] = $row;
             }
         }
+
         return $schemaByKeynames;
     }
 
@@ -219,9 +220,9 @@ class MetadataService extends ServiceAbstract
      *
      * @param int $foreignkey Chave de referencia
      * @param boolean $complete OPCIONAL Retorna os campos não definidos como NULL.
-     * @return array|null
+     * @return array
      */
-    public function getValues($foreignkey, $complete = false)
+    public function getValues(int $foreignkey, bool $complete = false)
     {
         $fetchAll = $this->getMapperValue()->fetchAll([$this->referenceKey => $foreignkey]);
         if (empty($fetchAll) && $complete !== true) {
@@ -279,6 +280,7 @@ class MetadataService extends ServiceAbstract
         // Verifica se tem alguma chave definida
         if (empty($metadataKeys)) {
             $this->lastSaveMetadataLog = $saveMetadataLog;
+
             return $set;
         }
 
@@ -302,7 +304,7 @@ class MetadataService extends ServiceAbstract
             if (!empty($currentValues) && array_key_exists($schema['nick'], $currentValues)) {
                 $whereKey = [
                     $this->infoForeignKeyName => $schema[$this->infoKeyName],
-                    $this->referenceKey => $foreignKey
+                    $this->referenceKey => $foreignKey,
                 ];
                 if ($setMetadataValue !== $currentValues[$schema['nick']]) {
                     if (is_null($setMetadataValue)) {
@@ -324,7 +326,7 @@ class MetadataService extends ServiceAbstract
                         [
                             $this->infoForeignKeyName => $schema[$this->infoKeyName],
                             $this->referenceKey => $foreignKey,
-                            $setMetadataKey => $setMetadataValue
+                            $setMetadataKey => $setMetadataValue,
                         ]
                     );
                 $saveMetadataLog[$schema['nick']] = [null, $setMetadataValue];
@@ -385,6 +387,7 @@ class MetadataService extends ServiceAbstract
             if ($value === null || $value === '') {
                 return null;
             }
+
             return ($value) ? 1 : 0;
         }
 
@@ -392,6 +395,7 @@ class MetadataService extends ServiceAbstract
             if ($value === null || $value === '') {
                 return null;
             }
+
             return (int)$value;
         }
 
@@ -402,6 +406,7 @@ class MetadataService extends ServiceAbstract
             if (preg_replace('/[^0-9,\.]*/', '', $value) == '') {
                 return 0;
             }
+
             // @todo como considerar as virgulas e pontos?!
             return $value;
         }
@@ -410,6 +415,7 @@ class MetadataService extends ServiceAbstract
             if ($value === null || $value === '') {
                 return null;
             }
+
             return $value;
         }
 
@@ -487,49 +493,17 @@ class MetadataService extends ServiceAbstract
         return 'ERROR';
     }
 
-    /**
-     * Define se deve usar o cache
-     *
-     * @param boolean $useCache
-     *
-     * @return MetadataService
-     */
-    public function setUseCache($useCache)
+    public function setUseCache(bool $useCache): self
     {
         $this->useCache = $useCache;
         $this->getMapperSchema()->setUseCache($useCache);
         $this->getMapperValue()->setUseCache($useCache);
         $this->getMapper()->setUseCache($useCache);
 
-        // Mantem a cadeia
         return $this;
     }
 
-    /**
-     * Apaga o cache
-     *
-     * Não precisa apagar o cache dos metadata pois é o mesmo do serviço
-     */
-    public function cleanCache()
-    {
-        $this->getCache()->flush();
-        $this->getMapper()->getCache()->flush();
-    }
-
-    /**
-     * @return boolean
-     */
-    public function getAutoCleanCache()
-    {
-        return $this->getMapper()->getAutoCleanCache();
-    }
-
-    /**
-     * @param boolean $autoCleanCache
-     *
-     * @return self
-     */
-    public function setAutoCleanCache($autoCleanCache)
+    public function setAutoCleanCache(bool $autoCleanCache): self
     {
         $this->getMapper()->setAutoCleanCache($autoCleanCache);
         $this->getMapperSchema()->setAutoCleanCache($autoCleanCache);
@@ -597,6 +571,7 @@ class MetadataService extends ServiceAbstract
                 }
                 --$count;
             }
+
             return $text;
         }
     }

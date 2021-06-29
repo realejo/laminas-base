@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Test case para as funcionalidades padrões
  *
@@ -15,6 +17,9 @@ use PHPUnit\Framework\TestCase;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\TableGateway\Feature\GlobalAdapterFeature;
 use Laminas\Db\TableGateway\TableGateway;
+use ReflectionClass;
+use ReflectionException;
+use RuntimeException;
 
 class BaseTestCase extends TestCase
 {
@@ -29,11 +34,11 @@ class BaseTestCase extends TestCase
      *
      * @var array
      */
-    protected $tables = [];
+    protected array $tables = [];
 
-    protected $dataDir;
+    protected string $dataDir;
 
-    private $tableGateways = [];
+    private array $tableGateways = [];
 
     public static function setUpBeforeClass(): void
     {
@@ -193,7 +198,7 @@ class BaseTestCase extends TestCase
         if (is_string($table)) {
             $table = new TableGateway($table, $this->getAdapter());
         } elseif (!$table instanceof TableGateway) {
-            throw new \RuntimeException("$table deve ser um string ou TableGateway");
+            throw new RuntimeException("$table deve ser um string ou TableGateway");
         }
 
         foreach ($rows as $r) {
@@ -307,9 +312,9 @@ class BaseTestCase extends TestCase
     public function invokePrivateMethod(&$object, string $methodName, array $parameters = [])
     {
         try {
-            $reflection = new \ReflectionClass(get_class($object));
-        } catch (\ReflectionException $e) {
-            throw new \RuntimeException('Cannot reflect class ' . get_class($object) . ':' . $e->getMessage());
+            $reflection = new ReflectionClass(get_class($object));
+        } catch (ReflectionException $e) {
+            throw new RuntimeException('Cannot reflect class ' . get_class($object) . ':' . $e->getMessage());
         }
         $method = $reflection->getMethod($methodName);
         $method->setAccessible(true);

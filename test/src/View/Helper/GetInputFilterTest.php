@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RealejoTest\View\Helper;
 
 use PHPUnit\Framework\TestCase;
@@ -17,16 +19,15 @@ class GetInputFilterTest extends TestCase
     public function testConstruct(): void
     {
         $helper = new GetInputFilter();
-        $this->assertInstanceOf(GetInputFilter::class, $helper);
-        $this->assertInstanceOf(Translator::class, $helper->getTranslator());
-        $this->assertEquals('pt_BR', $helper->getTranslator()->getLocale());
+        self::assertInstanceOf(GetInputFilter::class, $helper);
+        self::assertEquals('pt_BR', $helper->getTranslator()->getLocale());
     }
 
     public function testConstructEnglish(): void
     {
         $translator = new Translator();
         $helper = new GetInputFilter($translator);
-        $this->assertEquals('en_US', $helper->getTranslator()->getLocale());
+        self::assertEquals('en_US', $helper->getTranslator()->getLocale());
     }
 
     public function testGetFormValidationFieldsArray(): void
@@ -69,20 +70,20 @@ class GetInputFilterTest extends TestCase
         $helper = new GetInputFilter();
 
         $fields = $helper->getFormValidationFieldsArray($form);
-        $this->assertIsArray($fields);
-        $this->assertNotEmpty($fields);
-        $this->assertCount(1, $fields);
-        $this->assertArrayHasKey('campo1', $fields);
-        $this->assertArrayHasKey('validators', $fields['campo1']);
-        $this->assertCount(3, $fields['campo1']['validators']);
-        $this->assertArraySubset(['integer', 'notEmpty', 'between'], array_keys($fields['campo1']['validators']));
+        self::assertIsArray($fields);
+        self::assertNotEmpty($fields);
+        self::assertCount(1, $fields);
+        self::assertArrayHasKey('campo1', $fields);
+        self::assertArrayHasKey('validators', $fields['campo1']);
+        self::assertCount(3, $fields['campo1']['validators']);
+        self::assertArraySubset(['integer', 'notEmpty', 'between'], array_keys($fields['campo1']['validators']));
 
-        $this->assertArrayHasKey('message', $fields['campo1']['validators']['integer']);
-        $this->assertArrayHasKey('message', $fields['campo1']['validators']['notEmpty']);
+        self::assertArrayHasKey('message', $fields['campo1']['validators']['integer']);
+        self::assertArrayHasKey('message', $fields['campo1']['validators']['notEmpty']);
 
-        $this->assertArrayHasKey('message', $fields['campo1']['validators']['between']);
-        $this->assertArrayHasKey('min', $fields['campo1']['validators']['between']);
-        $this->assertArrayHasKey('max', $fields['campo1']['validators']['between']);
+        self::assertArrayHasKey('message', $fields['campo1']['validators']['between']);
+        self::assertArrayHasKey('min', $fields['campo1']['validators']['between']);
+        self::assertArrayHasKey('max', $fields['campo1']['validators']['between']);
     }
 
     public function testGetFormValidationFieldsJson(): void
@@ -125,23 +126,23 @@ class GetInputFilterTest extends TestCase
 
         $helper = new GetInputFilter();
         $json = $helper->getFormValidationFieldsJSON($form);
-        $this->assertIsString($json);
+        self::assertIsString($json);
 
         $fields = json_decode($json, true);
-        $this->assertIsArray($fields);
+        self::assertIsArray($fields);
 
-        $this->assertNotEmpty($fields);
-        $this->assertCount(1, $fields);
-        $this->assertArrayHasKey('campo1', $fields);
-        $this->assertArrayHasKey('validators', $fields['campo1']);
-        $this->assertCount(3, $fields['campo1']['validators']);
-        $this->assertArraySubset(['integer', 'notEmpty', 'between'], array_keys($fields['campo1']['validators']));
+        self::assertNotEmpty($fields);
+        self::assertCount(1, $fields);
+        self::assertArrayHasKey('campo1', $fields);
+        self::assertArrayHasKey('validators', $fields['campo1']);
+        self::assertCount(3, $fields['campo1']['validators']);
+        self::assertArraySubset(['integer', 'notEmpty', 'between'], array_keys($fields['campo1']['validators']));
 
-        $this->assertArrayHasKey('message', $fields['campo1']['validators']['integer']);
-        $this->assertArrayHasKey('message', $fields['campo1']['validators']['notEmpty']);
+        self::assertArrayHasKey('message', $fields['campo1']['validators']['integer']);
+        self::assertArrayHasKey('message', $fields['campo1']['validators']['notEmpty']);
 
-        $this->assertArrayHasKey('message', $fields['campo1']['validators']['between']);
-        $this->assertArrayHasKey('min', $fields['campo1']['validators']['between']);
-        $this->assertArrayHasKey('max', $fields['campo1']['validators']['between']);
+        self::assertArrayHasKey('message', $fields['campo1']['validators']['between']);
+        self::assertArrayHasKey('min', $fields['campo1']['validators']['between']);
+        self::assertArrayHasKey('max', $fields['campo1']['validators']['between']);
     }
 }

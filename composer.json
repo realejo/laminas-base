@@ -13,7 +13,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": "^7.1",
+        "php": "^7.4",
         "ext-json": "*",
         "laminas/laminas-db": "^2.8.1",
         "laminas/laminas-cache": "^2.7.1",

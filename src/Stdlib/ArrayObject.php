@@ -1,37 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Realejo\Stdlib;
 
+use ArrayAccess;
 use DateTime;
 use Realejo\Enum\Enum;
+use RuntimeException;
+use stdClass;
 
-class ArrayObject implements \ArrayAccess
+class ArrayObject implements ArrayAccess
 {
-    /** @var array */
-    protected $storage = [];
-
-    /** @var array */
-    protected $mappedKeys = null;
+    protected array $storage = [];
+    protected ?array $mappedKeys = [];
 
     /**
      * Define se pode usar propriedades/chaves que não estejam previamente definidas
-     *
-     * @var bool
      */
-    protected $lockedKeys = true;
+    protected bool $lockedKeys = true;
 
-    protected $intKeys = [];
+    protected array $intKeys = [];
 
-    protected $booleanKeys = [];
+    protected array $booleanKeys = [];
 
-    protected $dateKeys = [];
+    protected array $dateKeys = [];
 
-    protected $jsonArrayKeys = [];
-    protected $jsonObjectKeys = [];
-    protected $jsonEncodeOptions = 0;
+    protected array $jsonArrayKeys = [];
+    protected array $jsonObjectKeys = [];
+    protected int $jsonEncodeOptions = 0;
 
     /** @var Enum[] */
-    protected $enumKeys = [];
+    protected array $enumKeys = [];
 
     public function __construct($data = null)
     {
@@ -45,7 +45,7 @@ class ArrayObject implements \ArrayAccess
      * @param bool $reverse
      * @return mixed
      */
-    protected function getMappedKey($key, $reverse = false)
+    protected function getMappedKey(string $key, bool $reverse = false)
     {
         $map = $this->getKeyMapping();
         if (empty($map)) {
@@ -56,10 +56,11 @@ class ArrayObject implements \ArrayAccess
         if ($reverse === true) {
             $map = array_flip($map);
         }
+
         return $map[$key] ?? $key;
     }
 
-    public function populate(array $data)
+    public function populate(array $data): void
     {
         $useDateKeys = (is_array($this->dateKeys) && !empty($this->dateKeys));
         $useJsonArrayKeys = (is_array($this->jsonArrayKeys) && !empty($this->jsonArrayKeys));
@@ -73,7 +74,7 @@ class ArrayObject implements \ArrayAccess
                 if ($useDateKeys && in_array($key, $this->dateKeys) && !empty($value)) {
                     $value = new DateTime($value);
                 } elseif ($useJsonArrayKeys && in_array($key, $this->jsonArrayKeys) && !empty($value)) {
-                    $value = json_decode($value, JSON_OBJECT_AS_ARRAY);
+                    $value = json_decode($value, true);
                 } elseif ($useJsonObjectKeys && in_array($key, $this->jsonObjectKeys) && !empty($value)) {
                     $value = json_decode($value);
                 } elseif ($useIntKeys && in_array($key, $this->intKeys) && !empty($value)) {
@@ -89,11 +90,7 @@ class ArrayObject implements \ArrayAccess
         }
     }
 
-    /**
-     * @param bool $unMapKeys
-     * @return array
-     */
-    public function toArray($unMapKeys = true)
+    public function toArray(bool $unMapKeys = true): array
     {
         $toArray = [];
 
@@ -116,12 +113,12 @@ class ArrayObject implements \ArrayAccess
         return $toArray;
     }
 
-    public function entityToArray()
+    public function entityToArray(): array
     {
         return $this->toArray();
     }
 
-    public function getArrayCopy()
+    public function getArrayCopy(): array
     {
         $toArray = $this->toArray(true);
 
@@ -131,7 +128,7 @@ class ArrayObject implements \ArrayAccess
 
         foreach ($toArray as $key => $value) {
             // desfaz datetime
-            if ($value instanceof \DateTime) {
+            if ($value instanceof DateTime) {
                 $value = $value->format('Y-m-d H:i:s');
             }
 
@@ -139,7 +136,7 @@ class ArrayObject implements \ArrayAccess
             if (in_array($key, $this->jsonArrayKeys) && is_array($value)) {
                 $value = json_encode($value, $this->jsonEncodeOptions);
             }
-            if (in_array($key, $this->jsonObjectKeys) && $value instanceof \stdClass) {
+            if (in_array($key, $this->jsonObjectKeys) && $value instanceof stdClass) {
                 $value = json_encode($value, $this->jsonEncodeOptions);
             }
 
@@ -159,9 +156,10 @@ class ArrayObject implements \ArrayAccess
         return $toArray;
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         $offset = $this->getMappedKey($offset);
+
         return (array_key_exists($offset, $this->storage));
     }
 
@@ -175,7 +173,7 @@ class ArrayObject implements \ArrayAccess
         return $this->storage[$offset];
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $offset = $this->getMappedKey($offset);
         if (!$this->getLockedKeys() || array_key_exists($offset, $this->storage)) {
@@ -185,10 +183,10 @@ class ArrayObject implements \ArrayAccess
         }
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         if ($this->getLockedKeys()) {
-            throw new \RuntimeException("You cannot remove a property");
+            throw new RuntimeException("You cannot remove a property");
         }
 
         $offset = $this->getMappedKey($offset);
@@ -199,7 +197,7 @@ class ArrayObject implements \ArrayAccess
      * @param string $name
      * @return mixed
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         return $this->offsetGet($name);
     }
@@ -209,79 +207,54 @@ class ArrayObject implements \ArrayAccess
      * @param string $name
      * @param mixed $value
      */
-    public function __set($name, $value)
+    public function __set(string $name, $value)
     {
         $this->offsetSet($name, $value);
     }
 
-    /**
-     * @param string $name
-     */
-    public function __unset($name)
+    public function __unset(string $name)
     {
         $this->offsetUnset($name);
     }
 
-    /**
-     * @param string $name
-     * @return bool
-     */
-    public function __isset($name)
+    public function __isset(string $name): bool
     {
         return $this->offsetExists($name);
     }
 
-    /**
-     * @return array
-     */
-    public function getKeyMapping()
+    public function getKeyMapping(): ?array
     {
         return $this->mappedKeys;
     }
 
-    /**
-     * @param array $mappedKeys
-     * @return ArrayObject
-     */
-    public function setMapping(array $mappedKeys = null)
+    public function setMapping(array $mappedKeys = null): self
     {
         $this->mappedKeys = $mappedKeys;
+
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function getLockedKeys()
+    public function getLockedKeys(): bool
     {
         return $this->lockedKeys;
     }
 
-    /**
-     * @param bool $lockedKeys
-     * @return ArrayObject
-     */
-    public function setLockedKeys($lockedKeys)
+    public function setLockedKeys($lockedKeys): ArrayObject
     {
         $this->lockedKeys = $lockedKeys;
+
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getJsonEncodeOptions(): int
     {
         return $this->jsonEncodeOptions;
     }
 
-    /**
-     * @param int $jsonEncodeOptions
-     * @return ArrayObject
-     */
-    public function setJsonEncodeOptions(int $jsonEncodeOptions): ArrayObject
+    public function setJsonEncodeOptions(int $jsonEncodeOptions): self
     {
         $this->jsonEncodeOptions = $jsonEncodeOptions;
+
         return $this;
     }
 }

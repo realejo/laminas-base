@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RealejoTest\Service\Mapper;
 
 use Realejo\Service\MapperAbstract;
@@ -7,10 +9,10 @@ use Laminas\Db\Sql\Select;
 
 class MapperConcrete extends MapperAbstract
 {
-    protected $tableName = 'album';
+    protected string $tableName = 'album';
     protected $tableKey = 'id';
 
-    protected $tableJoin = [
+    protected array $tableJoin = [
         'test' => [
             'table' => 'test_table',
             'condition' => 'test_condition',
