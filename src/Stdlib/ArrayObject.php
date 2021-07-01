@@ -13,7 +13,7 @@ use stdClass;
 class ArrayObject implements ArrayAccess
 {
     protected array $storage = [];
-    protected ?array $mappedKeys = [];
+    protected array $mappedKeys = [];
 
     /**
      * Define se pode usar propriedades/chaves que não estejam previamente definidas
@@ -222,12 +222,12 @@ class ArrayObject implements ArrayAccess
         return $this->offsetExists($name);
     }
 
-    public function getKeyMapping(): ?array
+    public function getKeyMapping(): array
     {
         return $this->mappedKeys;
     }
 
-    public function setMapping(array $mappedKeys = null): self
+    public function setMapping(array $mappedKeys): self
     {
         $this->mappedKeys = $mappedKeys;
 

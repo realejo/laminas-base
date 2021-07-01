@@ -235,9 +235,8 @@ class ArrayObjectTest extends TestCase
         self::assertInstanceof(get_class($object), $object->setMapping(['one' => 'two']));
         self::assertNotNull($object->getKeyMapping());
         self::assertEquals(['one' => 'two'], $object->getKeyMapping());
-        self::assertInstanceof(get_class($object), $object->setMapping(null));
-        self::assertNull($object->getKeyMapping());
-        self::assertEquals(null, $object->getKeyMapping());
+        self::assertInstanceof(get_class($object), $object->setMapping([]));
+        self::assertEquals([], $object->getKeyMapping());
     }
 
     public function testPopulateWithTypedKeys(): void
@@ -247,7 +246,7 @@ class ArrayObjectTest extends TestCase
         self::assertEmpty($object->toArray());
         self::assertEquals([], $object->toArray());
 
-        self::assertNull($object->populate(['one' => 'first']));
+        $object->populate(['one' => 'first']);
 
         // populate as it comes from database
         $originalArray = ['key' => 'value', 'unicode' => 'áéíóú😶çý', 'slashes' => '\\slashes\\'];

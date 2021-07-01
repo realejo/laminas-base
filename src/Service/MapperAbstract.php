@@ -556,14 +556,14 @@ abstract class MapperAbstract
     }
 
     /**
-     * @param array $where condições para localizar o registro
+     * @param array|Select $where condições para localizar o registro
      * @param array|string $order
-     * @param int $count
-     * @param int $offset
+     * @param int|null $count
+     * @param int|null $offset
      *
      * @return ArrayObject[]|HydratingResultSet
      */
-    public function fetchAll(array $where = null, $order = null, int $count = null, int $offset = null)
+    public function fetchAll($where = null, $order = null, int $count = null, int $offset = null)
     {
         // Cria a assinatura da consulta
         if ($where instanceof Select) {

@@ -178,7 +178,7 @@ abstract class ServiceAbstract
     /**
      * Retorna vários registros
      *
-     * @param string|array $where OPTIONAL An SQL WHERE clause
+     * @param array $where OPTIONAL An SQL WHERE clause
      * @param string|array $order OPTIONAL An SQL ORDER clause.
      * @param int|null $count OPTIONAL An SQL LIMIT count.
      * @param int|null $offset OPTIONAL An SQL LIMIT offset.
