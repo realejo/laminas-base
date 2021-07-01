@@ -1,15 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Realejo\View\Helper;
 
 use Laminas\View\Helper\AbstractHelper;
 
 class ApplicationConfig extends AbstractHelper
 {
-    /**
-     * @var array
-     */
-    private $config;
+    private array $config;
 
     public function __construct(array $config)
     {

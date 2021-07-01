@@ -1,60 +1,59 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RealejoTest\Service\Metadata;
 
 use Exception;
+use Laminas\Db\Sql\Expression;
 use Realejo\Cache\CacheService;
 use Realejo\Service\Metadata\MetadataMapper;
 use Realejo\Service\Metadata\MetadataService;
 use Realejo\Stdlib\ArrayObject;
 use RealejoTest\BaseTestCase;
 use ReflectionClass;
-use Laminas\Db\Sql\Expression;
 
 class MetadataServiceTest extends BaseTestCase
 {
-    /**
-     * @var MetadataService
-     */
-    private $metadataService;
+    private MetadataService $metadataService;
 
-    private $schema = [
+    private array $schema = [
         [
             'id_info' => 123,
             'type' => MetadataService::BOOLEAN,
-            'nick' => 'bool'
+            'nick' => 'bool',
         ],
         [
             'id_info' => 321,
             'type' => MetadataService::DATE,
-            'nick' => 'date'
+            'nick' => 'date',
         ],
         [
             'id_info' => 159,
             'type' => MetadataService::DATETIME,
-            'nick' => 'datetime'
+            'nick' => 'datetime',
         ],
         [
             'id_info' => 753,
             'type' => MetadataService::DECIMAL,
-            'nick' => 'decimal'
+            'nick' => 'decimal',
         ],
         [
             'id_info' => 78,
             'type' => MetadataService::INTEGER,
-            'nick' => 'integer'
+            'nick' => 'integer',
         ]
         ,
         [
             'id_info' => 456,
             'type' => MetadataService::TEXT,
-            'nick' => 'text'
-        ]
+            'nick' => 'text',
+        ],
     ];
 
-    private $cacheFetchAllKey;
+    private string $cacheFetchAllKey;
 
-    private $cacheSchemaKey = 'metadataschema_metadata_schema';
+    private string $cacheSchemaKey = 'metadataschema_metadata_schema';
 
     /**
      * Prepares the environment before running a test.
@@ -92,7 +91,7 @@ class MetadataServiceTest extends BaseTestCase
             ->getCache()
             ->setItem($this->cacheFetchAllKey, $fetchAll);
 
-        $this->assertEquals($fetchAll, $this->metadataService->getCache()->getItem($this->cacheFetchAllKey));
+        self::assertEquals($fetchAll, $this->metadataService->getCache()->getItem($this->cacheFetchAllKey));
 
         // Cria o schema associado pelo id
         $schemaById = [];
@@ -105,7 +104,7 @@ class MetadataServiceTest extends BaseTestCase
             ->getCache()
             ->setItem($this->cacheSchemaKey, $schemaById);
 
-        $this->assertEquals($schemaById, $this->metadataService->getCache()->getItem($this->cacheSchemaKey));
+        self::assertEquals($schemaById, $this->metadataService->getCache()->getItem($this->cacheSchemaKey));
     }
 
     private function createTableSchema(): void
@@ -119,7 +118,7 @@ class MetadataServiceTest extends BaseTestCase
     protected function tearDown(): void
     {
         $this->metadataService->cleanCache();
-        $this->metadataService = null;
+        unset($this->metadataService);
         $this->dropTables(['metadata_schema', 'metadata_value']);
         parent::tearDown();
     }
@@ -131,9 +130,9 @@ class MetadataServiceTest extends BaseTestCase
         foreach ($this->schema as $s) {
             $schemaByKeyName[$s['nick']] = $s;
         }
-        $this->assertEquals($schemaByKeyName, $this->metadataService->getSchemaByKeyNames());
-        $this->assertEquals($schemaByKeyName, $this->metadataService->getSchemaByKeyNames(true));
-        $this->assertEquals($schemaByKeyName, $this->metadataService->getSchemaByKeyNames(false));
+        self::assertEquals($schemaByKeyName, $this->metadataService->getSchemaByKeyNames());
+        self::assertEquals($schemaByKeyName, $this->metadataService->getSchemaByKeyNames(true));
+        self::assertEquals($schemaByKeyName, $this->metadataService->getSchemaByKeyNames(false));
     }
 
     /**
@@ -146,12 +145,12 @@ class MetadataServiceTest extends BaseTestCase
         $method = $reflection->getMethod('getCorrectSetKey');
         $method->setAccessible(true);
 
-        $this->assertEquals('value_boolean', $method->invokeArgs($service, [['type' => MetadataService::BOOLEAN]]));
-        $this->assertEquals('value_date', $method->invokeArgs($service, [['type' => MetadataService::DATE]]));
-        $this->assertEquals('value_datetime', $method->invokeArgs($service, [['type' => MetadataService::DATETIME]]));
-        $this->assertEquals('value_decimal', $method->invokeArgs($service, [['type' => MetadataService::DECIMAL]]));
-        $this->assertEquals('value_integer', $method->invokeArgs($service, [['type' => MetadataService::INTEGER]]));
-        $this->assertEquals('value_text', $method->invokeArgs($service, [['type' => MetadataService::TEXT]]));
+        self::assertEquals('value_boolean', $method->invokeArgs($service, [['type' => MetadataService::BOOLEAN]]));
+        self::assertEquals('value_date', $method->invokeArgs($service, [['type' => MetadataService::DATE]]));
+        self::assertEquals('value_datetime', $method->invokeArgs($service, [['type' => MetadataService::DATETIME]]));
+        self::assertEquals('value_decimal', $method->invokeArgs($service, [['type' => MetadataService::DECIMAL]]));
+        self::assertEquals('value_integer', $method->invokeArgs($service, [['type' => MetadataService::INTEGER]]));
+        self::assertEquals('value_text', $method->invokeArgs($service, [['type' => MetadataService::TEXT]]));
     }
 
     /**
@@ -164,56 +163,56 @@ class MetadataServiceTest extends BaseTestCase
         $method = $reflection->getMethod('getCorrectSetValue');
         $method->setAccessible(true);
 
-        $this->assertEquals(1, $method->invokeArgs($service, [['type' => MetadataService::BOOLEAN], 1]));
-        $this->assertEquals(1, $method->invokeArgs($service, [['type' => MetadataService::BOOLEAN], true]));
-        $this->assertEquals(0, $method->invokeArgs($service, [['type' => MetadataService::BOOLEAN], 0]));
-        $this->assertEquals(0, $method->invokeArgs($service, [['type' => MetadataService::BOOLEAN], false]));
+        self::assertEquals(1, $method->invokeArgs($service, [['type' => MetadataService::BOOLEAN], 1]));
+        self::assertEquals(1, $method->invokeArgs($service, [['type' => MetadataService::BOOLEAN], true]));
+        self::assertEquals(0, $method->invokeArgs($service, [['type' => MetadataService::BOOLEAN], 0]));
+        self::assertEquals(0, $method->invokeArgs($service, [['type' => MetadataService::BOOLEAN], false]));
 
-        $this->assertNull($method->invokeArgs($service, [['type' => MetadataService::BOOLEAN], null]));
-        $this->assertEquals(0, $method->invokeArgs($service, [['type' => MetadataService::BOOLEAN], '']));
+        self::assertNull($method->invokeArgs($service, [['type' => MetadataService::BOOLEAN], null]));
+        self::assertEquals(0, $method->invokeArgs($service, [['type' => MetadataService::BOOLEAN], '']));
 
-        $this->assertEquals(
+        self::assertEquals(
             '2016-12-10',
             $method->invokeArgs($service, [['type' => MetadataService::DATE], '10/12/2016'])
         );
-        $this->assertEquals(
+        self::assertEquals(
             '2016-12-10',
             $method->invokeArgs($service, [['type' => MetadataService::DATE], '10/12/2016 14:25:24'])
         );
-        $this->assertEquals('0', $method->invokeArgs($service, [['type' => MetadataService::DATE], '0']));
-        $this->assertNull($method->invokeArgs($service, [['type' => MetadataService::DATE], null]));
+        self::assertEquals('0', $method->invokeArgs($service, [['type' => MetadataService::DATE], '0']));
+        self::assertNull($method->invokeArgs($service, [['type' => MetadataService::DATE], null]));
 
-        $this->assertEquals(
+        self::assertEquals(
             'value_datetime',
             $method->invokeArgs($service, [['type' => MetadataService::DATETIME], 'value_datetime'])
         );
-        $this->assertEquals(
+        self::assertEquals(
             '2016-12-10 00:00:00',
             $method->invokeArgs($service, [['type' => MetadataService::DATETIME], '10/12/2016'])
         );
-        $this->assertEquals(
+        self::assertEquals(
             '2016-12-10 13:13:12',
             $method->invokeArgs($service, [['type' => MetadataService::DATETIME], '10/12/2016 13:13:12'])
         );
 
-        $this->assertEquals(0, $method->invokeArgs($service, [['type' => MetadataService::DECIMAL], 'value_decimal']));
-        $this->assertEquals(
+        self::assertEquals(0, $method->invokeArgs($service, [['type' => MetadataService::DECIMAL], 'value_decimal']));
+        self::assertEquals(
             '0',
             $method->invokeArgs($service, [['type' => MetadataService::DECIMAL], 'value_decimal'])
         );
-        $this->assertEquals(0, $method->invokeArgs($service, [['type' => MetadataService::INTEGER], 'value_integer']));
-        $this->assertEquals(
+        self::assertEquals(0, $method->invokeArgs($service, [['type' => MetadataService::INTEGER], 'value_integer']));
+        self::assertEquals(
             '0',
             $method->invokeArgs($service, [['type' => MetadataService::INTEGER], 'value_integer'])
         );
-        $this->assertEquals(
+        self::assertEquals(
             'value_text',
             $method->invokeArgs($service, [['type' => MetadataService::TEXT], 'value_text'])
         );
 
-        $this->assertNull($method->invokeArgs($service, [['type' => MetadataService::DECIMAL], null]));
-        $this->assertNull($method->invokeArgs($service, [['type' => MetadataService::INTEGER], null]));
-        $this->assertNull($method->invokeArgs($service, [['type' => MetadataService::TEXT], null]));
+        self::assertNull($method->invokeArgs($service, [['type' => MetadataService::DECIMAL], null]));
+        self::assertNull($method->invokeArgs($service, [['type' => MetadataService::INTEGER], null]));
+        self::assertNull($method->invokeArgs($service, [['type' => MetadataService::TEXT], null]));
     }
 
     public function testGetMappersSchema(): void
@@ -223,9 +222,9 @@ class MetadataServiceTest extends BaseTestCase
         $cacheService->setCacheDir($this->getDataDir() . '/cache');
         $service->setCache($cacheService->getFrontend());
 
-        $this->assertNull($service->getMapperSchema());
-        $this->assertNull($service->getMapperValue());
-        $this->assertInstanceOf(
+        self::assertNull($service->getMapperSchema());
+        self::assertNull($service->getMapperValue());
+        self::assertInstanceOf(
             MetadataService::class,
             $service->setMetadataMappers(
                 'schemaTable',
@@ -233,12 +232,12 @@ class MetadataServiceTest extends BaseTestCase
                 'foreignKeyName'
             )
         );
-        $this->assertInstanceOf(MetadataMapper::class, $service->getMapperSchema());
-        $this->assertEquals('schemaTable', $service->getMapperSchema()->getTableName());
-        $this->assertInstanceOf(MetadataMapper::class, $service->getMapperValue());
-        $this->assertEquals('valuesTable', $service->getMapperValue()->getTableName());
-        $this->assertEquals(['fk_info', 'foreignKeyName'], $service->getMapperValue()->getTableKey());
-        $this->assertEquals('fk_info', $service->getMapperValue()->getTableKey(true));
+        self::assertInstanceOf(MetadataMapper::class, $service->getMapperSchema());
+        self::assertEquals('schemaTable', $service->getMapperSchema()->getTableName());
+        self::assertInstanceOf(MetadataMapper::class, $service->getMapperValue());
+        self::assertEquals('valuesTable', $service->getMapperValue()->getTableName());
+        self::assertEquals(['fk_info', 'foreignKeyName'], $service->getMapperValue()->getTableKey());
+        self::assertEquals('fk_info', $service->getMapperValue()->getTableKey(true));
     }
 
     public function testCache(): void
@@ -248,58 +247,58 @@ class MetadataServiceTest extends BaseTestCase
         $cacheService->setCacheDir($this->getDataDir() . '/cache');
         $service->setCache($cacheService->getFrontend());
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             MetadataService::class,
             $service->setMetadataMappers('tableone', 'tablesecond', 'keyname')
         );
         $service->setMapper(MetadataMapperReference::class);
 
-        $this->assertFalse($service->getUseCache());
-        $this->assertFalse($service->getMapperSchema()->getUseCache());
-        $this->assertFalse($service->getMapperValue()->getUseCache());
-        $this->assertFalse($service->getMapper()->getUseCache());
+        self::assertFalse($service->getUseCache());
+        self::assertFalse($service->getMapperSchema()->getUseCache());
+        self::assertFalse($service->getMapperValue()->getUseCache());
+        self::assertFalse($service->getMapper()->getUseCache());
 
-        $this->assertInstanceOf(MetadataService::class, $service->setUseCache(true));
-        $this->assertTrue($service->getUseCache());
-        $this->assertTrue($service->getMapperSchema()->getUseCache());
-        $this->assertTrue($service->getMapperValue()->getUseCache());
+        self::assertInstanceOf(MetadataService::class, $service->setUseCache(true));
+        self::assertTrue($service->getUseCache());
+        self::assertTrue($service->getMapperSchema()->getUseCache());
+        self::assertTrue($service->getMapperValue()->getUseCache());
 
-        $this->assertInstanceOf(MetadataService::class, $service->setUseCache(false));
+        self::assertInstanceOf(MetadataService::class, $service->setUseCache(false));
 
-        $this->assertFalse($service->getUseCache());
-        $this->assertFalse($service->getMapperSchema()->getUseCache());
-        $this->assertFalse($service->getMapperValue()->getUseCache());
+        self::assertFalse($service->getUseCache());
+        self::assertFalse($service->getMapperSchema()->getUseCache());
+        self::assertFalse($service->getMapperValue()->getUseCache());
 
-        $this->assertInstanceOf(MetadataService::class, $service->setUseCache(true));
+        self::assertInstanceOf(MetadataService::class, $service->setUseCache(true));
 
-        $this->assertTrue($service->getCache()->setItem('servicekey', 'servicedata'));
-        $this->assertNotEmpty($service->getCache()->hasItem('servicekey'));
-        $this->assertEquals('servicedata', $service->getCache()->getItem('servicekey'));
+        self::assertTrue($service->getCache()->setItem('servicekey', 'servicedata'));
+        self::assertNotEmpty($service->getCache()->hasItem('servicekey'));
+        self::assertEquals('servicedata', $service->getCache()->getItem('servicekey'));
 
-        $this->assertTrue($service->getMapperSchema()->getCache()->setItem('schemakey', 'schemadata'));
-        $this->assertNotEmpty($service->getMapperSchema()->getCache()->hasItem('schemakey'));
-        $this->assertNotEmpty($service->getCache()->hasItem('schemakey'));
-        $this->assertEquals('schemadata', $service->getMapperSchema()->getCache()->getItem('schemakey'));
-        $this->assertEquals('schemadata', $service->getCache()->getItem('schemakey'));
+        self::assertTrue($service->getMapperSchema()->getCache()->setItem('schemakey', 'schemadata'));
+        self::assertNotEmpty($service->getMapperSchema()->getCache()->hasItem('schemakey'));
+        self::assertNotEmpty($service->getCache()->hasItem('schemakey'));
+        self::assertEquals('schemadata', $service->getMapperSchema()->getCache()->getItem('schemakey'));
+        self::assertEquals('schemadata', $service->getCache()->getItem('schemakey'));
 
-        $this->assertTrue($service->getMapperValue()->getCache()->setItem('valuekey', 'valuedata'));
-        $this->assertNotEmpty($service->getMapperValue()->getCache()->hasItem('valuekey'));
-        $this->assertNotEmpty($service->getCache()->hasItem('valuekey'));
-        $this->assertEquals('valuedata', $service->getMapperValue()->getCache()->getItem('valuekey'));
-        $this->assertEquals('valuedata', $service->getCache()->getItem('valuekey'));
+        self::assertTrue($service->getMapperValue()->getCache()->setItem('valuekey', 'valuedata'));
+        self::assertNotEmpty($service->getMapperValue()->getCache()->hasItem('valuekey'));
+        self::assertNotEmpty($service->getCache()->hasItem('valuekey'));
+        self::assertEquals('valuedata', $service->getMapperValue()->getCache()->getItem('valuekey'));
+        self::assertEquals('valuedata', $service->getCache()->getItem('valuekey'));
 
-        $this->assertTrue($service->getCache()->flush());
+        self::assertTrue($service->getCache()->flush());
 
-        $this->assertFalse($service->getCache()->hasItem('servicekey'));
-        $this->assertNull($service->getCache()->getItem('servicekey'));
-        $this->assertFalse($service->getCache()->hasItem('schemakey'));
-        $this->assertNull($service->getCache()->getItem('schemakey'));
-        $this->assertFalse($service->getCache()->hasItem('valuekey'));
-        $this->assertNull($service->getCache()->getItem('valuekey'));
-        $this->assertFalse($service->getMapperSchema()->getCache()->hasItem('schemakey'));
-        $this->assertNull($service->getMapperSchema()->getCache()->getItem('schemakey'));
-        $this->assertFalse($service->getMapperValue()->getCache()->hasItem('valuekey'));
-        $this->assertNull($service->getMapperValue()->getCache()->getItem('valuekey'));
+        self::assertFalse($service->getCache()->hasItem('servicekey'));
+        self::assertNull($service->getCache()->getItem('servicekey'));
+        self::assertFalse($service->getCache()->hasItem('schemakey'));
+        self::assertNull($service->getCache()->getItem('schemakey'));
+        self::assertFalse($service->getCache()->hasItem('valuekey'));
+        self::assertNull($service->getCache()->getItem('valuekey'));
+        self::assertFalse($service->getMapperSchema()->getCache()->hasItem('schemakey'));
+        self::assertNull($service->getMapperSchema()->getCache()->getItem('schemakey'));
+        self::assertFalse($service->getMapperValue()->getCache()->hasItem('valuekey'));
+        self::assertNull($service->getMapperValue()->getCache()->getItem('valuekey'));
     }
 
     public function testGetSchema(): void
@@ -310,16 +309,16 @@ class MetadataServiceTest extends BaseTestCase
             $schemaById[$s['id_info']] = $s;
         }
 
-        $this->assertEquals($schemaById, $this->metadataService->getSchema());
-        $this->assertEquals($schemaById, $this->metadataService->getSchema(true));
-        $this->assertEquals($schemaById, $this->metadataService->getSchema(false));
+        self::assertEquals($schemaById, $this->metadataService->getSchema());
+        self::assertEquals($schemaById, $this->metadataService->getSchema(true));
+        self::assertEquals($schemaById, $this->metadataService->getSchema(false));
 
         // apaga o cache do schema, mas mantem do fetchAll
-        $this->assertTrue($this->metadataService->getCache()->removeItem($this->cacheSchemaKey));
+        self::assertTrue($this->metadataService->getCache()->removeItem($this->cacheSchemaKey));
 
-        $this->assertEquals($schemaById, $this->metadataService->getSchema());
-        $this->assertEquals($schemaById, $this->metadataService->getSchema(true));
-        $this->assertEquals($schemaById, $this->metadataService->getSchema(false));
+        self::assertEquals($schemaById, $this->metadataService->getSchema());
+        self::assertEquals($schemaById, $this->metadataService->getSchema(true));
+        self::assertEquals($schemaById, $this->metadataService->getSchema(false));
     }
 
     /**
@@ -328,14 +327,14 @@ class MetadataServiceTest extends BaseTestCase
      */
     public function testGetWhere(): void
     {
-        $this->assertIsArray($this->metadataService->getWhere([]));
-        $this->assertEquals([], $this->metadataService->getWhere([]));
+        self::assertIsArray($this->metadataService->getWhere([]));
+        self::assertEquals([], $this->metadataService->getWhere([]));
 
-        $this->assertIsArray($this->metadataService->getWhere(['metadata' => []]));
-        $this->assertEquals([], $this->metadataService->getWhere(['metadata' => []]));
+        self::assertIsArray($this->metadataService->getWhere(['metadata' => []]));
+        self::assertEquals([], $this->metadataService->getWhere(['metadata' => []]));
 
-        $this->assertIsArray($this->metadataService->getWhere(['metadata' => null]));
-        $this->assertEquals([], $this->metadataService->getWhere(['metadata' => null]));
+        self::assertIsArray($this->metadataService->getWhere(['metadata' => null]));
+        self::assertEquals([], $this->metadataService->getWhere(['metadata' => null]));
     }
 
     /**
@@ -349,92 +348,92 @@ class MetadataServiceTest extends BaseTestCase
 
         /** @var $where Expression[] */
         $where = $this->metadataService->getWhere(['metadata' => ['bool' => true]]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(123)} AND value_boolean = 1)",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['bool' => true]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(123)} AND value_boolean = 1)",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['metadata' => ['bool' => false]]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(123)} AND value_boolean = 0)",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['bool' => false]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(123)} AND value_boolean = 0)",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['metadata' => ['bool' => 1]]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(123)} AND value_boolean = 1)",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['bool' => 1]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(123)} AND value_boolean = 1)",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['metadata' => ['bool' => 0]]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(123)} AND value_boolean = 0)",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['bool' => 0]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(123)} AND value_boolean = 0)",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['metadata' => ['bool' => null]]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(123)} AND value_boolean IS NULL)"
             . " OR NOT EXISTS ({$this->getSqlSchemaString(123)})",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['bool' => null]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(123)} AND value_boolean IS NULL)"
             . " OR NOT EXISTS ({$this->getSqlSchemaString(123)})",
             $where[0]->getExpression()
@@ -469,66 +468,66 @@ class MetadataServiceTest extends BaseTestCase
          * @var $where Expression[]
          */
         $where = $this->metadataService->getWhere(['metadata' => ['integer' => 10]]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(78)} AND value_integer = 10)",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['integer' => 10]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(78)} AND value_integer = 10)",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['metadata' => ['integer' => 0]]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(78)} AND value_integer = 0)",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['integer' => 0]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(78)} AND value_integer = 0)",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['metadata' => ['integer' => null]]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(78)} AND value_integer IS NULL)"
             . " OR NOT EXISTS ({$this->getSqlSchemaString(78)})",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['integer' => null]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(78)} AND value_integer IS NULL)"
             . " OR NOT EXISTS ({$this->getSqlSchemaString(78)})",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['integer' => -99]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(78)} AND value_integer = -99)",
             $where[0]->getExpression()
         );
@@ -544,74 +543,74 @@ class MetadataServiceTest extends BaseTestCase
 
         /** @var $where Expression[] */
         $where = $this->metadataService->getWhere(['metadata' => ['text' => 10]]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(456)} AND value_text = '10')",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['text' => 10]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(456)} AND value_text = '10')",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['metadata' => ['text' => 0]]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(456)} AND value_text = '0')",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['text' => 0]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(456)} AND value_text = '0')",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['metadata' => ['text' => 'qwerty']]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(456)} AND value_text = 'qwerty')",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['text' => 'qwerty']);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(456)} AND value_text = 'qwerty')",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['metadata' => ['text' => '']]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(456)} AND value_text IS NULL)"
             . " OR NOT EXISTS ({$this->getSqlSchemaString(456)})",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['text' => '']);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(456)} AND value_text IS NULL)"
             . " OR NOT EXISTS ({$this->getSqlSchemaString(456)})",
             $where[0]->getExpression()
@@ -619,20 +618,20 @@ class MetadataServiceTest extends BaseTestCase
 
 
         $where = $this->metadataService->getWhere(['metadata' => ['text' => null]]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(456)} AND value_text IS NULL)"
             . " OR NOT EXISTS ({$this->getSqlSchemaString(456)})",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['text' => null]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(456)} AND value_text IS NULL)"
             . " OR NOT EXISTS ({$this->getSqlSchemaString(456)})",
             $where[0]->getExpression()
@@ -649,110 +648,110 @@ class MetadataServiceTest extends BaseTestCase
 
         /** @var $where Expression[] */
         $where = $this->metadataService->getWhere(['metadata' => ['date' => '15/10/2016']]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(321)} AND value_date = '2016-10-15')",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['date' => '15/10/2016']);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(321)} AND value_date = '2016-10-15')",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['metadata' => ['date' => '2016-10-15']]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(321)} AND value_date = '2016-10-15')",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['date' => '2016-10-15']);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(321)} AND value_date = '2016-10-15')",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['metadata' => ['date' => '15/10/2016 14:24:35']]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(321)} AND value_date = '2016-10-15')",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['date' => '15/10/2016 14:24:35']);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(321)} AND value_date = '2016-10-15')",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['metadata' => ['date' => '2016-10-15 14:24:35']]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(321)} AND value_date = '2016-10-15')",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['date' => '2016-10-15 14:24:35']);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(321)} AND value_date = '2016-10-15')",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['metadata' => ['date' => '']]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(321)} AND value_date = '')",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['date' => '']);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(321)} AND value_date = '')",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['metadata' => ['date' => null]]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(321)} AND value_date IS NULL)"
             . " OR NOT EXISTS ({$this->getSqlSchemaString(321)})",
             $where[0]->getExpression()
         );
 
         $where = $this->metadataService->getWhere(['date' => null]);
-        $this->assertIsArray($where);
-        $this->assertCount(1, $where);
-        $this->assertInstanceOf(Expression::class, $where[0]);
-        $this->assertEquals(
+        self::assertIsArray($where);
+        self::assertCount(1, $where);
+        self::assertInstanceOf(Expression::class, $where[0]);
+        self::assertEquals(
             "EXISTS ({$this->getSqlSchemaString(321)} AND value_date IS NULL)"
             . " OR NOT EXISTS ({$this->getSqlSchemaString(321)})",
             $where[0]->getExpression()

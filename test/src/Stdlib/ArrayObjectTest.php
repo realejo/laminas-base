@@ -21,6 +21,8 @@ class ArrayObjectTest extends TestCase
 
         $originalArray = ['one' => 'first', 'three' => 'áéíóú', 'four' => '\\slashes\\'];
 
+        $object->populate($originalArray);
+
         self::assertNotNull($object->toArray());
         self::assertNotEmpty($object->toArray());
         self::assertEquals($originalArray, $object->toArray());

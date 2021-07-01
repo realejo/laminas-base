@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Retorna o HTML de um <select> para usar em formulários
  *
@@ -25,12 +27,7 @@ use Laminas\View\Helper\AbstractHelper;
 
 class FrmEnumChecked extends AbstractHelper
 {
-    /**
-     * @param Enum $enum
-     * @param array $options
-     * @return string
-     */
-    public function __invoke(Enum $enum, $options = [])
+    public function __invoke(Enum $enum, array $options = []): string
     {
         // Recupera os registros
         $names = $enum::getNames();

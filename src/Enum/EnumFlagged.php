@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Realejo\Enum;
 
 use InvalidArgumentException;
@@ -32,14 +34,14 @@ abstract class EnumFlagged extends Enum
     /**
      * Return the name os the constant
      *
-     * @param null $value
+     * @param mixed $value
      * @param string $join
      *
-     * @return string|array
+     * @return string
      */
-    public static function getName($value = null, $join = '/')
+    public static function getName($value, string $join = '/'): ?string
     {
-        if (!is_int($value)) {
+        if ($value === null || !is_int($value)) {
             return null;
         }
 
@@ -52,10 +54,6 @@ abstract class EnumFlagged extends Enum
             }
         }
 
-        if ($join === false) {
-            return $name;
-        }
-
         if (empty($name)) {
             return null;
         }
@@ -64,14 +62,35 @@ abstract class EnumFlagged extends Enum
     }
 
     /**
+     * Return the name os the constant
+     */
+    public static function getNameArray(int $value = null): ?array
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $names = self::getNames();
+
+        $name = [];
+        foreach ($names as $k => $v) {
+            if ($value & $k) {
+                $name[$k] = $v;
+            }
+        }
+
+        return $name;
+    }
+
+    /**
      * Descrição dos status
      *
-     * @param null $value
+     * @param mixed $value
      * @param string $join
      *
-     * @return string|array|null
+     * @return string|null
      */
-    public static function getDescription($value = null, $join = '/')
+    public static function getDescription($value, string $join = '/'): ?string
     {
         if (!is_int($value)) {
             return null;
@@ -86,10 +105,6 @@ abstract class EnumFlagged extends Enum
             }
         }
 
-        if ($join === false) {
-            return $description;
-        }
-
         if (empty($description)) {
             return null;
         }
@@ -98,20 +113,24 @@ abstract class EnumFlagged extends Enum
     }
 
     /**
-     * Return the name os the constant
-     *
-     * @param null $value
-     * @param string $join
-     *
-     * @return string|array
+     * Descrição dos status
      */
-    public function getValueName($value = null, $join = '/')
+    public static function getDescriptionArray(int $value = null): ?array
     {
-        if ($value === null && $this->value !== null) {
-            $value = $this->value;
+        if ($value === null) {
+            return null;
         }
 
-        return self::getName($value, $join);
+        $descriptions = self::getDescriptions();
+
+        $description = [];
+        foreach ($descriptions as $k => $v) {
+            if ($value & $k) {
+                $description[$k] = $v;
+            }
+        }
+
+        return $description;
     }
 
     /**
@@ -122,13 +141,51 @@ abstract class EnumFlagged extends Enum
      *
      * @return string|array
      */
-    public function getValueDescription($value = null, $join = '/')
+    public function getValueName($value = null, string $join = '/'): ?string
+    {
+        if ($value === null && $this->value !== null) {
+            $value = $this->value;
+        }
+
+        return self::getName($value, $join);
+    }
+
+    public function getValueNameArray($value = null): ?array
+    {
+        if ($value === null && $this->value !== null) {
+            $value = $this->value;
+        }
+
+        return self::getNameArray($value);
+    }
+
+    /**
+     * Return the name os the constant
+     *
+     * @param null $value
+     * @param string $join
+     *
+     * @return string|null
+     */
+    public function getValueDescription($value = null, string $join = '/'): ?string
     {
         if ($value === null && $this->value !== null) {
             $value = $this->value;
         }
 
         return self::getDescription($value, $join);
+    }
+
+    /**
+     * Return the name os the constant
+     */
+    public function getValueDescriptionArray(int $value = null): ?array
+    {
+        if ($value === null && $this->value !== null) {
+            $value = $this->value;
+        }
+
+        return self::getDescriptionArray($value);
     }
 
     public static function isValid($value): bool
@@ -149,6 +206,7 @@ abstract class EnumFlagged extends Enum
         }
 
         $maxFlaggedValue = max($const) * 2 - 1;
+
         return ($value <= $maxFlaggedValue);
     }
 

@@ -1,24 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @see https://gist.github.com/mcaskill/02636e5970be1bb22270#file-function-date-format-conversion-php
  */
 
 namespace Realejo\View\Helper;
 
+use DateTime;
 use Laminas\View\Helper\AbstractHelper;
 
 class FormatDate extends AbstractHelper
 {
     /**
-     * @param \DateTime| string $date
+     * @param DateTime| string $date
      * @param string $format
      * @return string
      */
-    public function __invoke($date, $format)
+    public function __invoke($date, string $format)
     {
-        if (!$date instanceof \DateTime) {
-            $date = new \DateTime($date);
+        if (!$date instanceof DateTime) {
+            $date = new DateTime($date);
         }
 
         $locale = setlocale(LC_TIME, 0);
@@ -44,7 +47,7 @@ class FormatDate extends AbstractHelper
      * @example Convert `%A, %B %e, %Y, %l:%M %P` to `l, F j, Y, g:i a`,
      *              and vice versa for "Saturday, March 10, 2001, 5:16 pm"
      */
-    private function dateFormatTo($format, $syntax)
+    private function dateFormatTo(string $format, string $syntax)
     {
         // http://php.net/manual/en/function.strftime.php
         $strf_syntax = [
@@ -144,7 +147,7 @@ class FormatDate extends AbstractHelper
      * @param string $strf_format A `strftime()` date/time format
      * @return string
      */
-    private function strftimeFormatToDateFormat($strf_format)
+    private function strftimeFormatToDateFormat(string $strf_format)
     {
         return $this->dateFormatTo($strf_format, 'date');
     }
@@ -155,7 +158,7 @@ class FormatDate extends AbstractHelper
      * @param string $date_format A `date()` date/time format
      * @return string
      */
-    private function dateFormatToStrftimeFormat($date_format)
+    private function dateFormatToStrftimeFormat(string $date_format)
     {
         return $this->dateFormatTo($date_format, 'strf');
     }

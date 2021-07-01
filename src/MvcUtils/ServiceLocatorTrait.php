@@ -1,37 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Realejo\MvcUtils;
 
 use Laminas\ServiceManager\ServiceManager;
+use RuntimeException;
 
 trait ServiceLocatorTrait
 {
 
-    /**
-     * @var ServiceManager
-     */
-    public $serviceLocator;
+    public ServiceManager $serviceLocator;
 
-    /**
-     * @return ServiceManager
-     */
-    public function getServiceLocator()
+    public function getServiceLocator(): ServiceManager
     {
         return $this->serviceLocator;
     }
 
-    /**
-     * @param ServiceManager $serviceLocator
-     * @return self
-     */
-    public function setServiceLocator(ServiceManager $serviceLocator)
+    public function setServiceLocator(ServiceManager $serviceLocator): self
     {
         $this->serviceLocator = $serviceLocator;
 
         return $this;
     }
 
-    public function hasServiceLocator()
+    public function hasServiceLocator(): bool
     {
         return null !== $this->serviceLocator;
     }
@@ -39,10 +32,10 @@ trait ServiceLocatorTrait
     public function getFromServiceLocator($class)
     {
         if (!$this->hasServiceLocator()) {
-            throw new \RuntimeException('Service locator not defined!');
+            throw new RuntimeException('Service locator not defined!');
         }
 
-        if (!$this->getServiceLocator()->has($class) && $this->getServiceLocator() instanceof ServiceManager) {
+        if (!$this->getServiceLocator()->has($class)) {
             $newService = new $class();
             if (method_exists($newService, 'setServiceLocator')) {
                 $newService->setServiceLocator($this->getServiceLocator());

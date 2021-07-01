@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Realejo\View\Helper;
 
 use Laminas\Form\Form;
@@ -24,8 +26,7 @@ use RuntimeException;
  */
 class GetInputFilter extends AbstractHelper
 {
-    /** @var Translator */
-    private $translator;
+    private Translator $translator;
 
     public function __construct(Translator $translator = null)
     {
@@ -58,7 +59,7 @@ class GetInputFilter extends AbstractHelper
      *
      * @return array|string        Campos do formulario com regras e mensagens
      */
-    private function getFormValidationFields(Form $form, $json = true)
+    private function getFormValidationFields(Form $form, bool $json = true)
     {
         $result = [];
 
@@ -71,7 +72,7 @@ class GetInputFilter extends AbstractHelper
                         $result[$element->getName()]['validators']['notEmpty']['message'] = $this->getTranslator(
                         )->translate($messages[NotEmpty::IS_EMPTY]);
                         break;
-                    #TODO O regex do formvalidation é diferente do php, entao tem que trocar na mão la na view
+                    // TODO O regex do formvalidation é diferente do php, entao tem que trocar na mão la na view
                     case $validator['instance'] instanceof Regex:
                         $messages = $validator['instance']->getMessageTemplates();
                         $result[$element->getName()]['validators']['regexp']['message'] = $this->getTranslator(
@@ -204,7 +205,7 @@ class GetInputFilter extends AbstractHelper
      * @param bool $useTooltip
      * @return string
      */
-    public function getFormValidationJS(Form $form, string $target, $useTooltip = false)
+    public function getFormValidationJS(Form $form, string $target, bool $useTooltip = false)
     {
         if (empty($target)) {
             throw new \InvalidArgumentException(

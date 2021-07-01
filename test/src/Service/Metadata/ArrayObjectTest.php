@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RealejoTest\Service\Metadata;
 
 use PHPUnit\Framework\Error\Notice;
@@ -14,130 +16,123 @@ class ArrayObjectTest extends TestCase
     public function testMetadata(): void
     {
         $object = new ArrayObject();
-        $this->assertNotNull($object->getMetadata());
-        $this->assertEmpty($object->getMetadata());
-        $this->assertInstanceOf(StdlibArrayObject::class, $object);
+        self::assertNotNull($object->getMetadata());
+        self::assertEmpty($object->getMetadata());
+        self::assertInstanceOf(StdlibArrayObject::class, $object);
 
         $metadata = new MetadataArrayObject(['one' => 'first']);
 
-        $this->assertInstanceOf(ArrayObject::class, $object->setMetadata($metadata));
-        $this->assertInstanceOf(MetadataArrayObject::class, $object->getMetadata());
-        $this->assertEquals(['one' => 'first'], $object->getMetadata()->toArray());
+        $object->setMetadata($metadata);
+        self::assertEquals(['one' => 'first'], $object->getMetadata()->toArray());
 
-        $this->assertTrue($object->hasMetadata('one'));
-        $this->assertFalse($object->hasMetadata('two'));
+        self::assertTrue($object->hasMetadata('one'));
+        self::assertFalse($object->hasMetadata('two'));
 
         $metadata = ['two' => 'second'];
 
-        $this->assertInstanceOf(ArrayObject::class, $object->setMetadata($metadata));
-        $this->assertInstanceOf(MetadataArrayObject::class, $object->getMetadata());
+        $object->setMetadata($metadata);
 
-        $this->assertTrue($object->hasMetadata('two'));
-        $this->assertFalse($object->hasMetadata('one'));
+        self::assertTrue($object->hasMetadata('two'));
+        self::assertFalse($object->hasMetadata('one'));
     }
 
     public function testAddMetadata(): void
     {
         $object = new ArrayObject();
-        $this->assertEmpty($object->getMetadata());
-        $this->assertInstanceOf(StdlibArrayObject::class, $object);
+        self::assertEmpty($object->getMetadata());
+        self::assertInstanceOf(StdlibArrayObject::class, $object);
 
         $metadata = new MetadataArrayObject(['one' => 'first']);
 
-        $this->assertInstanceOf(ArrayObject::class, $object->setMetadata($metadata));
-        $this->assertInstanceOf(MetadataArrayObject::class, $object->getMetadata());
+        $object->setMetadata($metadata);
 
-        $this->assertFalse($object->hasMetadata('two'));
-        $this->assertTrue($object->hasMetadata('one'));
+        self::assertFalse($object->hasMetadata('two'));
+        self::assertTrue($object->hasMetadata('one'));
 
         $metadata = ['two' => 'second'];
 
-        $this->assertInstanceOf(ArrayObject::class, $object->addMetadata($metadata));
-        $this->assertInstanceOf(MetadataArrayObject::class, $object->getMetadata());
+        $object->addMetadata($metadata);
 
-        $this->assertTrue($object->hasMetadata('two'));
-        $this->assertTrue($object->hasMetadata('one'));
+        self::assertTrue($object->hasMetadata('two'));
+        self::assertTrue($object->hasMetadata('one'));
     }
 
     public function testPopulateToArray(): void
     {
         $object = new ArrayObject(['one' => 'first']);
-        $this->assertInstanceOf(MetadataArrayObject::class, $object->getMetadata());
-        $this->assertCount(0, $object->getMetadata());
-        $this->assertEmpty($object->getMetadata());
+        $object->getMetadata();
+        self::assertCount(0, $object->getMetadata());
+        self::assertEmpty($object->getMetadata());
 
-        $this->assertTrue(isset($object->one));
-        $this->assertTrue(isset($object['one']));
+        self::assertTrue(isset($object->one));
+        self::assertTrue(isset($object['one']));
 
-        $this->assertFalse(isset($object->two));
-        $this->assertFalse(isset($object['two']));
+        self::assertFalse(isset($object->two));
+        self::assertFalse(isset($object['two']));
 
-        $this->assertEquals(['one' => 'first'], $object->toArray());
+        self::assertEquals(['one' => 'first'], $object->toArray());
 
         $object = new ArrayObject(['one' => 'first', 'metadata' => ['two' => 'second']]);
-        $this->assertInstanceOf(MetadataArrayObject::class, $object->getMetadata());
-        $this->assertCount(1, $object->getMetadata());
+        self::assertCount(1, $object->getMetadata());
 
-        $this->assertTrue(isset($object->one));
-        $this->assertTrue(isset($object['one']));
+        self::assertTrue(isset($object->one));
+        self::assertTrue(isset($object['one']));
 
-        $this->assertTrue(isset($object->two));
-        $this->assertTrue(isset($object['two']));
+        self::assertTrue(isset($object->two));
+        self::assertTrue(isset($object['two']));
 
-        $this->assertFalse(isset($object->three));
-        $this->assertFalse(isset($object['three']));
+        self::assertFalse(isset($object->three));
+        self::assertFalse(isset($object['three']));
 
-        $this->assertEquals(['two' => 'second'], $object->getMetadata()->toArray());
-        $this->assertEquals(['one' => 'first', 'metadata' => ['two' => 'second']], $object->toArray());
+        self::assertEquals(['two' => 'second'], $object->getMetadata()->toArray());
+        self::assertEquals(['one' => 'first', 'metadata' => ['two' => 'second']], $object->toArray());
 
         $object = new ArrayObject(['one' => 'first', 'metadata' => '{"two":"second"}']);
-        $this->assertInstanceOf(MetadataArrayObject::class, $object->getMetadata());
-        $this->assertCount(1, $object->getMetadata());
+        self::assertCount(1, $object->getMetadata());
 
-        $this->assertTrue(isset($object->one));
-        $this->assertTrue(isset($object['one']));
+        self::assertTrue(isset($object->one));
+        self::assertTrue(isset($object['one']));
 
-        $this->assertTrue(isset($object->two));
-        $this->assertTrue(isset($object['two']));
+        self::assertTrue(isset($object->two));
+        self::assertTrue(isset($object['two']));
 
-        $this->assertFalse(isset($object->three));
-        $this->assertFalse(isset($object['three']));
+        self::assertFalse(isset($object->three));
+        self::assertFalse(isset($object['three']));
 
-        $this->assertEquals(['two' => 'second'], $object->getMetadata()->toArray());
-        $this->assertEquals(['one' => 'first', 'metadata' => ['two' => 'second']], $object->toArray());
+        self::assertEquals(['two' => 'second'], $object->getMetadata()->toArray());
+        self::assertEquals(['one' => 'first', 'metadata' => ['two' => 'second']], $object->toArray());
     }
 
     public function testGetterSetter(): void
     {
         $object = new ArrayObject(['one' => 'first', 'metadata' => ['two' => 'second']]);
-        $this->assertInstanceOf(MetadataArrayObject::class, $object->getMetadata());
-        $this->assertCount(1, $object->getMetadata());
+        self::assertCount(1, $object->getMetadata());
 
         $object->one = 'once';
-        $this->assertEquals('once', $object->one);
-        $this->assertEquals('once', $object['one']);
+        self::assertEquals('once', $object->one);
+        self::assertEquals('once', $object['one']);
 
         $object['one'] = 'more';
-        $this->assertEquals('more', $object->one);
-        $this->assertEquals('more', $object['one']);
+        self::assertEquals('more', $object->one);
+        self::assertEquals('more', $object['one']);
 
         $object->two = 'time';
-        $this->assertEquals('time', $object->two);
-        $this->assertEquals('time', $object['two']);
+        self::assertEquals('time', $object->two);
+        self::assertEquals('time', $object['two']);
 
         $object['two'] = 'lets celebrate';
-        $this->assertEquals('lets celebrate', $object->two);
-        $this->assertEquals('lets celebrate', $object['two']);
+        self::assertEquals('lets celebrate', $object->two);
+        self::assertEquals('lets celebrate', $object['two']);
 
         unset($object->two);
-        $this->assertNull($object->two);
-        $this->assertNull($object['two']);
+        self::assertNull($object->two);
+        self::assertNull($object['two']);
     }
 
     public function testGetKeyNonExisting(): void
     {
         $object = new ArrayObject();
-        $this->assertFalse(isset($object['test']));
+        self::assertFalse(isset($object['test']));
 
         $this->expectException(Notice::class);
 
@@ -147,7 +142,7 @@ class ArrayObjectTest extends TestCase
     public function testGetPropertyNonExisting(): void
     {
         $object = new ArrayObject();
-        $this->assertFalse(isset($object->test));
+        self::assertFalse(isset($object->test));
 
         $this->expectException(Notice::class);
 
@@ -158,11 +153,11 @@ class ArrayObjectTest extends TestCase
     {
         $object = new ArrayObject();
         $object->setLockedKeys(false);
-        $this->assertFalse(isset($object['test']));
+        self::assertFalse(isset($object['test']));
 
         $this->expectException(Notice::class);
 
-        $this->assertNull($object['test']);
+        self::assertNull($object['test']);
 
         // E como testo isso?
         $object['test'];
@@ -172,17 +167,17 @@ class ArrayObjectTest extends TestCase
     {
         $object = new ArrayObject();
         $object->setLockedKeys(false);
-        $this->assertFalse(isset($object->test));
+        self::assertFalse(isset($object->test));
 
         $this->expectException(Notice::class);
 
-        $this->assertNull($object->test);
+        self::assertNull($object->test);
     }
 
     public function testSetKeyNonExisting(): void
     {
         $object = new ArrayObject();
-        $this->assertFalse(isset($object['test']));
+        self::assertFalse(isset($object['test']));
 
         $this->expectException(Notice::class);
 
@@ -192,7 +187,7 @@ class ArrayObjectTest extends TestCase
     public function testSetPropertyNonExisting(): void
     {
         $object = new ArrayObject();
-        $this->assertFalse(isset($object->test));
+        self::assertFalse(isset($object->test));
 
         $this->expectException(Notice::class);
 
@@ -202,7 +197,7 @@ class ArrayObjectTest extends TestCase
     public function testUnsetKeyNonExisting(): void
     {
         $object = new ArrayObject();
-        $this->assertFalse(isset($object['test']));
+        self::assertFalse(isset($object['test']));
 
         $this->expectException(RuntimeException::class);
 
@@ -215,7 +210,7 @@ class ArrayObjectTest extends TestCase
 
         $this->expectException(RuntimeException::class);
 
-        $this->assertFalse(isset($object->test));
+        self::assertFalse(isset($object->test));
 
         // E como testo isso?
 

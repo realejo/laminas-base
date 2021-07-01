@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Model para recuperar as pastas de upload e verificar se elas possuem as permissões necessárias
  */

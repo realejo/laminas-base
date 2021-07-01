@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Retorna o HTML de um <select> apra usar em formulários
  *
@@ -19,19 +21,13 @@
 
 namespace Realejo\View\Helper;
 
+use Laminas\View\Helper\AbstractHelper;
 use Realejo\Enum\Enum;
 use Realejo\Enum\EnumFlagged;
-use Laminas\View\Helper\AbstractHelper;
 
 class FrmEnumCheckbox extends AbstractHelper
 {
-    /**
-     * @param Enum $enum
-     * @param string $name
-     * @param array $options
-     * @return string
-     */
-    public function __invoke(Enum $enum, $name, $options = [])
+    public function __invoke(Enum $enum, string $name, array $options = []): string
     {
         // Recupera os registros
         $names = $enum::getNames();
@@ -88,6 +84,7 @@ class FrmEnumCheckbox extends AbstractHelper
                         . implode('', array_slice($checkbox, ($c - 1) * $slice, $slice))
                         . '</div>';
                 }
+
                 return '<div class="row">' . implode('', $columns) . '</div>';
             }
         }

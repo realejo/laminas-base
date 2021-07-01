@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @see https://github.com/cakephp/cakephp/blob/ec23730aff39a2ca1230c2f34cbff92a96a44a75/src/Utility/Text.php
  * @link http://book.cakephp.org/3.0/en/views/helpers/text.html#truncating-text
@@ -24,13 +26,9 @@ class Text extends AbstractHelper
      * - `html` If true, HTML tags would be handled correctly
      * - `trimWidth` If true, $text will be truncated with the width
      *
-     * @param string $text String to truncate.
-     * @param int $length Length of returned string, including ellipsis.
-     * @param array $options An array of HTML attributes and options.
-     * @return string Trimmed string.
      * @link http://book.cakephp.org/3.0/en/core-libraries/string.html#truncating-text
      */
-    public static function truncate($text, $length = 100, array $options = [])
+    public static function truncate(string $text, int $length = 100, array $options = []): string
     {
         $default = [
             'ellipsis' => '...',
@@ -56,10 +54,10 @@ class Text extends AbstractHelper
                 $contentLength = self::strlen($tag[3], $options);
                 if ($truncate === '') {
                     if (
-                        !preg_match(
-                            '/img|br|input|hr|area|base|basefont|col|frame|isindex|link|meta|param/i',
-                            $tag[2]
-                        )
+                    !preg_match(
+                        '/img|br|input|hr|area|base|basefont|col|frame|isindex|link|meta|param/i',
+                        $tag[2]
+                    )
                     ) {
                         if (preg_match('/<[\w]+[^>]*>/', $tag[0])) {
                             array_unshift($openTags, $tag[2]);
@@ -103,10 +101,11 @@ class Text extends AbstractHelper
                 $result = self::removeLastWord($result);
             }
             // If result is empty, then we don't need to count ellipsis in the cut.
-            if (!strlen($result)) {
+            if ($result === '') {
                 $result = self::substr($text, 0, $length, $options);
             }
         }
+
         return $prefix . $result . $suffix;
     }
 
@@ -122,7 +121,7 @@ class Text extends AbstractHelper
      * @param array $options An array of options.
      * @return int
      */
-    private static function strlen($text, array $options)
+    private static function strlen(string $text, array $options): int
     {
         if (empty($options['trimWidth'])) {
             $strlen = 'mb_strlen';
@@ -137,10 +136,12 @@ class Text extends AbstractHelper
             $pattern,
             static function ($match) use ($strlen) {
                 $utf8 = html_entity_decode($match[0], ENT_HTML5 | ENT_QUOTES, 'UTF-8');
+
                 return str_repeat(' ', $strlen($utf8, 'UTF-8'));
             },
             $text
         );
+
         return $strlen($replace);
     }
 
@@ -151,14 +152,8 @@ class Text extends AbstractHelper
      *
      * - `html` If true, HTML entities will be handled as decoded characters.
      * - `trimWidth` If true, will be truncated with specified width.
-     *
-     * @param string $text The input string.
-     * @param int $start The position to begin extracting.
-     * @param int $length The desired length.
-     * @param array $options An array of options.
-     * @return string
      */
-    private static function substr($text, $start, $length, array $options)
+    private static function substr(string $text, int $start, int $length, array $options): string
     {
         if (empty($options['trimWidth'])) {
             $substr = 'mb_substr';
@@ -223,15 +218,10 @@ class Text extends AbstractHelper
                 break;
             }
         }
+
         return $result;
     }
 
-    /**
-     * Removes the last word from the input text.
-     *
-     * @param string $text The input text
-     * @return string
-     */
     private static function removeLastWord(string $text): string
     {
         $spacepos = mb_strrpos($text, ' ');
@@ -242,8 +232,10 @@ class Text extends AbstractHelper
             if (mb_strwidth($lastWord) === mb_strlen($lastWord)) {
                 $text = mb_substr($text, 0, $spacepos);
             }
+
             return $text;
         }
+
         return '';
     }
 }

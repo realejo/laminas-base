@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Aplicação de MPTT
  *
@@ -8,8 +10,11 @@
 
 namespace Realejo\Service\Mptt;
 
-use Realejo\Service\ServiceAbstract;
+use InvalidArgumentException;
+use Laminas\Db\Metadata\Source\Factory;
 use Laminas\Db\Sql\Predicate\Expression;
+use Realejo\Service\ServiceAbstract;
+use RuntimeException;
 
 abstract class MpttServiceAbstract extends ServiceAbstract
 {
@@ -23,17 +28,13 @@ abstract class MpttServiceAbstract extends ServiceAbstract
      *  'column'    => column name for identifying row (primary key assumed)
      *  'refColumn' => column name for parent id (if not set, will look in reference map for own table match)
      *  'order'     => order by for rebuilding tree (e.g. "`name` ASC, `age` DESC")
-     *
-     * @var array
      */
-    protected $traversal = [];
+    protected array $traversal = [];
 
     /**
      * Automatically is set to true once traversal info is set and verified
-     *
-     * @var boolean
      */
-    protected $isTraversable = false;
+    protected bool $isTraversable = false;
 
     /**
      * Modified to initialize traversal
@@ -50,7 +51,6 @@ abstract class MpttServiceAbstract extends ServiceAbstract
 
     /**
      * Prepares the traversal information
-     *
      */
     protected function initTraversal()
     {
@@ -65,8 +65,8 @@ abstract class MpttServiceAbstract extends ServiceAbstract
             $this->traversal['left'] = 'lft';
         }
 
-        if (!in_array($this->traversal['left'], $columns)) {
-            throw new \InvalidArgumentException(
+        if (!in_array($this->traversal['left'], $columns, true)) {
+            throw new InvalidArgumentException(
                 "Column '" . $this->traversal['left'] . "' not found in table for tree traversal"
             );
         }
@@ -76,8 +76,8 @@ abstract class MpttServiceAbstract extends ServiceAbstract
             $this->traversal['right'] = 'rgt';
         }
 
-        if (!in_array($this->traversal['right'], $columns)) {
-            throw new \InvalidArgumentException(
+        if (!in_array($this->traversal['right'], $columns, true)) {
+            throw new InvalidArgumentException(
                 "Column '" . $this->traversal['right'] . "' not found in table for tree traversal"
             );
         }
@@ -87,19 +87,19 @@ abstract class MpttServiceAbstract extends ServiceAbstract
             $this->traversal['column'] = $this->getMapper()->getTableKey();
         }
 
-        if (!in_array($this->traversal['column'], $columns)) {
-            throw new \InvalidArgumentException(
+        if (!in_array($this->traversal['column'], $columns, true)) {
+            throw new InvalidArgumentException(
                 "Column '" . $this->traversal['column'] . "' not found in table for tree traversal"
             );
         }
 
         // Check for reference column
         if (!isset($this->traversal['refColumn'])) {
-            throw new \InvalidArgumentException("Unable to determine reference column for traversal");
+            throw new InvalidArgumentException("Unable to determine reference column for traversal");
         }
 
-        if (!in_array($this->traversal['refColumn'], $columns)) {
-            throw new \InvalidArgumentException(
+        if (!in_array($this->traversal['refColumn'], $columns, true)) {
+            throw new InvalidArgumentException(
                 "Column '" . $this->traversal['refColumn'] . "' not found in table for tree traversal"
             );
         }
@@ -109,8 +109,8 @@ abstract class MpttServiceAbstract extends ServiceAbstract
             $this->traversal['order'] = $this->getMapper()->getTableKey();
         }
 
-        if (!in_array($this->traversal['order'], $columns)) {
-            throw new \InvalidArgumentException(
+        if (!in_array($this->traversal['order'], $columns, true)) {
+            throw new InvalidArgumentException(
                 "Column '" . $this->traversal['order'] . "' not found in table for tree traversal"
             );
         }
@@ -121,10 +121,8 @@ abstract class MpttServiceAbstract extends ServiceAbstract
     /**
      * Public function to rebuild tree traversal. The recursive function
      * _rebuildTreeTraversal() must be called without arguments.
-     *
-     * @return $this - Fluent interface
      */
-    public function rebuildTreeTraversal()
+    public function rebuildTreeTraversal(): self
     {
         $this->rebuildTreeTraversalRecursive();
 
@@ -135,11 +133,11 @@ abstract class MpttServiceAbstract extends ServiceAbstract
      * Recursively rebuilds the modified preorder tree traversal
      * data based on a parent id column
      *
-     * @param int $parentId
+     * @param int|null $parentId
      * @param int $leftValue
      * @return int new right value
      */
-    protected function rebuildTreeTraversalRecursive($parentId = null, $leftValue = 0)
+    protected function rebuildTreeTraversalRecursive(int $parentId = null, int $leftValue = 0): int
     {
         $this->verifyTraversable();
 
@@ -170,7 +168,7 @@ abstract class MpttServiceAbstract extends ServiceAbstract
                 ->update(
                     [
                         $this->traversal['left'] => $leftValue,
-                        $this->traversal['right'] => $rightValue
+                        $this->traversal['right'] => $rightValue,
                     ],
                     [$this->traversal['column'] => $parentId]
                 );
@@ -213,7 +211,7 @@ abstract class MpttServiceAbstract extends ServiceAbstract
                 [$this->getMapper()->getTableKey() => $parent_id]
             )->current();
             if (null === $parent) {
-                throw new \RuntimeException("Traversable error: Parent id {$parent_id} not found");
+                throw new RuntimeException("Traversable error: Parent id {$parent_id} not found");
             }
 
             $lt = (double)$parent->{$this->traversal['left']};
@@ -351,7 +349,7 @@ abstract class MpttServiceAbstract extends ServiceAbstract
     public function getColumns(): ?array
     {
         if (!isset($this->_columns)) {
-            $metadata = \Laminas\Db\Metadata\Source\Factory::createSourceFromAdapter(
+            $metadata = Factory::createSourceFromAdapter(
                 $this->getMapper()->getTableGateway()->getAdapter()
             );
             $this->_columns = $metadata->getColumnNames($this->getMapper()->getTableName());
@@ -366,10 +364,8 @@ abstract class MpttServiceAbstract extends ServiceAbstract
      * if passes a string, assumes it's the refColumn
      *
      * @param string|array $traversal
-     *
-     * @return self
      */
-    public function setTraversal($traversal)
+    public function setTraversal($traversal): self
     {
         // Verifica se é apenas o campo de referencia
         if (is_string($traversal)) {
@@ -387,19 +383,18 @@ abstract class MpttServiceAbstract extends ServiceAbstract
      * Return if the table is traversable
      * Only set to true after initTraversal
      */
-    public function isTraversable()
+    public function isTraversable(): bool
     {
         return $this->isTraversable;
     }
 
-
     /**
      * Verifies that the current table is a traversable
      */
-    protected function verifyTraversable()
+    protected function verifyTraversable(): void
     {
         if (!$this->isTraversable()) {
-            throw new \RuntimeException("Table {$this->getMapper()->getTableName()} is not traversable");
+            throw new RuntimeException("Table {$this->getMapper()->getTableName()} is not traversable");
         }
     }
 }

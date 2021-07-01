@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Realejo\View\Helper;
 
 use Laminas\View\Helper\AbstractHelper;
@@ -14,9 +16,9 @@ use Laminas\View\Helper\AbstractHelper;
  */
 class FormValidation extends AbstractHelper
 {
-    private static $initialized = false;
+    private static bool $initialized = false;
 
-    public function init()
+    public function init(): void
     {
         if (!self::$initialized) {
             $config = $this->getView()->applicationConfig();
@@ -45,12 +47,7 @@ class FormValidation extends AbstractHelper
         }
     }
 
-    /**
-     * Grava o nome e marca o selecionado em um SELECT
-     *
-     * @return string valor formatado
-     */
-    public function __invoke()
+    public function __invoke(): self
     {
         $this->init();
         return $this;

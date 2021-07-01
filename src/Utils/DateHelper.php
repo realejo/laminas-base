@@ -1,22 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Realejo\Utils;
+
+use DateTime;
+use DateTimeInterface;
 
 class DateHelper
 {
     /**
      * Transforma data no formato d/m/a para o formato a-m-d
      *
-     * @param string|\DateTime $d data a se transformada para o formato do MYSQL
+     * @param string|DateTimeInterface $d data a se transformada para o formato do MYSQL
      * @return string
      */
-    public static function toMySQL($d)
+    public static function toMySQL($d): ?string
     {
         if (empty($d)) {
             return null;
         }
 
-        if ($d instanceof \DateTime) {
+        if ($d instanceof DateTime) {
             $sql = $d->format('Y-m-d H:i:s');
         } else {
             $datetime = explode(' ', $d);
@@ -44,17 +49,14 @@ class DateHelper
      *         i - minutos
      *         s - segundos (padrão)
      *
-     * @param \DateTime $d1
-     * @param \DateTime $d2
-     * @param string $part
+     * @param DateTimeInterface $d1
+     * @param DateTimeInterface $d2
+     * @param string|null $part
      * @return int
      */
-    public static function staticDiff(\DateTime $d1, \DateTime $d2, $part = null)
+    public static function staticDiff(DateTimeInterface $d1, DateTimeInterface $d2, string $part = null): int
     {
-        $d1 = $d1->getTimestamp();
-        $d2 = $d2->getTimestamp();
-
-        $diff = abs($d1 - $d2);
+        $diff = abs($d1->getTimestamp() - $d2->getTimestamp());
 
         switch ($part) {
             case 'y':
@@ -77,37 +79,25 @@ class DateHelper
 
     /**
      * Validate if a date is valid and is in the given format
-     *
-     * @param string $date
-     * @param string $format
-     *
-     * @return boolean
      */
-    public static function isDate(string $date, string $format = 'm/d/Y')
+    public static function isDate(string $date, string $format = 'm/d/Y'): bool
     {
-        $dateTime = \DateTime::createFromFormat($format, $date);
+        $DateTimeInterface = DateTime::createFromFormat($format, $date);
 
         // Verifica se apareceu algum erro
-        $errors = \DateTime::getLastErrors();
+        $errors = DateTime::getLastErrors();
         if (!empty($errors['warning_count'])) {
             return false;
         }
-        return $dateTime !== false;
+
+        return $DateTimeInterface !== false;
     }
 
-    /**
-     *
-     * Retorna se uma data é valida
-     *
-     * @param string $date
-     * @param string $format
-     *
-     * @return true
-     */
-    public static function isFormat(string $format, string $date)
+    public static function isFormat(string $format, string $date): bool
     {
-        \DateTime::createFromFormat($format, $date);
-        $date_errors = \DateTime::getLastErrors();
-        return (($date_errors['warning_count'] + $date_errors['error_count']) == 0);
+        DateTime::createFromFormat($format, $date);
+        $date_errors = DateTime::getLastErrors();
+
+        return (($date_errors['warning_count'] + $date_errors['error_count']) === 0);
     }
 }

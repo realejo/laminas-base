@@ -1,82 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Realejo\Service;
 
 class PaginatorOptions
 {
 
-    /**
-     * @var number
-     */
-    protected $pageRange = 10;
+    protected int $pageRange = 10;
+    protected int $currentPageNumber = 1;
+    protected int $itemCountPerPage = 10;
 
-    /**
-     * @var number
-     */
-    protected $currentPageNumber = 1;
-
-    /**
-     * @var number
-     */
-    protected $itemCountPerPage = 10;
-
-    /**
-     * @param number $pageRange
-     * @return PaginatorOptions
-     */
-    public function setPageRange($pageRange)
+    public function setPageRange(int $pageRange): self
     {
         $this->pageRange = $pageRange;
 
-        // Mantem a cadeia
         return $this;
     }
 
-    /**
-     * @param number $currentPageNumber
-     * @return PaginatorOptions
-     */
-    public function setCurrentPageNumber($currentPageNumber)
+    public function setCurrentPageNumber(int $currentPageNumber): self
     {
         $this->currentPageNumber = $currentPageNumber;
 
-        // Mantem a cadeia
         return $this;
     }
 
-    /**
-     * @param number $itemCountPerPage
-     * @return PaginatorOptions
-     */
-    public function setItemCountPerPage($itemCountPerPage)
+    public function setItemCountPerPage(int $itemCountPerPage): self
     {
         $this->itemCountPerPage = $itemCountPerPage;
 
-        // Mantem a cadeia
         return $this;
     }
 
-    /**
-     * @return number
-     */
-    public function getPageRange()
+    public function getPageRange(): int
     {
         return $this->pageRange;
     }
 
-    /**
-     * @return number
-     */
-    public function getCurrentPageNumber()
+    public function getCurrentPageNumber(): int
     {
         return $this->currentPageNumber;
     }
 
-    /**
-     *
-     * @return number
-     */
-    public function getItemCountPerPage()
+    public function getItemCountPerPage(): int
     {
         return $this->itemCountPerPage;
     }

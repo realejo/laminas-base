@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Realejo\Service\Metadata;
 
 use DateTime;
@@ -24,19 +26,21 @@ class MetadataService extends ServiceAbstract
 
     protected $mapperValues;
 
+    /** @var string|MetadataMapper */
     protected $mapperSchema;
 
+    /** @var string|MetadataMapper */
     protected $mapperValue;
 
-    protected $referenceKey;
+    protected string $referenceKey;
 
-    protected $cacheKey;
+    protected string $cacheKey;
 
     protected $lastSaveMetadataLog;
 
-    protected $infoKeyName = 'id_info';
+    protected string $infoKeyName = 'id_info';
 
-    protected $infoForeignKeyName = 'fk_info';
+    protected string $infoForeignKeyName = 'fk_info';
 
     public function getWhere(array $where): array
     {
@@ -219,7 +223,7 @@ class MetadataService extends ServiceAbstract
      * Retorna os valores de todos os metadados
      *
      * @param int $foreignkey Chave de referencia
-     * @param boolean $complete OPCIONAL Retorna os campos não definidos como NULL.
+     * @param bool $complete OPCIONAL Retorna os campos não definidos como NULL.
      * @return array
      */
     public function getValues(int $foreignkey, bool $complete = false)
@@ -383,7 +387,7 @@ class MetadataService extends ServiceAbstract
             return null;
         }
 
-        if ($schema['type'] == self::BOOLEAN) {
+        if ($schema['type'] === self::BOOLEAN) {
             if ($value === null || $value === '') {
                 return null;
             }
@@ -391,7 +395,7 @@ class MetadataService extends ServiceAbstract
             return ($value) ? 1 : 0;
         }
 
-        if ($schema['type'] == self::INTEGER) {
+        if ($schema['type'] === self::INTEGER) {
             if ($value === null || $value === '') {
                 return null;
             }
@@ -399,11 +403,11 @@ class MetadataService extends ServiceAbstract
             return (int)$value;
         }
 
-        if ($schema['type'] == self::DECIMAL) {
+        if ($schema['type'] === self::DECIMAL) {
             if ($value === null || $value === '') {
                 return null;
             }
-            if (preg_replace('/[^0-9,\.]*/', '', $value) == '') {
+            if (preg_replace('/[^0-9,\.]*/', '', $value) === '') {
                 return 0;
             }
 
@@ -411,7 +415,7 @@ class MetadataService extends ServiceAbstract
             return $value;
         }
 
-        if ($schema['type'] == self::TEXT) {
+        if ($schema['type'] === self::TEXT) {
             if ($value === null || $value === '') {
                 return null;
             }
@@ -419,7 +423,7 @@ class MetadataService extends ServiceAbstract
             return $value;
         }
 
-        if ($schema['type'] == self::DATE) {
+        if ($schema['type'] === self::DATE) {
             // Remove qualquer hora se houver
             $value = explode(' ', $value);
             $value = array_shift($value);
@@ -428,65 +432,66 @@ class MetadataService extends ServiceAbstract
             }
         }
 
-        if ($schema['type'] == self::DATETIME && DateHelper::isFormat('d/m/Y H:i:s', $value)) {
+        if ($schema['type'] === self::DATETIME && DateHelper::isFormat('d/m/Y H:i:s', $value)) {
             return DateTime::createFromFormat('d/m/Y H:i:s', $value)->format('Y-m-d H:i:s');
         }
 
-        if ($schema['type'] == self::DATETIME && DateHelper::isFormat('d/m/Y', $value)) {
+        if ($schema['type'] === self::DATETIME && DateHelper::isFormat('d/m/Y', $value)) {
             return DateTime::createFromFormat('d/m/Y', $value)->format('Y-m-d 00:00:00');
         }
 
         return $value;
     }
 
-    protected function getCorrectSetKey($schema)
+    protected function getCorrectSetKey($schema): string
     {
-        if ($schema['type'] == self::INTEGER) {
+        if ($schema['type'] === self::INTEGER) {
             return 'value_integer';
         }
 
-        if ($schema['type'] == self::BOOLEAN) {
+        if ($schema['type'] === self::BOOLEAN) {
             return 'value_boolean';
         }
 
-        if ($schema['type'] == self::DATE) {
+        if ($schema['type'] === self::DATE) {
             return 'value_date';
         }
 
-        if ($schema['type'] == self::DATETIME) {
+        if ($schema['type'] === self::DATETIME) {
             return 'value_datetime';
         }
 
-        if ($schema['type'] == self::DECIMAL) {
+        if ($schema['type'] === self::DECIMAL) {
             return 'value_decimal';
         }
 
         return 'value_text';
     }
 
+    /** @return mixed */
     protected function getCurrentValue($schema, $value)
     {
-        if ($schema['type'] == self::TEXT) {
+        if ($schema['type'] === self::TEXT) {
             return $value['value_text'];
         }
 
-        if ($schema['type'] == self::INTEGER) {
+        if ($schema['type'] === self::INTEGER) {
             return $value['value_integer'];
         }
 
-        if ($schema['type'] == self::BOOLEAN) {
+        if ($schema['type'] === self::BOOLEAN) {
             return $value['value_boolean'];
         }
 
-        if ($schema['type'] == self::DATE) {
+        if ($schema['type'] === self::DATE) {
             return $value['value_date'];
         }
 
-        if ($schema['type'] == self::DATETIME) {
+        if ($schema['type'] === self::DATETIME) {
             return $value['value_datetime'];
         }
 
-        if ($schema['type'] == self::DECIMAL) {
+        if ($schema['type'] === self::DECIMAL) {
             return $value['value_decimal'];
         }
 
@@ -556,14 +561,18 @@ class MetadataService extends ServiceAbstract
     {
         if ($count === null) {
             if ($cast === 'INTEGER') {
-                return str_replace('?', intval($value), $text);
-            } elseif ($cast === 'DECIMAL') {
-                return str_replace('?', floatval($value), $text);
-            } elseif ($cast === 'STRING') {
-                return str_replace('?', $platform->quoteValue($value), $text);
-            } else {
-                throw new InvalidArgumentException('CAST inválido em ' . get_class($this) . '::quoteInto');
+                return str_replace('?', (string)(int)$value, $text);
             }
+
+            if ($cast === 'DECIMAL') {
+                return str_replace('?', (string)(float)$value, $text);
+            }
+
+            if ($cast === 'STRING') {
+                return str_replace('?', $platform->quoteValue($value), $text);
+            }
+
+            throw new InvalidArgumentException('CAST inválido em ' . get_class($this) . '::quoteInto');
         } else {
             while ($count > 0) {
                 if (strpos($text, '?') !== false) {

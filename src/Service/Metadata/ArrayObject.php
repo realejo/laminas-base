@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Estende as funcionalidades do ArrayObject com as informações disponíveis no metadata
  *
  * Ele deveria extender Realejo\Stdlib\ArrayObject mas como rescreve a maioria dos
- * méetodos eu deixei numa classe a parte
+ * métodos eu deixei numa classe a parte
  */
 
 namespace Realejo\Service\Metadata;
@@ -16,16 +16,13 @@ use RuntimeException;
 
 class ArrayObject extends StdlibArrayObject
 {
-    /**
-     * @var MetadataArrayObject
-     */
-    protected $metadata;
+    protected MetadataArrayObject $metadata;
 
     protected string $metadataKeyName = 'metadata';
 
     public function getMetadata(): MetadataArrayObject
     {
-        if ($this->metadata === null) {
+        if (!isset($this->metadata)) {
             $this->metadata = new MetadataArrayObject();
         }
 
@@ -34,9 +31,8 @@ class ArrayObject extends StdlibArrayObject
 
     /**
      * @param array|MetadataArrayObject $metadata
-     * @return $this
      */
-    public function setMetadata($metadata)
+    public function setMetadata($metadata): self
     {
         if (is_array($metadata)) {
             $metadata = new MetadataArrayObject($metadata);
@@ -47,22 +43,14 @@ class ArrayObject extends StdlibArrayObject
         return $this;
     }
 
-    /**
-     * @param array $metadata
-     * @return $this
-     */
-    public function addMetadata($metadata)
+    public function addMetadata(array $metadata): self
     {
         $this->getMetadata()->addMetadata($metadata);
 
         return $this;
     }
 
-    /**
-     * @param string $key
-     * @return bool
-     */
-    public function hasMetadata($key): bool
+    public function hasMetadata(string $key): bool
     {
         return $this->getMetadata()->offsetExists($key);
     }
@@ -71,7 +59,7 @@ class ArrayObject extends StdlibArrayObject
     {
         if (isset($data[$this->metadataKeyName])) {
             if (is_string($data[$this->metadataKeyName])) {
-                $data[$this->metadataKeyName] = json_decode($data[$this->metadataKeyName], JSON_OBJECT_AS_ARRAY);
+                $data[$this->metadataKeyName] = json_decode($data[$this->metadataKeyName], true);
             }
             if (!empty($data[$this->metadataKeyName])) {
                 $this->setMetadata($data[$this->metadataKeyName]);
@@ -82,10 +70,6 @@ class ArrayObject extends StdlibArrayObject
         parent::populate($data);
     }
 
-    /**
-     * @param bool $unMapKeys
-     * @return array
-     */
     public function toArray(bool $unMapKeys = true): array
     {
         $toArray = parent::toArray($unMapKeys);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Realejo\Enum;
 
 use InvalidArgumentException;
@@ -25,8 +27,9 @@ use InvalidArgumentException;
  */
 abstract class Enum
 {
-    protected static $constDescription = [];
+    protected static array $constDescription = [];
 
+    /** @var mixed */
     protected $value;
 
     public function __construct($value = null)
@@ -45,8 +48,6 @@ abstract class Enum
 
     /**
      * Return the const values with it's names
-     *
-     * @return array
      */
     public static function getNames(): array
     {
@@ -54,13 +55,12 @@ abstract class Enum
         foreach (static::$constDescription as $v => $description) {
             $fetchAll[$v] = (is_array($description)) ? $description[0] : $description;
         }
+
         return $fetchAll;
     }
 
     /**
      * Returns descriptions for the constants
-     *
-     * @return array
      */
     public static function getDescriptions(): array
     {
@@ -68,13 +68,12 @@ abstract class Enum
         foreach (static::$constDescription as $v => $description) {
             $getDescriptions[$v] = (is_array($description)) ? $description[1] : $description;
         }
+
         return $getDescriptions;
     }
 
     /**
      * Return the const values
-     *
-     * @return array
      */
     public static function getValues(): array
     {
@@ -84,14 +83,13 @@ abstract class Enum
     /**
      * Return the name os the constant
      *
-     * @param null $value
-     *
-     * @return string|null
+     * @param mixed $value
      */
-    public static function getName($value = null)
+    public static function getName($value): ?string
     {
         $names = self::getNames();
 
+        // Casting matters
         if (in_array($value, array_keys($names), true)) {
             return $names[$value];
         }
@@ -102,11 +100,9 @@ abstract class Enum
     /**
      * Return the name os the constant
      *
-     * @param null $value
-     *
-     * @return string|array
+     * @param mixed $value
      */
-    public function getValueName($value = null)
+    public function getValueName($value = null): ?string
     {
         if ($value === null && $this->value !== null) {
             $value = $this->value;
@@ -118,11 +114,9 @@ abstract class Enum
     /**
      * Return the name os the constant
      *
-     * @param null $value
-     *
-     * @return string|array
+     * @param mixed $value
      */
-    public function getValueDescription($value = null)
+    public function getValueDescription($value = null): ?string
     {
         if ($value === null && $this->value !== null) {
             $value = $this->value;
@@ -134,14 +128,13 @@ abstract class Enum
     /**
      * Descrição dos status
      *
-     * @param null $value
-     *
-     * @return string|null
+     * @param mixed $value
      */
-    public static function getDescription($value = null)
+    public static function getDescription($value): ?string
     {
         $descriptions = self::getDescriptions();
 
+        // Casting matters
         if (in_array($value, array_keys($descriptions), true)) {
             return $descriptions[$value];
         }
@@ -149,9 +142,14 @@ abstract class Enum
         return null;
     }
 
+    /**
+     * @param string|int $value
+     */
     public static function isValid($value): bool
     {
         $const = static::getNames();
+
+        // Casting matters
         return in_array($value, array_keys($const), true);
     }
 

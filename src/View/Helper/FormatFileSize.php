@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @see https://gist.github.com/mcaskill/02636e5970be1bb22270#file-function-date-format-conversion-php
  */
@@ -19,7 +21,7 @@ class FormatFileSize extends AbstractHelper
         $pow = min($pow, count($units) - 1);
 
         // Uncomment one of the following alternatives
-        $bytes /= pow(1024, $pow);
+        $bytes /= 1024 ** $pow;
         // $bytes /= (1 << (10 * $pow));
 
         return round($bytes, $precision) . ' ' . $units[$pow];

@@ -1,18 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Realejo\Service\Metadata;
 
 class MetadataArrayObject implements \ArrayAccess, \Countable
 {
-    /**
-     * @var array
-     */
-    protected $storage = [];
+    protected array $storage = [];
 
-    /**
-     * @var string
-     */
-    protected $nullKeys = ':';
+    protected string $nullKeys = ':';
 
     public function __construct(array $data = null)
     {
@@ -26,7 +22,7 @@ class MetadataArrayObject implements \ArrayAccess, \Countable
         return count($this->storage) + substr_count($this->nullKeys, ':') - 1;
     }
 
-    public function populate(array $data)
+    public function populate(array $data): void
     {
         // remove as chaves vazias
         if (!empty($data)) {
@@ -40,7 +36,7 @@ class MetadataArrayObject implements \ArrayAccess, \Countable
         $this->storage = $data;
     }
 
-    public function toArray()
+    public function toArray(): array
     {
         $toArray = $this->storage;
         if (strlen($this->nullKeys) > 1) {
@@ -48,13 +44,11 @@ class MetadataArrayObject implements \ArrayAccess, \Countable
                 $toArray[$key] = null;
             }
         }
+
         return $toArray;
     }
 
-    /**
-     * @param array $metadata
-     */
-    public function addMetadata($metadata)
+    public function addMetadata(array $metadata): void
     {
         // remove as chaves vazias
         if (!empty($metadata)) {
@@ -69,7 +63,7 @@ class MetadataArrayObject implements \ArrayAccess, \Countable
         }
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         if (array_key_exists($offset, $this->storage)) {
             return true;
@@ -104,12 +98,14 @@ class MetadataArrayObject implements \ArrayAccess, \Countable
             } else {
                 $this->storage[$offset] = $value;
             }
+
             return null;
         }
 
         if (isset($this->nullKeys) && strpos($this->nullKeys, ":$offset:") !== false) {
             $this->storage[$offset] = $value;
             $this->nullKeys = str_replace(":$offset:", ':', $this->nullKeys);
+
             return $this;
         }
 
@@ -121,6 +117,7 @@ class MetadataArrayObject implements \ArrayAccess, \Countable
         if ($this->offsetExists($offset)) {
             $this->nullKeys .= "$offset:";
             unset($this->storage[$offset]);
+
             return;
         }
 
@@ -136,24 +133,17 @@ class MetadataArrayObject implements \ArrayAccess, \Countable
      * @param string $name
      * @param mixed $value
      */
-    public function __set($name, $value)
+    public function __set(string $name, $value)
     {
         $this->offsetSet($name, $value);
     }
 
-    /**
-     * @param string $name
-     */
-    public function __unset($name)
+    public function __unset(string $name)
     {
         $this->offsetUnset($name);
     }
 
-    /**
-     * @param string $name
-     * @return bool
-     */
-    public function __isset($name)
+    public function __isset(string $name): bool
     {
         return $this->offsetExists($name);
     }

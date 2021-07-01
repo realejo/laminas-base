@@ -9,5 +9,7 @@ use Realejo\Service\MapperAbstract;
 class MapperConcrete extends MapperAbstract
 {
     protected string $tableName = 'mptt';
+
+    /** @var string|array  */
     protected $tableKey = 'id';
 }

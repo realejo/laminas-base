@@ -11,7 +11,6 @@ class EnumTest extends TestCase
     {
         $enum = new EnumConcreteEmpty();
         $this->assertEquals([], $enum::getNames());
-        $this->assertNull($enum::getName());
         $this->assertNull($enum->getValueName());
 
         $enum = new EnumConcrete();
@@ -25,7 +24,6 @@ class EnumTest extends TestCase
             ],
             $enum::getNames()
         );
-        $this->assertNull($enum::getName());
         $this->assertNull($enum::getName('Z'));
         $this->assertNull($enum::getName(123));
         $this->assertEquals('string1', $enum::getName('S'));
@@ -49,7 +47,6 @@ class EnumTest extends TestCase
     public function testGetNamesStatic(): void
     {
         $this->assertEquals([], EnumConcreteEmpty::getNames());
-        $this->assertNull(EnumConcreteEmpty::getName());
 
         $this->assertEquals(
             [
@@ -60,7 +57,6 @@ class EnumTest extends TestCase
             ],
             EnumConcrete::getNames()
         );
-        $this->assertNull(EnumConcrete::getName());
         $this->assertNull(EnumConcrete::getName('Z'));
         $this->assertNull(EnumConcrete::getName(123));
         $this->assertNull(EnumConcrete::getName(false));
@@ -76,7 +72,6 @@ class EnumTest extends TestCase
     {
         $enum = new EnumConcreteEmpty();
         $this->assertEquals([], $enum::getDescriptions());
-        $this->assertNull($enum::getDescription());
         $this->assertNull($enum->getValueDescription());
 
         $enum = new EnumConcrete();
@@ -90,7 +85,6 @@ class EnumTest extends TestCase
             ],
             $enum::getDescriptions()
         );
-        $this->assertNull($enum::getDescription());
         $this->assertNull($enum::getDescription('Z'));
         $this->assertNull($enum::getDescription(123));
         $this->assertNull($enum::getDescription(false));
@@ -116,7 +110,6 @@ class EnumTest extends TestCase
     public function testGetDescriptionsStatic(): void
     {
         $this->assertEquals([], EnumConcreteEmpty::getDescriptions());
-        $this->assertNull(EnumConcreteEmpty::getDescription());
 
         $this->assertEquals(
             [
@@ -127,7 +120,6 @@ class EnumTest extends TestCase
             ],
             EnumConcrete::getDescriptions()
         );
-        $this->assertNull(EnumConcrete::getDescription());
         $this->assertNull(EnumConcrete::getDescription('Z'));
         $this->assertNull(EnumConcrete::getDescription(123));
         $this->assertNull(EnumConcrete::getDescription(false));
@@ -186,8 +178,6 @@ class EnumTest extends TestCase
 
         $enum = new EnumConcrete();
         $this->assertNull($enum->getValue());
-        $this->assertNull($enum::getName());
-        $this->assertNull($enum::getDescription());
 
         $this->assertNull($enum->getValueName());
         $this->assertNull($enum->getValueDescription());
@@ -198,8 +188,6 @@ class EnumTest extends TestCase
         $this->assertEquals('string1', $enum::getDescription($enum->getValue()));
         $this->assertEquals('string1', $enum->getValueName());
         $this->assertEquals('string1', $enum->getValueDescription());
-        $this->assertNull($enum::getName());
-        $this->assertNull($enum::getDescription());
 
         $enum = new EnumConcrete(EnumConcrete::STRING2);
         $this->assertEquals(EnumConcrete::STRING2, $enum->getValue());
@@ -207,8 +195,6 @@ class EnumTest extends TestCase
         $this->assertEquals('string with description', $enum::getDescription($enum->getValue()));
         $this->assertEquals('string2', $enum->getValueName());
         $this->assertEquals('string with description', $enum->getValueDescription());
-        $this->assertNull($enum::getName());
-        $this->assertNull($enum::getDescription());
 
         $enum = new EnumConcrete(EnumConcrete::NUMERIC1);
         $this->assertEquals(EnumConcrete::NUMERIC1, $enum->getValue());
@@ -216,8 +202,6 @@ class EnumTest extends TestCase
         $this->assertEquals('numeric1', $enum::getDescription($enum->getValue()));
         $this->assertEquals('numeric1', $enum->getValueName());
         $this->assertEquals('numeric1', $enum->getValueDescription());
-        $this->assertNull($enum::getName());
-        $this->assertNull($enum::getDescription());
 
         $enum = new EnumConcrete(EnumConcrete::NUMERIC2);
         $this->assertEquals(EnumConcrete::NUMERIC2, $enum->getValue());
@@ -225,8 +209,6 @@ class EnumTest extends TestCase
         $this->assertEquals('numeric with description', $enum::getDescription($enum->getValue()));
         $this->assertEquals('numeric2', $enum->getValueName());
         $this->assertEquals('numeric with description', $enum->getValueDescription());
-        $this->assertNull($enum::getName());
-        $this->assertNull($enum::getDescription());
     }
 
     public function testGetValueStatic(): void

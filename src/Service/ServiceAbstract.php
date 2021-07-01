@@ -183,7 +183,7 @@ abstract class ServiceAbstract
      * @param int|null $count OPTIONAL An SQL LIMIT count.
      * @param int|null $offset OPTIONAL An SQL LIMIT offset.
      *
-     * @return ArrayObject[] | null
+     * @return ArrayObject[] | HydratingResultSet
      */
     public function findAll(array $where = [], $order = null, int $count = null, int $offset = null)
     {
@@ -266,11 +266,7 @@ abstract class ServiceAbstract
         return $this->cache;
     }
 
-    /**
-     * @param CacheStorage\StorageInterface $cache
-     * @return ServiceAbstract
-     */
-    public function setCache(CacheStorage\StorageInterface $cache)
+    public function setCache(CacheStorage\StorageInterface $cache): self
     {
         $this->cache = $cache;
 
@@ -416,7 +412,7 @@ abstract class ServiceAbstract
      * @param int|null $count OPTIONAL An SQL LIMIT count.
      * @param int|null $offset OPTIONAL An SQL LIMIT offset.
      *
-     * @return ArrayObject[] | null
+     * @return ArrayObject[] | HydratingResultSet
      */
     public function findAssoc(array $where = [], $order = null, int $count = null, int $offset = null)
     {
@@ -458,10 +454,8 @@ abstract class ServiceAbstract
      * @param string|array $order OPTIONAL An SQL ORDER clause.
      * @param int|null $count OPTIONAL An SQL LIMIT count.
      * @param int|null $offset OPTIONAL An SQL LIMIT offset.
-     *
-     * @return Paginator
      */
-    public function findPaginated(array $where = [], $order = null, int $count = null, int $offset = null)
+    public function findPaginated(array $where = [], $order = null, int $count = null, int $offset = null): Paginator
     {
         // Define a consulta
         if ($where instanceof Select) {
@@ -532,19 +526,12 @@ abstract class ServiceAbstract
         return $this->getMapper()->update($set, $key);
     }
 
-    /**
-     * @return bool
-     */
-    public function getUseJoin()
+    public function getUseJoin(): bool
     {
         return $this->getMapper()->getUseJoin();
     }
 
-    /**
-     * @param bool $useJoin
-     * @return ServiceAbstract
-     */
-    public function setUseJoin($useJoin)
+    public function setUseJoin(bool $useJoin): self
     {
         $this->getMapper()->setUseJoin($useJoin);
 
@@ -556,16 +543,13 @@ abstract class ServiceAbstract
      *
      * Não precisa apagar o cache dos metadata pois é o mesmo do serviço
      */
-    public function cleanCache()
+    public function cleanCache(): void
     {
         $this->getCache()->flush();
         $this->getMapper()->getCache()->flush();
     }
 
-    /**
-     * @return bool
-     */
-    public function getAutoCleanCache()
+    public function getAutoCleanCache(): bool
     {
         return $this->getMapper()->getAutoCleanCache();
     }

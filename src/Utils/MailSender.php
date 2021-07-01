@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Realejo\Utils;
 
-use RuntimeException;
 use Laminas\Mail;
 use Laminas\Mime;
 use Laminas\Stdlib\ArrayUtils;
+use RuntimeException;
 
 class MailSender
 {
@@ -419,13 +421,13 @@ class MailSender
     /**
      * Verifica se está no padrão UTF-8
      * @param string $str Texto para identificar se é UTF8
-     * @return boolean
+     * @return bool
      * @todo descobrir pq não funciona mb_check_encoding
      *
      */
     private function checkUTF8($str)
     {
-        $len = strlen($str);
+        $len = strlen($str ?? '');
         for ($i = 0; $i < $len; $i++) {
             $c = ord($str[$i]);
             if ($c > 128) {

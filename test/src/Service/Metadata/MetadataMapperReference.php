@@ -13,5 +13,7 @@ use Realejo\Service\MapperAbstract;
 class MetadataMapperReference extends MapperAbstract
 {
     protected string $tableName = 'tblreference';
+
+    /** @var string|array */
     protected $tableKey = 'id_reference';
 }

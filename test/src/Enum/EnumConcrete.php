@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RealejoTest\Enum;
 
 use Realejo\Enum\Enum;
@@ -11,7 +13,7 @@ final class EnumConcrete extends Enum
     public const NUMERIC1 = 666;
     public const NUMERIC2 = 999;
 
-    protected static $constDescription = [
+    protected static array $constDescription = [
         'S' => 'string1',
         'X' => ['string2', 'string with description'],
         666 => 'numeric1',

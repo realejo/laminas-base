@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Coloca o CKEditor e CKFinder na view
  *
@@ -9,13 +11,11 @@
 namespace Realejo\View\Helper;
 
 use Laminas\View\Helper\AbstractHelper;
+use RuntimeException;
 
 class CKEditor extends AbstractHelper
 {
-    /**
-     * @var bool
-     */
-    private static $initialized = false;
+    private static bool $initialized = false;
 
     /**
      * @var bool|array
@@ -29,7 +29,7 @@ class CKEditor extends AbstractHelper
      */
     private static $ckEditorCustomConfig = false;
 
-    public function init()
+    public function init(): void
     {
         if (!self::$initialized) {
             $config = $this->getView()->applicationConfig();
@@ -68,7 +68,7 @@ class CKEditor extends AbstractHelper
      *
      * @return string js
      */
-    public function __invoke($fields = [], $options = [])
+    public function __invoke($fields = [], $options = []): string
     {
         // Inicializa o CKEditor
         $this->init();
@@ -77,7 +77,7 @@ class CKEditor extends AbstractHelper
         if (array_key_exists('ckfinder', $options)) {
             // Se não estiver definido retorna erro
             if (self::$ckFinderConfig === false) {
-                throw new \RuntimeException('CKFinder config not defined');
+                throw new RuntimeException('CKFinder config not defined');
             }
 
             // Define os valores do plugin de integração do ckfinder

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RealejoTest\Enum;
 
 use Realejo\Enum\EnumFlagged;
@@ -10,7 +12,7 @@ class EnumFlaggedConcrete extends EnumFlagged
     public const WRITE = 1 << 1; // 2
     public const READ = 1 << 2; // 4
 
-    protected static $constDescription = [
+    protected static array $constDescription = [
         self::EXECUTE => ['x', 'execute'],
         self::WRITE => 'w',
         self::READ => 'r',
