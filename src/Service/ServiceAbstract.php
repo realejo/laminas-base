@@ -450,10 +450,10 @@ abstract class ServiceAbstract
     /**
      * Retorna a consulta paginada
      *
-     * @param string|array $where OPTIONAL An SQL WHERE clause
+     * @param array $where OPTIONAL An SQL WHERE clause
      * @param string|array $order OPTIONAL An SQL ORDER clause.
-     * @param int|null $count OPTIONAL An SQL LIMIT count.
-     * @param int|null $offset OPTIONAL An SQL LIMIT offset.
+     * @param int $count OPTIONAL An SQL LIMIT count.
+     * @param int $offset OPTIONAL An SQL LIMIT offset.
      */
     public function findPaginated(array $where = [], $order = null, int $count = null, int $offset = null): Paginator
     {
