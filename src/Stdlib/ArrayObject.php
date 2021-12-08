@@ -62,24 +62,24 @@ class ArrayObject implements ArrayAccess
 
     public function populate(array $data): void
     {
-        $useDateKeys = (is_array($this->dateKeys) && !empty($this->dateKeys));
-        $useJsonArrayKeys = (is_array($this->jsonArrayKeys) && !empty($this->jsonArrayKeys));
-        $useJsonObjectKeys = (is_array($this->jsonObjectKeys) && !empty($this->jsonObjectKeys));
-        $useIntKeys = (is_array($this->intKeys) && !empty($this->intKeys));
-        $useBooleanKeys = (is_array($this->booleanKeys) && !empty($this->booleanKeys));
-        $useEnumKeys = (is_array($this->enumKeys) && !empty($this->enumKeys));
+        $useDateKeys = !empty($this->dateKeys);
+        $useJsonArrayKeys = !empty($this->jsonArrayKeys);
+        $useJsonObjectKeys = !empty($this->jsonObjectKeys);
+        $useIntKeys = !empty($this->intKeys);
+        $useBooleanKeys = !empty($this->booleanKeys);
+        $useEnumKeys = !empty($this->enumKeys);
 
         if (!empty($data)) {
             foreach ($data as $key => $value) {
-                if ($useDateKeys && in_array($key, $this->dateKeys) && !empty($value)) {
+                if ($useDateKeys && in_array($key, $this->dateKeys, true) && !empty($value)) {
                     $value = new DateTime($value);
-                } elseif ($useJsonArrayKeys && in_array($key, $this->jsonArrayKeys) && !empty($value)) {
+                } elseif ($useJsonArrayKeys && in_array($key, $this->jsonArrayKeys, true) && !empty($value)) {
                     $value = json_decode($value, true);
-                } elseif ($useJsonObjectKeys && in_array($key, $this->jsonObjectKeys) && !empty($value)) {
+                } elseif ($useJsonObjectKeys && in_array($key, $this->jsonObjectKeys, true) && !empty($value)) {
                     $value = json_decode($value);
-                } elseif ($useIntKeys && in_array($key, $this->intKeys) && !empty($value)) {
+                } elseif ($useIntKeys && in_array($key, $this->intKeys, true) && !empty($value)) {
                     $value = (int)$value;
-                } elseif ($useBooleanKeys && in_array($key, $this->booleanKeys) && !empty($value)) {
+                } elseif ($useBooleanKeys && in_array($key, $this->booleanKeys, true)) {
                     $value = (bool)$value;
                 } elseif ($useEnumKeys && array_key_exists($key, $this->enumKeys)) {
                     $value = new $this->enumKeys[$key]($value);

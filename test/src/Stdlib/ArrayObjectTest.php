@@ -258,14 +258,14 @@ class ArrayObjectTest extends TestCase
                 'datetimeKey' => '2010-01-01 00:00:00',
                 'intKey' => '1',
                 'enum' => EnumConcrete::STRING1,
-                'enumFlagged' => EnumFlaggedConcrete::WRITE
+                'enumFlagged' => EnumFlaggedConcrete::WRITE,
             ]
         );
 
         // check keys
         self::assertTrue($object->booleanKey);
         self::assertEquals(new \DateTime('2010-01-01'), $object->datetimeKey);
-        self::assertSame($object->intKey, 1);
+        self::assertSame(1, $object->intKey);
 
         self::assertInstanceOf(EnumConcrete::class, $object->enum);
         self::assertEquals(EnumConcrete::STRING1, $object->enum->getValue());
@@ -299,5 +299,41 @@ class ArrayObjectTest extends TestCase
         self::assertEquals(1, $objectArray['intKey']);
         self::assertEquals('S', $objectArray['enum']);
         self::assertEquals(2, $objectArray['enumFlagged']);
+
+        /**
+         * Test for empty values
+         */
+        $object = new ArrayObjectTypedKeys(
+            [
+                'booleanKey' => '0',
+                'jsonObjectKey' => null,
+                'jsonArrayKey' => null,
+                'datetimeKey' => null,
+                'intKey' => null,
+                'enum' => null,
+                'enumFlagged' => null,
+            ]
+        );
+
+        // check keys
+        self::assertFalse($object->booleanKey);
+        self::assertNull($object->datetimeKey);
+        self::assertNull($object->intKey);
+
+        self::assertInstanceOf(EnumConcrete::class, $object->enum);
+        self::assertNull($object->enum->getValue());
+        self::assertFalse($object->enum->is(EnumConcrete::STRING1));
+
+        self::assertInstanceOf(EnumFlaggedConcrete::class, $object->enumFlagged);
+        self::assertEquals(0, $object->enumFlagged->getValue());
+        self::assertFalse($object->enumFlagged->is(EnumFlaggedConcrete::WRITE));
+
+        // get the array as it will be inserted on database
+        $objectArray = $object->getArrayCopy();
+        self::assertEquals(0, $objectArray['booleanKey']);
+        self::assertNull($objectArray['datetimeKey']);
+        self::assertEquals(0, $objectArray['intKey']);
+        self::assertNull($objectArray['enum']);
+        self::assertEquals(0, $objectArray['enumFlagged']);
     }
 }
